@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "2026-etpgrf-site"
+version = "0.1.0"
+description = ""
+authors = ["erjemin <erjemin@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.13"
+django = "^6.0"
+psycopg2-binary = "^2.9.11"
+gunicorn = "^23.0.0"
+etpgrf = "^0.1.1"
+python-dotenv = "^1.2.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
