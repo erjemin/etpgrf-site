@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    # Путь к manage.py
+    command: python etpgrf_site/manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      # Подключаем файл .env с переменными окружения (секретами)
+      - .env
