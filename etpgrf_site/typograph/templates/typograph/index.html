@@ -1,0 +1,23 @@
+{% extends 'typograph/base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h3>Исходный текст</h3>
+        <form hx-post="{% url 'process_text' %}" hx-target="#result-area" hx-swap="innerHTML">
+            {% csrf_token %}
+            <div class="mb-3">
+                <textarea class="form-control" name="text" rows="15" placeholder="Вставьте текст сюда..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Типографировать</button>
+        </form>
+    </div>
+
+    <div class="col-md-12">
+        <h3>Результат</h3>
+        <div id="result-area" class="result-box">
+            <p class="text-muted">Здесь появится результат...</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
