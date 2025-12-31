@@ -32,7 +32,7 @@
                                     <option value="ru+en" data-desc="Основной русский, поддержка английских фраз. Вложенность кавычек учитывает оба языка.">Русский + Английский</option>
                                     <option value="en+ru" data-desc="Основной английский, поддержка русских фраз.">Английский + Русский</option>
                                 </select>
-                                <!-- Сюда JS будет писать описание -->
+                                <!-- Блок для описания языка -->
                                 <div id="descLangs" class="form-text text-muted small mb-2" style="min-height: 2.5em;"></div>
 
                                 <div class="form-check">
@@ -55,6 +55,7 @@
                                     <option value="unicode" data-desc="Компактно. Все символы в UTF-8 (включая неразрывный пробел U+00A0).">Юникод (Unicode)</option>
                                     <option value="mnemonic" data-desc="Совместимость. Все спецсимволы заменяются на HTML-сущности (&amp;mdash;, &amp;copy;).">Мнемоники (&amp;nbsp;)</option>
                                 </select>
+                                <!-- Блок для описания режима -->
                                 <div id="descMode" class="form-text text-muted small mb-2" style="min-height: 2.5em;"></div>
                             </div>
 
@@ -97,21 +98,19 @@
 </div>
 
 <script>
-    // Простой скрипт для обновления описаний
     document.addEventListener('DOMContentLoaded', function() {
         function setupDynamicDescription(selectId, descId) {
             const select = document.getElementById(selectId);
             const desc = document.getElementById(descId);
+            if (!select || !desc) return;
 
             function update() {
                 const selectedOption = select.options[select.selectedIndex];
-                // Берем текст из data-desc или пустую строку
                 desc.textContent = selectedOption.getAttribute('data-desc') || '';
             }
 
             select.addEventListener('change', update);
-            // Вызываем один раз при загрузке, чтобы показать описание для дефолтного значения
-            update();
+            update(); // Инициализация при загрузке
         }
 
         setupDynamicDescription('selectLangs', 'descLangs');
