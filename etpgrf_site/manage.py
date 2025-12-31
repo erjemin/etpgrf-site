@@ -7,16 +7,15 @@ from pathlib import Path
 
 def main():
     """Run administrative tasks."""
-    
     # Пытаемся загрузить переменные из .env файла
     try:
         from dotenv import load_dotenv
+        # Ищем .env в корне проекта (на два уровня выше manage.py)
         # manage.py лежит в etpgrf_site/manage.py
-        # .env лежит в 2026-etpgrf-site/.env (на два уровня выше)
         env_path = Path(__file__).resolve().parent.parent / '.env'
         load_dotenv(env_path)
     except ImportError:
-        pass
+        pass  # Если python-dotenv не установлен, просто пропускаем
 
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'etpgrf_site.settings')
     try:
