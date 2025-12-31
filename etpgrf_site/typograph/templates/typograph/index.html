@@ -1,120 +1,128 @@
 {% extends 'typograph/base.html' %}
 
 {% block content %}
-<div class="row">
+  <div class="row">
     <div class="col-md-12">
-        <h3>Типограф</h3>
-        <form hx-post="{% url 'process_text' %}" hx-target="#result-area" hx-swap="innerHTML">
-            {% csrf_token %}
+      <h3>Типограф</h3>
+      <form hx-post="{% url 'process_text' %}" hx-target="#result-area" hx-swap="innerHTML">
+        {% csrf_token %}
 
-            <!-- Поле ввода -->
-            <div class="mb-3">
-                <textarea class="form-control" name="text" rows="10" placeholder="Вставьте текст сюда..."></textarea>
-            </div>
+        <!-- Поле ввода -->
+        <div class="mb-3">
+          <textarea class="form-control" name="text" rows="10" placeholder="Вставьте текст сюда..."></textarea>
+        </div>
 
-            <!-- Блок настроек (Collapse) -->
-            <div class="mb-3">
-                <button class="btn btn-outline-secondary btn-sm mb-2" type="button" data-bs-toggle="collapse" data-bs-target="#settingsCollapse" aria-expanded="false" aria-controls="settingsCollapse">
-                    ⚙️ Настройки типографики
-                </button>
+        <!-- Блок настроек (Collapse) -->
+        <div class="mb-3">
+          <button class="btn btn-outline-secondary btn-sm mb-2" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#settingsCollapse" aria-expanded="false" aria-controls="settingsCollapse">
+            ⚙️ Настройки типографики
+          </button>
 
-                <div class="collapse" id="settingsCollapse">
-                    <div class="card card-body bg-light">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <h6>Основные</h6>
+          <div class="collapse" id="settingsCollapse">
+            <div class="card card-body bg-light">
+              <div class="row">
+                <div class="col-md-4">
+                  <h6>Основные</h6>
 
-                                <!-- Выбор языка -->
-                                <label class="form-label small text-muted mb-0">Язык:</label>
-                                <select class="form-select form-select-sm" name="langs" id="selectLangs">
-                                    <option value="ru" selected data-desc="Правила русского языка. Кавычки: «...», вложенные „...“. Тире: длинное (—).">Русский</option>
-                                    <option value="en" data-desc="Правила английского языка. Кавычки: “...”, вложенные ‘...’. Тире: английское (—).">Английский</option>
-                                    <option value="ru+en" data-desc="Основной русский, поддержка английских фраз. Вложенность кавычек учитывает оба языка.">Русский + Английский</option>
-                                    <option value="en+ru" data-desc="Основной английский, поддержка русских фраз.">Английский + Русский</option>
-                                </select>
-                                <!-- Блок для описания языка -->
-                                <div id="descLangs" class="form-text text-muted small mb-2" style="min-height: 2.5em;"></div>
+                  <!-- Выбор языка (Alpine.js) -->
+                  <!-- x-data инициализирует состояние. Берем описание первой опции сразу. -->
+                  <div
+                    x-data="{ desc: 'Только русская типографика: кавычки &laquo;ёлочки&raquo; (&bdquo;вложенные&ldquo;); длинное тире (&mdash;) с&nbsp;пробелами; &laquo;прилипающие&raquo; союзы и&nbsp;предлоги только для&nbsp;русского языка, и&nbsp;т.&thinsp;д.' }">
+                    <label class="form-label small text-muted mb-0">Язык:</label>
+                    <select class="form-select form-select-sm mb-2" name="langs"
+                            @change="desc = $event.target.options[$event.target.selectedIndex].dataset.desc">
+                      <option value="ru" selected
+                              data-desc="Только русская типографика: кавычки &laquo;ёлочки&raquo; (&bdquo;вложенные&ldquo;); длинное тире (&mdash;) с&nbsp;пробелами; &laquo;прилипающие&raquo; союзы и&nbsp;предлоги только для&nbsp;русского языка, и&nbsp;т.&thinsp;д.">
+                        Русский
+                      </option>
+                      <option value="en"
+                              data-desc="Только английская типографика: кавычки &ldquo;лапки&rdquo; (&lsquo;вложенные&rsquo;); длинное тире (&mdash;) вплотную; &ldquo;прилипающие&rdquo; союзы и&nbsp;предлоги только для&nbsp;английского языка, и&nbsp;т.&thinsp;д.">
+                        Английский
+                      </option>
+                      <option value="ru+en"
+                              data-desc="Основной русский, поддержка английских фраз. Вложенность кавычек учитывает оба языка.">
+                        Русский + Английский
+                      </option>
+                      <option value="en+ru" data-desc="Основной английский, поддержка русских фраз.">Английский +
+                        Русский
+                      </option>
+                    </select>
+                    <!-- Вывод описания -->
+                    <div class="form-text text-muted small mb-2" style="min-height: 2.5em;" x-text="desc"></div>
+                  </div>
 
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="quotes" id="optQuotes" checked>
-                                    <label class="form-check-label" for="optQuotes">Обработка кавычек</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="layout" id="optLayout" checked>
-                                    <label class="form-check-label" for="optLayout">Тире и спецсимволы</label>
-                                </div>
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" name="unbreakables" id="optUnbreakables" checked>
-                                    <label class="form-check-label" for="optUnbreakables">Неразрывные пробелы</label>
-                                </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="quotes" id="optQuotes" checked>
+                    <label class="form-check-label" for="optQuotes">Обработка кавычек</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="layout" id="optLayout" checked>
+                    <label class="form-check-label" for="optLayout">Тире и спецсимволы</label>
+                  </div>
+                  <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" name="unbreakables" id="optUnbreakables" checked>
+                    <label class="form-check-label" for="optUnbreakables">Неразрывные пробелы</label>
+                  </div>
 
-                                <!-- Режим вывода -->
-                                <label class="form-label small text-muted mb-0">Режим вывода:</label>
-                                <select class="form-select form-select-sm" name="mode" id="selectMode">
-                                    <option value="mixed" selected data-desc="Оптимально. Спецсимволы (—, ©) как есть, неразрывные пробелы как &amp;nbsp;.">Смешанный (Mixed)</option>
-                                    <option value="unicode" data-desc="Компактно. Все символы в UTF-8 (включая неразрывный пробел U+00A0).">Юникод (Unicode)</option>
-                                    <option value="mnemonic" data-desc="Совместимость. Все спецсимволы заменяются на HTML-сущности (&amp;mdash;, &amp;copy;).">Мнемоники (&amp;nbsp;)</option>
-                                </select>
-                                <!-- Блок для описания режима -->
-                                <div id="descMode" class="form-text text-muted small mb-2" style="min-height: 2.5em;"></div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <h6>Дополнительно</h6>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="hyphenation" id="optHyphenation" checked>
-                                    <label class="form-check-label" for="optHyphenation">Переносы слов (&shy;)</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="symbols" id="optSymbols" checked>
-                                    <label class="form-check-label" for="optSymbols">Символы ((c) &rarr; ©)</label>
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <h6>Висячая пунктуация</h6>
-                                <select class="form-select form-select-sm mb-2" name="hanging_punctuation">
-                                    <option value="both" selected>С обеих сторон</option>
-                                    <option value="left">Только слева</option>
-                                    <option value="right">Только справа</option>
-                                    <option value="none">Отключить</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
+                  <!-- Режим вывода (Alpine.js) -->
+                  <div x-data="{ desc: 'Оптимально. Спецсимволы (—, ©) как есть, неразрывные пробелы как &nbsp;.' }">
+                    <label class="form-label small text-muted mb-0">Режим вывода:</label>
+                    <select class="form-select form-select-sm" name="mode"
+                            @change="desc = $event.target.options[$event.target.selectedIndex].dataset.desc">
+                      <option value="mixed" selected
+                              data-desc="Оптимально. Спецсимволы (—, ©) как есть, неразрывные пробелы как &amp;nbsp;.">
+                        Смешанный
+                        (Mixed)
+                      </option>
+                      <option value="unicode"
+                              data-desc="Компактно. Все символы в UTF-8 (включая неразрывный пробел U+00A0).">
+                        Юникод (Unicode)
+                      </option>
+                      <option value="mnemonic"
+                              data-desc="Совместимость. Все спецсимволы заменяются на HTML-сущности (&amp;mdash;, &amp;copy;).">
+                        Мнемоники (&amp;nbsp;)
+                      </option>
+                    </select>
+                    <div class="form-text text-muted small mb-2" style="min-height: 2.5em;" x-text="desc"></div>
+                  </div>
                 </div>
-            </div>
 
-            <!-- Кнопка отправки -->
-            <button type="submit" class="btn btn-primary btn-lg w-100">Типографировать</button>
-        </form>
+                <div class="col-md-4">
+                  <h6>Дополнительно</h6>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="hyphenation" id="optHyphenation" checked>
+                    <label class="form-check-label" for="optHyphenation">Переносы слов (&shy;)</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="symbols" id="optSymbols" checked>
+                    <label class="form-check-label" for="optSymbols">Символы ((c) &rarr; ©)</label>
+                  </div>
+                </div>
+
+                <div class="col-md-4">
+                  <h6>Висячая пунктуация</h6>
+                  <select class="form-select form-select-sm mb-2" name="hanging_punctuation">
+                    <option value="none" selected="">Отключена</option>
+                    <option value="left">Только слева</option>
+                    <option value="right">Только справа</option>
+                    <option value="both">С обеих сторон</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Кнопка отправки -->
+        <button type="submit" class="btn btn-primary btn-lg w-100">Типографировать</button>
+      </form>
     </div>
 
     <div class="col-md-12 mt-4">
-        <h3>Результат</h3>
+      <h3>Результат</h3>
       <pre id="result-area" class="result-box">Здесь появится результат...</pre>
 
     </div>
-</div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        function setupDynamicDescription(selectId, descId) {
-            const select = document.getElementById(selectId);
-            const desc = document.getElementById(descId);
-            if (!select || !desc) return;
-
-            function update() {
-                const selectedOption = select.options[select.selectedIndex];
-                desc.textContent = selectedOption.getAttribute('data-desc') || '';
-            }
-
-            select.addEventListener('change', update);
-            update(); // Инициализация при загрузке
-        }
-
-        setupDynamicDescription('selectLangs', 'descLangs');
-        setupDynamicDescription('selectMode', 'descMode');
-    });
-</script>
+  </div>
 {% endblock %}
