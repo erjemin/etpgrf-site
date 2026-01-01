@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-# Импортируем напрямую из пакета etpgrf, который лежит в корне проекта
 from etpgrf.typograph import Typographer
+from etpgrf.layout import LayoutProcessor
 
 def index(request):
     return render(request, template_name='typograph/index.html')
@@ -10,21 +10,42 @@ def process_text(request):
     if request.method == 'POST':
         text = request.POST.get(key='text', default='')
         
-        # Собираем настройки из формы
-        options = {
-            # Выпадающие списки
-            'langs': request.POST.get(key='langs', default='ru'),
-            'hanging_punctuation': request.POST.get(key='hanging_punctuation', default='both'),
-            'mode': request.POST.get(key='mode', default='mixed'),
+        # 1. Читаем базовые настройки
+        langs = request.POST.get(key='langs', default='ru')
+        
+        # 2. Собираем LayoutProcessor
+        layout_enabled = request.POST.get('layout') == 'on'
+        layout_option = False # По умолчанию выключен
+        
+        if layout_enabled:
+            # Если включен, создаем процессор с тонкими настройками
+            layout_option = LayoutProcessor(
+                langs=langs,
+                process_initials_and_acronyms=request.POST.get('layout_initials') == 'on',
+                process_units=request.POST.get('layout_units') == 'on'
+            )
             
+        # 3. Читаем Sanitizer
+        sanitizer_val = request.POST.get('sanitizer', '')
+        sanitizer_option = None
+        if sanitizer_val:
+            sanitizer_option = sanitizer_val # 'etp' или 'html'
+
+        # 4. Собираем общие опции
+        options = {
+            'langs': langs,
             'process_html': True,
             
-            # Чекбоксы
             'quotes': request.POST.get('quotes') == 'on',
-            'layout': request.POST.get('layout') == 'on',
+            'layout': layout_option, # Передаем объект или False
             'unbreakables': request.POST.get('unbreakables') == 'on',
             'hyphenation': request.POST.get('hyphenation') == 'on',
             'symbols': request.POST.get('symbols') == 'on',
+            
+            'hanging_punctuation': request.POST.get(key='hanging_punctuation', default='none'),
+            'mode': request.POST.get(key='mode', default='mixed'),
+            
+            'sanitizer': sanitizer_option
         }
         
         if options['hanging_punctuation'] == 'none':
@@ -36,7 +57,6 @@ def process_text(request):
         # Обрабатываем текст
         processed = typo.process(text)
         
-        # Возвращаем фрагмент с явным указанием аргументов
         return render(
             request, 
             template_name='typograph/result_fragment.html', 
