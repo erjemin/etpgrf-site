@@ -56,7 +56,7 @@
                         <label class="form-check-label fw-bold" for="optQuotes">Обработка кавычек</label>
                     </div>
                     {# Описание (видно, когда выключено) #}<div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
-                        Прямые кавычки (&quot;) не будут заменяться на типографские («…ёлочки…» или “…лапки…”).
+                        Прямые кавычки (&quot;) не будут заменяться на типографские («…ёлочки…» или&nbsp;“…лапки…”).
                     </div>
                   </div>
                   {# ========= #}<hr class="my-2" />
@@ -145,7 +145,7 @@
                       </select>
                   </div>
                   {# ========= #}<hr class="my-2" />
-                  {# Группа "Режим вывода" #}<div x-data="{ desc: 'Оптимально. Спецсимволы (—, ©) как&nbsp;есть, неразрывные пробелы как&nbsp;&amp;nbsp;.' }">
+                  {# Группа "Режим вывода" #}<div x-data="{ desc: 'Оптимально. Спецсимволы (—, ©) как&amp;nbsp;есть, неразрывные пробелы как&amp;nbsp;<tt>&amp;amp;nbsp;</tt>.' }">
                     <div class="d-flex align-items-center mb-1">
                         <div class="me-2 text-center" style="width: 1.25em;">
                             <i class="bi bi-code-slash"></i>
@@ -154,17 +154,16 @@
                         <select class="form-select form-select-sm w-auto" name="mode"
                                 @change="desc = $event.target.options[$event.target.selectedIndex].dataset.desc">
                           <option value="mixed" selected
-                                  data-desc="Оптимально. Спецсимволы (—, ©) как есть, неразрывные пробелы как &amp;nbsp;.">
-                            Смешанный
-                            (Mixed)
+                                  data-desc="Оптимально. Спецсимволы (—, ©) как&nbsp;есть, неразрывные пробелы как&amp;nbsp;<tt>&amp;amp;nbsp;</tt>.">
+                            Смешанный (Mixed)
                           </option>
                           <option value="unicode"
-                                  data-desc="Компактно. Все символы в UTF-8 (включая неразрывный пробел U+00A0).">
+                                  data-desc="Компактно. Все символы в&amp;nbsp;UTF-8 (включая неразрывный пробел&amp;nbsp;U+00A0).">
                             Юникод (Unicode)
                           </option>
                           <option value="mnemonic"
-                                  data-desc="Совместимость. Все спецсимволы заменяются на HTML-сущности (&amp;mdash;, &amp;copy;).">
-                            Мнемоники (&amp;nbsp;)
+                                  data-desc="Совместимость. Все спецсимволы заменяются на&amp;nbsp;HTML-мнемоники (<tt>&amp;amp;mdash;</tt>, <tt>&amp;amp;copy;</tt>, <tt>&amp;amp;half;</tt> …).">
+                            Мнемоники (mnemonic)
                           </option>
                         </select>
                     </div>
