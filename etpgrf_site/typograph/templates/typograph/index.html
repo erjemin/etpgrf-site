@@ -25,34 +25,36 @@
                   <h6>Основные</h6>
 
                   <!-- Выбор языка (Alpine.js) -->
-                  <div
+                  <div class="mb-3"
                     x-data="{ desc: 'Только русская типографика: кавычки &laquo;ёлочки&raquo; (&bdquo;вложенные&ldquo;); длинное тире (&mdash;) с&nbsp;пробелами; &laquo;прилипающие&raquo; союзы и&nbsp;предлоги только для&nbsp;русского языка, переносы слов и&nbsp;т.&thinsp;д.' }">
                     <label class="form-label small text-muted mb-0">Язык:</label>
                     <select class="form-select form-select-sm mb-2" name="langs"
                             @change="desc = $event.target.options[$event.target.selectedIndex].dataset.desc">
                       <option value="ru" selected
-                              data-desc="Только русская типографика: кавычки &laquo;ёлочки&raquo; (&bdquo;вложенные&ldquo;); длинное тире (&mdash;) с&nbsp;пробелами; &laquo;прилипающие&raquo; союзы и&nbsp;предлоги только для&nbsp;русского языка, переносы слов и&nbsp;т.&thinsp;д.">
-                        Русский
-                      </option>
+                              data-desc="Только русская типографика: кавычки &laquo;ёлочки&raquo; (&bdquo;вложенные&ldquo;); длинное тире (&mdash;) с&nbsp;пробелами; &laquo;прилипающие&raquo; союзы и&nbsp;предлоги только для&nbsp;русского языка, переносы слов и&nbsp;т.&thinsp;д.">Русский</option>
                       <option value="en"
-                              data-desc="Только английская типографика: кавычки &ldquo;лапки&rdquo; (&lsquo;вложенные&rsquo;); длинное тире (&mdash;) вплотную; &ldquo;прилипающие&rdquo; союзы и&nbsp;предлоги только для&nbsp;английского языка, переносы слов и&nbsp;т.&thinsp;д.">
-                        Английский
-                      </option>
+                              data-desc="Только английская типографика: кавычки &ldquo;лапки&rdquo; (&lsquo;вложенные&rsquo;); длинное тире (&mdash;) вплотную; &ldquo;прилипающие&rdquo; союзы и&nbsp;предлоги только для&nbsp;английского языка, переносы слов и&nbsp;т.&thinsp;д.">Английский</option>
                       <option value="ru+en"
-                              data-desc="Основной русский <small>(кавычки и&nbsp;тире)</small> + поддержка английского языка для&nbsp;других правил типографики.">
-                        Русский + Английский
-                      </option>
-                      <option value="en+ru" data-desc="Основной английский <small>(кавычки и&nbsp;тире)</small> + поддержка русского  языка для&nbsp;других правил типографики.">Английский +
-                        Русский
-                      </option>
+                              data-desc="Основной русский <small>(кавычки и&nbsp;тире)</small> + поддержка английского языка для&nbsp;других правил типографики.">Русский + Английский</option>
+                      <option value="en+ru" data-desc="Основной английский <small>(кавычки и&nbsp;тире)</small> + поддержка русского  языка для&nbsp;других правил типографики.">Английский + Русский</option>
                     </select>
                     <div class="form-text text-muted small mb-2" style="min-height: 2.5em;" x-html="desc"></div>
                   </div>
 
-                  <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="quotes" id="optQuotes" checked>
-                    <label class="form-check-label fw-bold" for="optQuotes">Обработка кавычек</label>
+                  <hr class="my-2">
+
+                  {# Группа "Кавычки" #}<div x-data="{ enabled: true }" class="mb-2">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="quotes" id="optQuotes" checked x-model="enabled">
+                        <label class="form-check-label fw-bold" for="optQuotes">Обработка кавычек</label>
+                    </div>
+                    {# Описание группы "Кавычки" (видно, когда выключено) #}
+                    <div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
+                        Прямые кавычки (&quot;) не будут заменяться на типографские («…ёлочки…» или “…лапки…”).
+                    </div>
                   </div>
+
+                  <hr class="my-2">
 
                   {# Группа "Компоновка и отбивка" (Layout)  #}<div x-data="{ enabled: true }" class="mb-2">
                       <div class="form-check">
@@ -81,16 +83,26 @@
                           </div>
                       </div>
 
-                      <!-- Описание (видно, когда выключено) -->
-                      <div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
-                          Обработка тире, чисел, инициалов, сокращений и единиц измерения отключена.
+                      {# Описание группа "Компоновка и отбивка" (видно, когда выключено) #}<div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
+                          Если отключено, то&nbsp;отбивка тире, инициалов, устойчивых сокращений, единиц измерения
+                          не&nbsp;будет произведена.
                       </div>
                   </div>
 
-                  <div class="form-check mb-2">
-                    <input class="form-check-input" type="checkbox" name="unbreakables" id="optUnbreakables" checked>
-                    <label class="form-check-label" for="optUnbreakables">Неразрывные пробелы</label>
+                  <hr class="my-2">
+
+                  {# Группа "Неразрывные пробелы" #}<div x-data="{ enabled: true }" class="mb-2">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="unbreakables" id="optUnbreakables" checked x-model="enabled">
+                        <label class="form-check-label fw-bold" for="optUnbreakables">Неразрывные пробелы</label>
+                      </div>
+
+                      {# Описание группы "Неразрывные пробелы" (видно, когда выключено) #}<div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
+                          Если отключено, то&nbsp;предлоги, союзы и&nbsp;артикли могут оставаться в&nbsp;конце строки, частицы (<em>бы, же…</em>) могут отрываться от&nbsp;слов.
+                      </div>
                   </div>
+
+                  <hr class="my-2">
 
                   <!-- Режим вывода (Alpine.js) -->
                   <div x-data="{ desc: 'Оптимально. Спецсимволы (—, ©) как есть, неразрывные пробелы как &nbsp;.' }">
@@ -98,7 +110,7 @@
                     <select class="form-select form-select-sm" name="mode"
                             @change="desc = $event.target.options[$event.target.selectedIndex].dataset.desc">
                       <option value="mixed" selected
-                              data-desc="Оптимально. Спецсимволы (—, ©) как есть, неразрывные пробелы как &amp;nbsp;.">
+                              data-desc="Оптимально. Спецсимволы (—, ©) как есть, неразрывные пробелы как &nbsp;.">
                         Смешанный
                         (Mixed)
                       </option>
