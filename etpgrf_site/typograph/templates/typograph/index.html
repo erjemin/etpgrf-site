@@ -7,8 +7,7 @@
       <form hx-post="{% url 'process_text' %}" hx-target="#result-area" hx-swap="innerHTML">
         {% csrf_token %}
 
-        <!-- Поле ввода -->
-        <div class="mb-3">
+        {# ГЛАВНОЕ ПОЛЕ ВВОДА: ТЕКСТ ДЛЯ ФОТОГРАФИРОВАНИЯ #}<div class="mb-3">
           <textarea class="form-control" name="text" rows="10" placeholder="Вставьте текст сюда..."></textarea>
         </div>
 
@@ -55,21 +54,36 @@
                     <label class="form-check-label fw-bold" for="optQuotes">Обработка кавычек</label>
                   </div>
 
-                  <!-- Группа "Знаки и отбивка" (Layout) -->
-                  <div x-data="{ enabled: true }" class="mb-2">
+                  {# Группа "Компоновка и отбивка" (Layout)  #}<div x-data="{ enabled: true }" class="mb-2">
                       <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="layout" id="optLayout" checked x-model="enabled">
                         <label class="form-check-label fw-bold" for="optLayout">Компоновка и&nbsp;отбивка</label>
                       </div>
-                      <div class="ms-3">
+
+                      <!-- Настройки (видны, когда включено) -->
+                      <div class="ms-3" x-show="enabled" x-transition>
                           <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="layout_initials" id="optLayoutInitials" checked :disabled="!enabled">
-                            <label class="form-check-label" for="optLayoutInitials">Инициалы <small class="text-muted">(А.&thinsp;С.&thinsp;Пушкин) и акронимы записанные через точку (U.&thinsp;S.&thinsp;S.)</small></label>
+                            <input class="form-check-input" type="checkbox" name="layout_initials" id="optLayoutInitials" checked>
+                            <label class="form-check-label" for="optLayoutInitials">Инициалы <small class="text-muted">(А.&thinsp;С.&thinsp;Пушкин)</small></label>
                           </div>
-                          <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="layout_units" id="optLayoutUnits" checked :disabled="!enabled">
+
+                          <!-- Единицы измерения с кастомным полем -->
+                          <div x-data="{ unitsEnabled: true }" class="form-check">
+                            <input class="form-check-input" type="checkbox" name="layout_units" id="optLayoutUnits" checked
+                                   x-model="unitsEnabled">
                             <label class="form-check-label" for="optLayoutUnits">Единицы измерения <small class="text-muted">(10&thinsp;км)</small></label>
+
+                            <!-- Поле для кастомных единиц -->
+                            <div class="mt-1" x-show="unitsEnabled" x-transition>
+                                <input type="text" class="form-control form-control-sm" name="layout_units_custom"
+                                       placeholder="Доп. единицы (через пробел): бит байт">
+                            </div>
                           </div>
+                      </div>
+
+                      <!-- Описание (видно, когда выключено) -->
+                      <div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
+                          Обработка тире, чисел, инициалов, сокращений и единиц измерения отключена.
                       </div>
                   </div>
 

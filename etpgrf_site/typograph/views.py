@@ -18,11 +18,20 @@ def process_text(request):
         layout_option = False # По умолчанию выключен
         
         if layout_enabled:
+            # Обработка единиц измерения
+            process_units = request.POST.get('layout_units') == 'on'
+            if process_units:
+                # Если включено, проверяем кастомные единицы
+                custom_units = request.POST.get('layout_units_custom', '').strip()
+                if custom_units:
+                    # Если есть кастомные, передаем их списком (библиотека сама объединит с дефолтными)
+                    process_units = custom_units.split()
+            
             # Если включен, создаем процессор с тонкими настройками
             layout_option = LayoutProcessor(
                 langs=langs,
                 process_initials_and_acronyms=request.POST.get('layout_initials') == 'on',
-                process_units=request.POST.get('layout_units') == 'on'
+                process_units=process_units
             )
             
         # 3. Читаем Sanitizer
