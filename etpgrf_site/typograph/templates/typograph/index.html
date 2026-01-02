@@ -11,50 +11,60 @@
           <textarea class="form-control" name="text" rows="10" placeholder="Вставьте текст сюда..."></textarea>
         </div>
 
-        <!-- Блок настроек (Collapse) -->
-        <div class="mb-3">
+        {# Блок настроек (Collapse) #}<div class="mb-3">
           <button class="btn btn-outline-secondary btn-sm mb-2" type="button" data-bs-toggle="collapse"
                   data-bs-target="#settingsCollapse" aria-expanded="false" aria-controls="settingsCollapse">
-            ⚙️ Настройки типографики
+            <i class="bi bi-gear-fill me-1"></i> Настройки типографики
           </button>
 
           <div class="collapse" id="settingsCollapse">
             <div class="card card-body bg-light">
               <div class="row">
-                <div class="col-md-4">
-                  <h6>Основные</h6>
-
-                  <!-- Выбор языка (Alpine.js) -->
-                  <div class="mb-3"
+                {# КОЛОНКА 1 #}<div class="col-md-4">
+                  {# Выбор языка (Alpine.js) #}<div class="mb-3"
                     x-data="{ desc: 'Только русская типографика: кавычки &laquo;ёлочки&raquo; (&bdquo;вложенные&ldquo;); длинное тире (&mdash;) с&nbsp;пробелами; &laquo;прилипающие&raquo; союзы и&nbsp;предлоги только для&nbsp;русского языка, переносы слов и&nbsp;т.&thinsp;д.' }">
-                    <label class="form-label small text-muted mb-0">Язык:</label>
-                    <select class="form-select form-select-sm mb-2" name="langs"
-                            @change="desc = $event.target.options[$event.target.selectedIndex].dataset.desc">
-                      <option value="ru" selected
-                              data-desc="Только русская типографика: кавычки &laquo;ёлочки&raquo; (&bdquo;вложенные&ldquo;); длинное тире (&mdash;) с&nbsp;пробелами; &laquo;прилипающие&raquo; союзы и&nbsp;предлоги только для&nbsp;русского языка, переносы слов и&nbsp;т.&thinsp;д.">Русский</option>
-                      <option value="en"
-                              data-desc="Только английская типографика: кавычки &ldquo;лапки&rdquo; (&lsquo;вложенные&rsquo;); длинное тире (&mdash;) вплотную; &ldquo;прилипающие&rdquo; союзы и&nbsp;предлоги только для&nbsp;английского языка, переносы слов и&nbsp;т.&thinsp;д.">Английский</option>
-                      <option value="ru+en"
-                              data-desc="Основной русский <small>(кавычки и&nbsp;тире)</small> + поддержка английского языка для&nbsp;других правил типографики.">Русский + Английский</option>
-                      <option value="en+ru" data-desc="Основной английский <small>(кавычки и&nbsp;тире)</small> + поддержка русского  языка для&nbsp;других правил типографики.">Английский + Русский</option>
-                    </select>
-                    <div class="form-text text-muted small mb-2" style="min-height: 2.5em;" x-html="desc"></div>
+
+                    <div class="d-flex align-items-center mb-1">
+                        {# Иконка вместо чекбокса #}<div class="me-2 text-center" style="width: 1.25em;">
+                            <i class="bi bi-globe"></i>
+                        </div>
+                        <label class="form-check-label fw-bold me-2">Язык</label>
+                        <select class="form-select form-select-sm w-auto" name="langs"
+                                @change="desc = $event.target.options[$event.target.selectedIndex].dataset.desc">
+                          <option value="ru" selected
+                                  data-desc="Только русская типографика: кавычки &laquo;ёлочки&raquo; (&bdquo;вложенные&ldquo;); длинное тире (&mdash;) с&nbsp;пробелами; &laquo;прилипающие&raquo; союзы и&nbsp;предлоги только для&nbsp;русского языка, переносы слов и&nbsp;т.&thinsp;д.">
+                            Русский
+                          </option>
+                          <option value="en"
+                                  data-desc="Только английская типографика: кавычки &ldquo;лапки&rdquo; (&lsquo;вложенные&rsquo;); длинное тире (&mdash;) вплотную; &ldquo;прилипающие&rdquo; союзы и&nbsp;предлоги только для&nbsp;английского языка, переносы слов и&nbsp;т.&thinsp;д.">
+                            Английский
+                          </option>
+                          <option value="ru+en"
+                                  data-desc="Основной русский <small>(кавычки и&nbsp;тире)</small> + поддержка английского языка для&nbsp;других правил типографики.">
+                            Русский + Английский
+                          </option>
+                          <option value="en+ru" data-desc="Основной английский <small>(кавычки и&nbsp;тире)</small> + поддержка русского  языка для&nbsp;других правил типографики.">Английский +
+                            Русский
+                          </option>
+                        </select>
+                    </div>
+
+                    {# Описание с отступом, чтобы было под текстом #}<div class="ms-4 ps-1 form-text text-muted small" style="min-height: 2.5em;" x-html="desc"></div>
                   </div>
 
-                  <hr class="my-2">
+                  <hr class="my-2" />
 
                   {# Группа "Кавычки" #}<div x-data="{ enabled: true }" class="mb-2">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="quotes" id="optQuotes" checked x-model="enabled">
                         <label class="form-check-label fw-bold" for="optQuotes">Обработка кавычек</label>
                     </div>
-                    {# Описание группы "Кавычки" (видно, когда выключено) #}
-                    <div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
+                    {# Описание (видно, когда выключено) #}<div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
                         Прямые кавычки (&quot;) не будут заменяться на типографские («…ёлочки…» или “…лапки…”).
                     </div>
                   </div>
 
-                  <hr class="my-2">
+                  <hr class="my-2" />
 
                   {# Группа "Компоновка и отбивка" (Layout)  #}<div x-data="{ enabled: true }" class="mb-2">
                       <div class="form-check">
@@ -62,21 +72,18 @@
                         <label class="form-check-label fw-bold" for="optLayout">Компоновка и&nbsp;отбивка</label>
                       </div>
 
-                      <!-- Настройки (видны, когда включено) -->
-                      <div class="ms-3" x-show="enabled" x-transition>
+                      {# Настройки (видны, когда включено) #}<div class="ms-3" x-show="enabled" x-transition>
                           <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="layout_initials" id="optLayoutInitials" checked>
                             <label class="form-check-label" for="optLayoutInitials">Инициалы <small class="text-muted">(А.&thinsp;С.&thinsp;Пушкин)</small></label>
                           </div>
 
-                          <!-- Единицы измерения с кастомным полем -->
-                          <div x-data="{ unitsEnabled: true }" class="form-check">
+                          {# Единицы измерения с кастомным полем #}<div x-data="{ unitsEnabled: true }" class="form-check">
                             <input class="form-check-input" type="checkbox" name="layout_units" id="optLayoutUnits" checked
                                    x-model="unitsEnabled">
                             <label class="form-check-label" for="optLayoutUnits">Единицы измерения <small class="text-muted">(10&thinsp;км)</small></label>
 
-                            <!-- Поле для кастомных единиц -->
-                            <div class="mt-1" x-show="unitsEnabled" x-transition>
+                            {# Поле для кастомных единиц #}<div class="mt-1" x-show="unitsEnabled" x-transition>
                                 <input type="text" class="form-control form-control-sm" name="layout_units_custom"
                                        placeholder="Доп. единицы (через пробел): бит байт">
                             </div>
@@ -88,9 +95,9 @@
                           не&nbsp;будет произведена.
                       </div>
                   </div>
+                </div>
 
-                  <hr class="my-2">
-
+                {# КОЛОНКА 2 #}<div class="col-md-4">
                   {# Группа "Неразрывные пробелы" #}<div x-data="{ enabled: true }" class="mb-2">
                       <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="unbreakables" id="optUnbreakables" checked x-model="enabled">
@@ -102,61 +109,90 @@
                       </div>
                   </div>
 
-                  <hr class="my-2">
+                  <hr class="my-2" />
 
-                  <!-- Режим вывода (Alpine.js) -->
-                  <div x-data="{ desc: 'Оптимально. Спецсимволы (—, ©) как есть, неразрывные пробелы как &nbsp;.' }">
-                    <label class="form-label small text-muted mb-0">Режим вывода:</label>
-                    <select class="form-select form-select-sm" name="mode"
-                            @change="desc = $event.target.options[$event.target.selectedIndex].dataset.desc">
-                      <option value="mixed" selected
-                              data-desc="Оптимально. Спецсимволы (—, ©) как есть, неразрывные пробелы как &nbsp;.">
-                        Смешанный
-                        (Mixed)
-                      </option>
-                      <option value="unicode"
-                              data-desc="Компактно. Все символы в UTF-8 (включая неразрывный пробел U+00A0).">
-                        Юникод (Unicode)
-                      </option>
-                      <option value="mnemonic"
-                              data-desc="Совместимость. Все спецсимволы заменяются на HTML-сущности (&amp;mdash;, &amp;copy;).">
-                        Мнемоники (&amp;nbsp;)
-                      </option>
-                    </select>
-                    <div class="form-text text-muted small mb-2" style="min-height: 2.5em;" x-html="desc"></div>
+                  {# Группа "Переносы" #}<div x-data="{ enabled: true }" class="mb-2">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="hyphenation" id="optHyphenation" checked x-model="enabled">
+                        <label class="form-check-label fw-bold" for="optHyphenation">Переносы внутри длинных слов&nbsp;(&amp;shy;)</label>
+                      </div>
+
+                      {# Настройки переносов #}<div class="ms-3 mt-1" x-show="enabled" x-transition>
+                          <label class="form-label small text-muted mb-0">Макс. длина слова без переноса:</label>
+                          <select class="form-select form-select-sm" name="hyphenation_len">
+                              <option value="8">8 символов</option>
+                              <option value="10">10 символов</option>
+                              <option value="12" selected>12 символов</option>
+                              <option value="14">14 символов</option>
+                              <option value="16">16 символов</option>
+                          </select>
+                      </div>
+
+                      {# Описание (видно, когда выключено) #}<div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
+                          Если отключено, мягкие переносы (&amp;shy;) не будут расставляться.
+                      </div>
+                  </div>
+
+                  <hr class="my-2" />
+
+                  {# Группа "Символы" #}<div x-data="{ enabled: true }" class="mb-2">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="symbols" id="optSymbols" checked x-model="enabled">
+                        <label class="form-check-label fw-bold" for="optSymbols">Символы ((c) &rarr; ©)</label>
+                      </div>
+                      {# Описание (видно, когда выключено) #}<div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
+                          Замена псевдографики (стрелочки, копирайты) на&nbsp;спецсимволы отключена.
+                      </div>
                   </div>
                 </div>
 
-                <div class="col-md-4">
-                  <h6>Дополнительно</h6>
-                  <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="hyphenation" id="optHyphenation" checked>
-                    <label class="form-check-label" for="optHyphenation">Переносы слов (&shy;)</label>
-                  </div>
-                  <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="symbols" id="optSymbols" checked>
-                    <label class="form-check-label" for="optSymbols">Символы ((c) &rarr; ©)</label>
-                  </div>
-
-                  <!-- Санитайзер -->
-                  <div class="mt-3">
-                      <label class="form-label small text-muted mb-0">Очистка (Sanitizer):</label>
-                      <select class="form-select form-select-sm" name="sanitizer">
-                          <option value="" selected>Без очистки</option>
-                          <option value="etp">Удалить старую типографику</option>
-                          <option value="html">Удалить все HTML-теги</option>
-                      </select>
-                  </div>
-                </div>
-
-                <div class="col-md-4">
-                  <h6>Висячая пунктуация</h6>
+                {# КОЛОНКА 3 #}<div class="col-md-4">
+                  {# Группа "Висячая пунктуация" #}<h6>Висячая пунктуация</h6>
                   <select class="form-select form-select-sm mb-2" name="hanging_punctuation">
                     <option value="none" selected="">Отключена</option>
                     <option value="left">Только слева</option>
                     <option value="right">Только справа</option>
                     <option value="both">С обеих сторон</option>
                   </select>
+
+                  <hr class="my-2" />
+
+                  {# Санитайзер #}<div class="mt-3 mb-3">
+                      <label class="form-label fw-bold mb-0">Очистка (Sanitizer):</label>
+                      <select class="form-select form-select-sm" name="sanitizer">
+                          <option value="" selected>Без очистки</option>
+                          <option value="etp">Удалить старую типографику</option>
+                          <option value="html">Удалить все HTML-теги</option>
+                      </select>
+                  </div>
+
+                  <hr class="my-2" />
+
+                  {# Режим вывода (Alpine.js) #}<div x-data="{ desc: 'Оптимально. Спецсимволы (—, ©) как есть, неразрывные пробелы как &nbsp;.' }">
+                    <div class="d-flex align-items-center mb-1">
+                        <div class="me-2 text-center" style="width: 1.25em;">
+                            <i class="bi bi-code-slash"></i>
+                        </div>
+                        <label class="form-check-label fw-bold me-2">Режим вывода</label>
+                        <select class="form-select form-select-sm w-auto" name="mode"
+                                @change="desc = $event.target.options[$event.target.selectedIndex].dataset.desc">
+                          <option value="mixed" selected
+                                  data-desc="Оптимально. Спецсимволы (—, ©) как есть, неразрывные пробелы как &amp;nbsp;.">
+                            Смешанный
+                            (Mixed)
+                          </option>
+                          <option value="unicode"
+                                  data-desc="Компактно. Все символы в UTF-8 (включая неразрывный пробел U+00A0).">
+                            Юникод (Unicode)
+                          </option>
+                          <option value="mnemonic"
+                                  data-desc="Совместимость. Все спецсимволы заменяются на HTML-сущности (&amp;mdash;, &amp;copy;).">
+                            Мнемоники (&amp;nbsp;)
+                          </option>
+                        </select>
+                    </div>
+                    <div class="ms-4 ps-1 form-text text-muted small mb-2" style="min-height: 2.5em;" x-html="desc"></div>
+                  </div>
                 </div>
               </div>
             </div>
