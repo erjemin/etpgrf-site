@@ -99,7 +99,7 @@
                   {# Группа "Переносы" #}<div x-data="{ enabled: true }" class="mb-2">
                       <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="hyphenation" id="optHyphenation" checked x-model="enabled">
-                        <label class="form-check-label fw-bold" for="optHyphenation">Переносы внутри длинных слов&nbsp;(&amp;shy;)</label>
+                        <label class="form-check-label fw-bold" for="optHyphenation">Переносы внутри длинных слов</label>
                       </div>
                       {# Настройки переносов #}<div class="ms-3 mt-1" x-show="enabled" x-transition>
                           <label class="form-label small text-muted mb-0">Максимальная длина слова без переноса:</label>
@@ -112,7 +112,7 @@
                           </select>
                       </div>
                       {# Описание (видно, когда выключено) #}<div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
-                          Если отключено, мягкие переносы (&amp;shy;) не&nbsp;будут расставляться.
+                Если отключено, мягкие переносы (<tt>&amp;shy;</tt>) не&nbsp;будут расставляться.
                       </div>
                   </div>
                   {# ========== #}<hr class="my-2" />
@@ -156,11 +156,11 @@
                           </select>
                       </div>
                       {# Описание группы "Санитайзер" (видно, когда выключено) #}<div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
-                          Текст будет обработан &laquo;как есть&raquo;, без предварительной очистки от&nbsp;тегов или старой разметки.
+                          Текст будет обработан &laquo;как есть&raquo;, без предварительной очистки от&nbsp;HTML-тегов или&nbsp;старой разметки.
                       </div>
                   </div>
                    {# ========== #}<hr class="my-2" />
-                  {# Режим вывода (Alpine.js) #}<div x-data="{ desc: 'Оптимально. Спецсимволы (—, ©) как есть, неразрывные пробелы как &nbsp;.' }">
+                  {# Группа "Режим вывода" #}<div x-data="{ desc: 'Оптимально. Спецсимволы (—, ©) как&nbsp;есть, неразрывные пробелы как&nbsp;<tt>&amp;amp;nbsp;.</tt>' }">
                     <div class="d-flex align-items-center mb-1">
                         <div class="me-2 text-center" style="width: 1.25em;">
                             <i class="bi bi-code-slash"></i>
@@ -169,7 +169,7 @@
                         <select class="form-select form-select-sm w-auto" name="mode"
                                 @change="desc = $event.target.options[$event.target.selectedIndex].dataset.desc">
                           <option value="mixed" selected
-                                  data-desc="Оптимально. Спецсимволы (—, ©) как есть, неразрывные пробелы как &amp;amp;nbsp;.">
+                                  data-desc="Оптимально. Спецсимволы (—, ©) как есть, неразрывные пробелы как&nbsp;<tt>&amp;amp;nbsp;</tt>.">
                             Смешанный (Mixed)
                           </option>
                           <option value="unicode"
