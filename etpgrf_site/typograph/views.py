@@ -15,30 +15,30 @@ def process_text(request):
         langs = request.POST.get(key='langs', default='ru')
         
         # 2. Собираем LayoutProcessor
-        layout_enabled = request.POST.get('layout') == 'on'
+        layout_enabled = request.POST.get(key='layout') == 'on'
         layout_option = False
         if layout_enabled:
-            process_units = request.POST.get('layout_units') == 'on'
+            process_units = request.POST.get(key='layout_units') == 'on'
             if process_units:
-                custom_units = request.POST.get('layout_units_custom', '').strip()
+                custom_units = request.POST.get(key='layout_units_custom', default='').strip()
                 if custom_units:
                     process_units = custom_units.split()
             
             layout_option = LayoutProcessor(
                 langs=langs,
-                process_initials_and_acronyms=request.POST.get('layout_initials') == 'on',
+                process_initials_and_acronyms=request.POST.get(key='layout_initials') == 'on',
                 process_units=process_units
             )
             
         # 3. Собираем Hyphenator
-        hyphenation_enabled = request.POST.get('hyphenation') == 'on'
+        hyphenation_enabled = request.POST.get(key='hyphenation') == 'on'
         hyphenation_option = False
         if hyphenation_enabled:
-            max_len = request.POST.get('hyphenation_len', '15')
+            max_len = request.POST.get(key='hyphenation_len', default='12')
             try:
                 max_len = int(max_len)
             except (ValueError, TypeError):
-                max_len = 15 # Дефолтное значение, если пришло что-то не то
+                max_len = 12
             
             hyphenation_option = Hyphenator(
                 langs=langs,
@@ -46,30 +46,30 @@ def process_text(request):
             )
 
         # 4. Читаем Sanitizer
-        sanitizer_val = request.POST.get('sanitizer', '')
-        sanitizer_option = None
-        if sanitizer_val:
-            sanitizer_option = sanitizer_val
+        sanitizer_enabled = request.POST.get(key='sanitizer_enabled', default='')
+        sanitizer_option = request.POST.get(key='sanitizer', default='etp')
+        if sanitizer_enabled and sanitizer_option not in ['etp', 'html']:
+            sanitizer_option = 'etp'
 
-        # 5. Собираем общие опции
+        # 5. Читаем Hanging Punctuation
+        hanging_enabled = request.POST.get(key='hanging_enabled') == 'on'
+        hanging_option = None
+        if hanging_enabled:
+            hanging_option = request.POST.get(key='hanging_punctuation', default='both')
+
+        # 6. Собираем общие опции
         options = {
             'langs': langs,
             'process_html': True,
-            
             'quotes': request.POST.get('quotes') == 'on',
             'layout': layout_option,
-            'unbreakables': request.POST.get('unbreakables') == 'on',
+            'unbreakables': request.POST.get(key='unbreakables') == 'on',
             'hyphenation': hyphenation_option,
-            'symbols': request.POST.get('symbols') == 'on',
-            
-            'hanging_punctuation': request.POST.get(key='hanging_punctuation', default='none'),
+            'symbols': request.POST.get(key='symbols') == 'on',
+            'hanging_punctuation': hanging_option,
             'mode': request.POST.get(key='mode', default='mixed'),
-            
             'sanitizer': sanitizer_option
         }
-        
-        if options['hanging_punctuation'] == 'none':
-            options['hanging_punctuation'] = None
 
         # Создаем экземпляр типографа
         typo = Typographer(**options)

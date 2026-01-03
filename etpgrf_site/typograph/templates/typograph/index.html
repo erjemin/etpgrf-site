@@ -10,7 +10,6 @@
         {# ГЛАВНОЕ ПОЛЕ ВВОДА: ТЕКСТ ДЛЯ ФОТОГРАФИРОВАНИЯ #}<div class="mb-3">
           <textarea class="form-control" name="text" rows="10" placeholder="Вставьте текст сюда..."></textarea>
         </div>
-
         {# Блок настроек (Collapse) #}<div class="mb-3">
           <button class="btn btn-outline-secondary btn-sm mb-2" type="button" data-bs-toggle="collapse"
                   data-bs-target="#settingsCollapse" aria-expanded="false" aria-controls="settingsCollapse">
@@ -49,23 +48,23 @@
                     </div>
                     {# Описание с отступом, чтобы было под текстом #}<div class="ms-4 ps-1 form-text text-muted small" style="min-height: 2.5em;" x-html="desc"></div>
                   </div>
-                  {# ========= #}<hr class="my-2" />
+                  {# ========== #}<hr class="my-2" />
                   {# Группа "Кавычки" #}<div x-data="{ enabled: true }" class="mb-2">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="quotes" id="optQuotes" checked x-model="enabled">
                         <label class="form-check-label fw-bold" for="optQuotes">Обработка кавычек</label>
                     </div>
                     {# Описание (видно, когда выключено) #}<div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
-                        Прямые кавычки (&quot;) не будут заменяться на типографские («…ёлочки…» или&nbsp;“…лапки…”).
+                        Прямые кавычки (&quot;) не будут заменяться на типографские («…ёлочки…» или “…лапки…”).
                     </div>
                   </div>
-                  {# ========= #}<hr class="my-2" />
+                  {# ========== #}<hr class="my-2" />
                   {# Группа "Компоновка и отбивка" (Layout)  #}<div x-data="{ enabled: true }" class="mb-2">
                       <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="layout" id="optLayout" checked x-model="enabled">
                         <label class="form-check-label fw-bold" for="optLayout">Компоновка и&nbsp;отбивка</label>
                       </div>
-                      {# Настройки (видны, когда включено) #}<div class="ms-3" x-show="enabled" x-transition>
+                      {# Настройки группы "Компоновка и отбивка" (видны, когда включено) #}<div class="ms-3" x-show="enabled" x-transition>
                           <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="layout_initials" id="optLayoutInitials" checked>
                             <label class="form-check-label" for="optLayoutInitials">Инициалы <small class="text-muted">(А.&thinsp;С.&thinsp;Пушкин)</small></label>
@@ -85,7 +84,7 @@
                           не&nbsp;будет произведена.
                       </div>
                   </div>
-               </div>
+                </div>
                 {# КОЛОНКА 2 #}<div class="col-md-4">
                   {# Группа "Неразрывные пробелы" #}<div x-data="{ enabled: true }" class="mb-2">
                       <div class="form-check">
@@ -96,14 +95,14 @@
                           Если отключено, то&nbsp;предлоги, союзы и&nbsp;артикли могут оставаться в&nbsp;конце строки, частицы (<em>бы, же…</em>) могут отрываться от&nbsp;слов.
                       </div>
                   </div>
-                  {# ========= #}<hr class="my-2" />
+                  {# ========== #}<hr class="my-2" />
                   {# Группа "Переносы" #}<div x-data="{ enabled: true }" class="mb-2">
                       <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="hyphenation" id="optHyphenation" checked x-model="enabled">
                         <label class="form-check-label fw-bold" for="optHyphenation">Переносы внутри длинных слов&nbsp;(&amp;shy;)</label>
                       </div>
                       {# Настройки переносов #}<div class="ms-3 mt-1" x-show="enabled" x-transition>
-                          <label class="form-label small text-muted mb-0">Максимальная длина слова без&nbsp;переноса:</label>
+                          <label class="form-label small text-muted mb-0">Максимальная длина слова без переноса:</label>
                           <select class="form-select form-select-sm" name="hyphenation_len">
                               <option value="8">8 символов</option>
                               <option value="10">10 символов</option>
@@ -116,36 +115,52 @@
                           Если отключено, мягкие переносы (&amp;shy;) не&nbsp;будут расставляться.
                       </div>
                   </div>
-                  {# ========= #}<hr class="my-2" />
+                  {# ========== #}<hr class="my-2" />
                   {# Группа "Символы" #}<div x-data="{ enabled: true }" class="mb-2">
                       <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="symbols" id="optSymbols" checked x-model="enabled">
                         <label class="form-check-label fw-bold" for="optSymbols">Символы ((c) &rarr; ©)</label>
                       </div>
                       {# Описание (видно, когда выключено) #}<div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
-                          Замена псевдографики (стрелочки, копирайты) на&nbsp;спецсимволы отключена.
+                          Замена псевдографики (стрелочки, копирайты) и&nbsp;обработка числовых диапазонов (10-20 &rarr; 10&ndash;20) отключена.
                       </div>
                   </div>
                 </div>
                 {# КОЛОНКА 3 #}<div class="col-md-4">
-                  {# Группа "Висячая пунктуация" #}<h6>Висячая пунктуация</h6>
-                  <select class="form-select form-select-sm mb-2" name="hanging_punctuation">
-                    <option value="none" selected="">Отключена</option>
-                    <option value="left">Только слева</option>
-                    <option value="right">Только справа</option>
-                    <option value="both">С обеих сторон</option>
-                  </select>
-                  {# ========= #}<hr class="my-2" />
-                  {#  Группа "Санитайзер" #}<div class="mt-3 mb-3">
-                      <label class="form-label fw-bold mb-0">Очистка (Sanitizer):</label>
-                      <select class="form-select form-select-sm" name="sanitizer">
-                          <option value="" selected>Без очистки</option>
-                          <option value="etp">Удалить старую типографику</option>
-                          <option value="html">Удалить все HTML-теги</option>
-                      </select>
+                  {# Группа "Висячая пунктуация" #}<div x-data="{ enabled: false }" class="mb-2">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="hanging_enabled" id="optHanging" x-model="enabled">
+                        <label class="form-check-label fw-bold" for="optHanging">Висячая пунктуация</label>
+                      </div>
+                      {# Настройки группы "Висячая пунктуация" (видны, когда включено) #}<div class="ms-3 mt-1" x-show="enabled" x-transition>
+                          <select class="form-select form-select-sm" name="hanging_punctuation">
+                            <option value="left" selected>Только слева</option>
+                            <option value="right">Только справа</option>
+                            <option value="both">С обеих сторон</option>
+                          </select>
+                      </div>
+                      {# Описание (видно, когда выключено) #}<div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
+                          Кавычки, скобки, точки и&nbsp;запятые не&nbsp;будут выноситься за&nbsp;границы текстового блока.
+                      </div>
                   </div>
-                  {# ========= #}<hr class="my-2" />
-                  {# Группа "Режим вывода" #}<div x-data="{ desc: 'Оптимально. Спецсимволы (—, ©) как&amp;nbsp;есть, неразрывные пробелы как&amp;nbsp;<tt>&amp;amp;nbsp;</tt>.' }">
+                {# ========== #}<hr class="my-2" />
+                  {# Группа "Санитайзер" #}<div x-data="{ enabled: false }" class="mb-2">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="sanitizer_enabled" id="optSanitizer" x-model="enabled">
+                        <label class="form-check-label fw-bold" for="optSanitizer">Очистка от HTML (Sanitizer)</label>
+                      </div>
+                      {# Настройки группы "Санитайзер" (видны, когда включено) #}<div class="ms-3 mt-1" x-show="enabled" x-transition>
+                          <select class="form-select form-select-sm" name="sanitizer">
+                              <option value="etp" selected>Очистить разметку висячей пунктуации</option>
+                              <option value="html">Очистить все HTML-теги</option>
+                          </select>
+                      </div>
+                      {# Описание группы "Санитайзер" (видно, когда выключено) #}<div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
+                          Текст будет обработан &laquo;как есть&raquo;, без предварительной очистки от&nbsp;тегов или старой разметки.
+                      </div>
+                  </div>
+                   {# ========== #}<hr class="my-2" />
+                  {# Режим вывода (Alpine.js) #}<div x-data="{ desc: 'Оптимально. Спецсимволы (—, ©) как есть, неразрывные пробелы как &nbsp;.' }">
                     <div class="d-flex align-items-center mb-1">
                         <div class="me-2 text-center" style="width: 1.25em;">
                             <i class="bi bi-code-slash"></i>
@@ -154,16 +169,16 @@
                         <select class="form-select form-select-sm w-auto" name="mode"
                                 @change="desc = $event.target.options[$event.target.selectedIndex].dataset.desc">
                           <option value="mixed" selected
-                                  data-desc="Оптимально. Спецсимволы (—, ©) как&nbsp;есть, неразрывные пробелы как&amp;nbsp;<tt>&amp;amp;nbsp;</tt>.">
+                                  data-desc="Оптимально. Спецсимволы (—, ©) как есть, неразрывные пробелы как &amp;amp;nbsp;.">
                             Смешанный (Mixed)
                           </option>
                           <option value="unicode"
-                                  data-desc="Компактно. Все символы в&amp;nbsp;UTF-8 (включая неразрывный пробел&amp;nbsp;U+00A0).">
+                                  data-desc="Компактно. Все символы в UTF-8 (включая неразрывный пробел U+00A0).">
                             Юникод (Unicode)
                           </option>
                           <option value="mnemonic"
-                                  data-desc="Совместимость. Все спецсимволы заменяются на&amp;nbsp;HTML-мнемоники (<tt>&amp;amp;mdash;</tt>, <tt>&amp;amp;copy;</tt>, <tt>&amp;amp;half;</tt> …).">
-                            Мнемоники (mnemonic)
+                                  data-desc="Совместимость. Все спецсимволы заменяются на HTML-мнемоники (&amp;amp;mdash;, &amp;amp;copy; …).">
+                            Мнемоники (Mnemonic)
                           </option>
                         </select>
                     </div>
