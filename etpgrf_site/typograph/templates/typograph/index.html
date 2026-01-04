@@ -7,7 +7,7 @@
       <form hx-post="{% url 'process_text' %}" hx-target="#result-area" hx-swap="innerHTML">
         {% csrf_token %}
 
-        {# ГЛАВНОЕ ПОЛЕ ВВОДА: ТЕКСТ ДЛЯ ФОТОГРАФИРОВАНИЯ #}<div class="mb-3">
+        {# ГЛАВНОЕ ПОЛЕ ВВОДА: ТЕКСТ ДЛЯ ТИПОГРАФИРОВАНИЯ #}<div class="mb-3">
           <textarea class="form-control" name="text" rows="10" placeholder="Вставьте текст сюда..."></textarea>
         </div>
         {# Блок настроек (Collapse) #}<div class="mb-3">
@@ -144,19 +144,19 @@
                       </div>
                   </div>
                 {# ========== #}<hr class="my-2" />
-                  {# Группа "Санитайзер" #}<div x-data="{ enabled: false }" class="mb-2">
+                  {# Группа «Санитайзер» #}<div x-data="{ enabled: false }" class="mb-2">
                       <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="sanitizer_enabled" id="optSanitizer" x-model="enabled">
-                        <label class="form-check-label fw-bold" for="optSanitizer">Очистка от HTML (Sanitizer)</label>
+                        <label class="form-check-label fw-bold" for="optSanitizer">Очистка от&nbsp;HTML (Sanitizer)</label>
                       </div>
-                      {# Настройки группы "Санитайзер" (видны, когда включено) #}<div class="ms-3 mt-1" x-show="enabled" x-transition>
+                      {# Настройки группы «Санитайзер» (видны, когда включено) #}<div class="ms-3 mt-1" x-show="enabled" x-transition>
                           <select class="form-select form-select-sm" name="sanitizer">
                               <option value="etp" selected>Очистить разметку висячей пунктуации</option>
                               <option value="html">Очистить все HTML-теги</option>
                           </select>
                       </div>
-                      {# Описание группы "Санитайзер" (видно, когда выключено) #}<div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
-                          Текст будет обработан &laquo;как есть&raquo;, без предварительной очистки от&nbsp;HTML-тегов или&nbsp;старой разметки.
+                      {# Описание группы «Санитайзер» (видно, когда выключено) #}<div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
+                          Текст будет обработан &laquo;как есть&raquo;, без предва&shy;рительной очистки от&nbsp;HTML-тегов или&nbsp;старой разметки.
                       </div>
                   </div>
                    {# ========== #}<hr class="my-2" />
