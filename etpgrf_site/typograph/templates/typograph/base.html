@@ -8,6 +8,19 @@
     {# Bootstrap Icons #}<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     {# HTMX #}<script src="https://unpkg.com/htmx.org@1.9.10"></script>
     {# Alpine.js #}<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    {# Polyfill for Import Maps #}<script async src="https://ga.jspm.io/npm:es-module-shims@1.10.0/dist/es-module-shims.js"></script>
+    {# CodeMirror 6 Import Map #}<script type="importmap">
+    {
+      "imports": {
+        "codemirror": "https://esm.sh/codemirror@6.0.1",
+        "@codemirror/lang-html": "https://esm.sh/@codemirror/lang-html@6.4.5",
+        "@codemirror/theme-one-dark": "https://esm.sh/@codemirror/theme-one-dark@6.1.2",
+        "@codemirror/view": "https://esm.sh/@codemirror/view@6.17.1",
+        "@codemirror/state": "https://esm.sh/@codemirror/state@6.2.1"
+      }
+    }
+    </script>
+
     <style>
         /* Небольшие стили для красоты */
         body { background-color: #f8f9fa; }
@@ -17,11 +30,32 @@
             border-radius: 0.375rem;
             padding: 1rem;
             min-height: 300px;
+            /* Для корректного отображения висячей пунктуации нужен отступ слева/справа */
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+            white-space: pre-wrap; /* Чтобы pre переносил строки */
+            font-family: inherit; /* Наследуем шрифт, если это pre */
         }
-        /* Стили для висячей пунктуации (из спецификации) */
-        .etp-laquo { margin-left: -0.44em; }
-        .etp-bdquo { margin-left: -0.44em; }
-        /* Добавь остальные классы по мере необходимости */
+
+        /* --- Висячая пунктуация (Hanging Punctuation) --- */
+        /* Слева */
+        .result-box .etp-laquo { margin-left: -0.44em; }
+        .result-box .etp-ldquo { margin-left: -0.44em; }
+        .result-box .etp-lpar  { margin-left: -0.3em; }
+        .result-box .etp-lsqb  { margin-left: -0.3em; }
+        .result-box .etp-lcub  { margin-left: -0.3em; }
+
+        /* Справа */
+        .result-box .etp-raquo { margin-right: -0.44em; }
+        .result-box .etp-rdquo { margin-right: -0.44em; }
+        .result-box .etp-rpar  { margin-right: -0.3em; }
+        .result-box .etp-rsqb  { margin-right: -0.3em; }
+        .result-box .etp-rcub  { margin-right: -0.3em; }
+
+        /* Точки и запятые висят меньше */
+        .result-box .etp-r-dot   { margin-right: -0.2em; }
+        .result-box .etp-r-comma { margin-right: -0.2em; }
+        .result-box .etp-r-colon { margin-right: -0.2em; }
     </style>
 </head>
 <body>
