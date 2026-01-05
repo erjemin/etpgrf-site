@@ -205,7 +205,7 @@
 <script type="module">
     // Используем esm.sh с фиксированной версией для всех пакетов, чтобы избежать дублирования зависимостей
     import {EditorView, minimalSetup} from "https://esm.sh/codemirror@6.0.1?deps=@codemirror/state@6.2.1";
-    import {lineNumbers, highlightActiveLineGutter} from "https://esm.sh/@codemirror/view@6.17.1?deps=@codemirror/state@6.2.1";
+    import {lineNumbers, highlightActiveLineGutter, highlightSpecialChars} from "https://esm.sh/@codemirror/view@6.17.1?deps=@codemirror/state@6.2.1";
     import {html} from "https://esm.sh/@codemirror/lang-html@6.4.5?deps=@codemirror/state@6.2.1";
     import {oneDark} from "https://esm.sh/@codemirror/theme-one-dark@6.1.2?deps=@codemirror/state@6.2.1";
     import {EditorState} from "https://esm.sh/@codemirror/state@6.2.1";
@@ -218,6 +218,17 @@
             minimalSetup,
             lineNumbers(),
             highlightActiveLineGutter(),
+            // Добавляем подсветку NBSP
+            highlightSpecialChars({
+                specialChars: /[\u00a0]/,
+                render: (code) => {
+                    let span = document.createElement("span");
+                    span.textContent = "·"; // Точка вместо пробела
+                    span.style.color = "#6c757d"; // Серый цвет
+                    span.title = "Неразрывный пробел (U+00A0)";
+                    return span;
+                }
+            }),
             html(),
             oneDark,
             EditorState.readOnly.of(true)
@@ -231,7 +242,8 @@
 
     document.body.addEventListener('htmx:afterSwap', function(evt) {
         if (evt.detail.target.id === 'result-area') {
-            const newContent = evt.detail.target.innerHTML;
+            // ИСПОЛЬЗУЕМ responseText, ЧТОБЫ ПОЛУЧИТЬ СЫРОЙ ОТВЕТ (С МНЕМОНИКАМИ)
+            const newContent = evt.detail.xhr.response;
             resultView.dispatch({
                 changes: { from: 0, to: resultView.state.doc.length, insert: newContent }
             });
