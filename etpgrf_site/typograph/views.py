@@ -46,10 +46,10 @@ def process_text(request):
             )
 
         # 4. Читаем Sanitizer
-        sanitizer_enabled = request.POST.get(key='sanitizer_enabled', default='')
-        sanitizer_option = request.POST.get(key='sanitizer', default='etp')
-        if sanitizer_enabled and sanitizer_option not in ['etp', 'html']:
-            sanitizer_option = 'etp'
+        sanitizer_enabled = request.POST.get(key='sanitizer_enabled') == 'on'
+        sanitizer_option = None
+        if sanitizer_enabled:
+            sanitizer_option = request.POST.get(key='sanitizer', default='etp')
 
         # 5. Читаем Hanging Punctuation
         hanging_enabled = request.POST.get(key='hanging_enabled') == 'on'
@@ -70,6 +70,10 @@ def process_text(request):
             'mode': request.POST.get(key='mode', default='mixed'),
             'sanitizer': sanitizer_option
         }
+        
+        # --- ДИАГНОСТИКА ---
+        print("Typographer options:", options)
+        # -------------------
 
         # Создаем экземпляр типографа
         typo = Typographer(**options)
