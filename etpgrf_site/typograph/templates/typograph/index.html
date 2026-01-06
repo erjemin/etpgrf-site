@@ -205,12 +205,44 @@
 <script type="module">
     // Используем esm.sh с фиксированной версией для всех пакетов, чтобы избежать дублирования зависимостей
     import {EditorView, minimalSetup} from "https://esm.sh/codemirror@6.0.1?deps=@codemirror/state@6.2.1";
-    import {lineNumbers, highlightActiveLineGutter, highlightSpecialChars} from "https://esm.sh/@codemirror/view@6.17.1?deps=@codemirror/state@6.2.1";
+    import {lineNumbers, highlightActiveLineGutter, ViewPlugin, Decoration} from "https://esm.sh/@codemirror/view@6.17.1?deps=@codemirror/state@6.2.1";
     import {html} from "https://esm.sh/@codemirror/lang-html@6.4.5?deps=@codemirror/state@6.2.1";
     import {oneDark} from "https://esm.sh/@codemirror/theme-one-dark@6.1.2?deps=@codemirror/state@6.2.1";
     import {EditorState} from "https://esm.sh/@codemirror/state@6.2.1";
 
     const resultWrapper = document.getElementById('cm-result-wrapper');
+
+    // Декоратор для подсветки NBSP
+    const nbspDecoration = Decoration.mark({
+        attributes: {
+            style: "background-color: rgba(108, 117, 125, 0.2); border-radius: 2px;"
+        }
+    });
+
+    const nbspScanner = ViewPlugin.fromClass(class {
+        constructor(view) {
+            this.decorations = this.getDecorations(view);
+        }
+        update(update) {
+            if (update.docChanged || update.viewportChanged) {
+                this.decorations = this.getDecorations(update.view);
+            }
+        }
+        getDecorations(view) {
+            const builder = new Decoration.Builder();
+            for (const {from, to} of view.visibleRanges) {
+                const text = view.state.doc.sliceString(from, to);
+                let match;
+                const nbspRegex = /\u00a0/g;
+                while (match = nbspRegex.exec(text)) {
+                    builder.add(from + match.index, from + match.index + 1, nbspDecoration);
+                }
+            }
+            return builder.finish();
+        }
+    }, {
+        decorations: v => v.decorations
+    });
 
     const resultState = EditorState.create({
         doc: "Здесь появится результат...",
@@ -218,17 +250,7 @@
             minimalSetup,
             lineNumbers(),
             highlightActiveLineGutter(),
-            // Добавляем подсветку NBSP
-            highlightSpecialChars({
-                specialChars: /[\u00a0]/,
-                render: (code) => {
-                    let span = document.createElement("span");
-                    span.textContent = "·"; // Точка вместо пробела
-                    span.style.color = "#6c757d"; // Серый цвет
-                    span.title = "Неразрывный пробел (U+00A0)";
-                    return span;
-                }
-            }),
+            nbspScanner, // <-- Наш плагин
             html(),
             oneDark,
             EditorState.readOnly.of(true)
