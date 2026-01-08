@@ -21,7 +21,7 @@
               <div class="row">
                 {# КОЛОНКА 1 #}<div class="col-md-4">
                   {# Выбор языка (Alpine.js) #}<div class="mb-3"
-                    x-data="{ desc: 'Только русская типографика: кавычки &laquo;ёлочки&raquo; (&bdquo;вложенные&ldquo;); длинное тире (&mdash;) с&nbsp;пробелами; &laquo;прилипающие&raquo; союзы и&nbsp;предлоги только для&nbsp;русского языка, переносы слов и&nbsp;т.&thinsp;д.' }">
+                    x-data="{ desc: 'Только русская типографика: кавычки «ёлочки» („вложенные“); длинное тире (—) с&nbsp;пробелами; «прилипающие» союзы и&nbsp;предлоги только для&nbsp;русского языка, переносы слов и&nbsp;т.&thinsp;д.' }">
                     <div class="d-flex align-items-center mb-1">
                         {# Иконка вместо чекбокса #}<div class="me-2 text-center" style="width: 1.25em;">
                             <i class="bi bi-globe"></i>
@@ -30,7 +30,7 @@
                         <select class="form-select form-select-sm w-auto" name="langs"
                                 @change="desc = $event.target.options[$event.target.selectedIndex].dataset.desc">
                           <option value="ru" selected
-                                  data-desc="Только русская типографика: кавычки &laquo;ёлочки&raquo; (&bdquo;вложенные&ldquo;); длинное тире (&mdash;) с&nbsp;пробелами; &laquo;прилипающие&raquo; союзы и&nbsp;предлоги только для&nbsp;русского языка, переносы слов и&nbsp;т.&thinsp;д.">
+                                  data-desc="Только русская типографика: кавычки «ёлочки» („вложенные“); длинное тире (—) с&nbsp;пробелами; «прилипающие» союзы и&nbsp;предлоги только для&nbsp;русского языка, переносы слов и&nbsp;т.&thinsp;д.">
                             Русский
                           </option>
                           <option value="en"
@@ -55,7 +55,7 @@
                         <label class="form-check-label fw-bold" for="optQuotes">Обработка кавычек</label>
                     </div>
                     {# Описание (видно, когда выключено) #}<div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
-                        Прямые кавычки (&quot;) не будут заменяться на типографские («…ёлочки…» или “…лапки…”).
+                        Прямые кавычки (&quot;) не&nbsp;будут заменяться на&nbsp;типографские («…ёлочки…» или&nbsp;“…лапки…”).
                     </div>
                   </div>
                   {# ========== #}<hr class="my-2" />
@@ -92,7 +92,7 @@
                         <label class="form-check-label fw-bold" for="optUnbreakables">Неразрывные пробелы</label>
                       </div>
                       {# Описание группы "Неразрывные пробелы" (видно, когда выключено) #}<div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
-                          Если отключено, то&nbsp;предлоги, союзы и&nbsp;артикли могут оставаться в&nbsp;конце строки, частицы (<em>бы, же…</em>) могут отрываться от&nbsp;слов.
+                          Если отключено, то&nbsp;предлоги, союзы и&nbsp;артикли могут оставаться в&nbsp;конце строки, частицы (<em>бы,&nbsp;же&mldr;</em>) могут отрываться от&nbsp;слов.
                       </div>
                   </div>
                   {# ========== #}<hr class="my-2" />
@@ -156,7 +156,7 @@
                           </select>
                       </div>
                       {# Описание группы "Санитайзер" (видно, когда выключено) #}<div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
-                          Текст будет обработан «как&nbsp;есть», без&nbsp;предва­рительной очистки от&nbsp;HTML-тегов или&nbsp;старой разметки.
+                          Текст будет обработан «как&nbsp;есть», без предва­рительной очистки от&nbsp;HTML-тегов или&nbsp;старой разметки.
                       </div>
                   </div>
                    {# ========== #}<hr class="my-2" />
@@ -203,54 +203,24 @@
   </div>
 
 <script type="module">
-    // Используем esm.sh с фиксированной версией для всех пакетов, чтобы избежать дублирования зависимостей
-    import {EditorView, minimalSetup} from "https://esm.sh/codemirror@6.0.1?deps=@codemirror/state@6.2.1";
-    import {lineNumbers, highlightActiveLineGutter, ViewPlugin, Decoration} from "https://esm.sh/@codemirror/view@6.17.1?deps=@codemirror/state@6.2.1";
+    // Используем esm.sh с фиксированной версией для всех пакетов
+    import {EditorView, lineNumbers, highlightActiveLineGutter, highlightWhitespace, highlightTrailingWhitespace, drawSelection, keymap} from "https://esm.sh/@codemirror/view@6.17.1?deps=@codemirror/state@6.2.1";
     import {html} from "https://esm.sh/@codemirror/lang-html@6.4.5?deps=@codemirror/state@6.2.1";
     import {oneDark} from "https://esm.sh/@codemirror/theme-one-dark@6.1.2?deps=@codemirror/state@6.2.1";
     import {EditorState} from "https://esm.sh/@codemirror/state@6.2.1";
+    import {defaultKeymap} from "https://esm.sh/@codemirror/commands@6.2.4?deps=@codemirror/state@6.2.1";
 
     const resultWrapper = document.getElementById('cm-result-wrapper');
-
-    // Декоратор для подсветки NBSP
-    const nbspDecoration = Decoration.mark({
-        attributes: {
-            style: "background-color: rgba(108, 117, 125, 0.2); border-radius: 2px;"
-        }
-    });
-
-    const nbspScanner = ViewPlugin.fromClass(class {
-        constructor(view) {
-            this.decorations = this.getDecorations(view);
-        }
-        update(update) {
-            if (update.docChanged || update.viewportChanged) {
-                this.decorations = this.getDecorations(update.view);
-            }
-        }
-        getDecorations(view) {
-            const builder = new Decoration.Builder();
-            for (const {from, to} of view.visibleRanges) {
-                const text = view.state.doc.sliceString(from, to);
-                let match;
-                const nbspRegex = /\u00a0/g;
-                while (match = nbspRegex.exec(text)) {
-                    builder.add(from + match.index, from + match.index + 1, nbspDecoration);
-                }
-            }
-            return builder.finish();
-        }
-    }, {
-        decorations: v => v.decorations
-    });
 
     const resultState = EditorState.create({
         doc: "Здесь появится результат...",
         extensions: [
-            minimalSetup,
             lineNumbers(),
             highlightActiveLineGutter(),
-            nbspScanner, // <-- Наш плагин
+            highlightWhitespace(), // Подсветка всех пробелов
+            highlightTrailingWhitespace(), // Подсветка пробелов в конце
+            drawSelection(),
+            keymap.of(defaultKeymap),
             html(),
             oneDark,
             EditorState.readOnly.of(true)
@@ -264,7 +234,6 @@
 
     document.body.addEventListener('htmx:afterSwap', function(evt) {
         if (evt.detail.target.id === 'result-area') {
-            // ИСПОЛЬЗУЕМ responseText, ЧТОБЫ ПОЛУЧИТЬ СЫРОЙ ОТВЕТ (С МНЕМОНИКАМИ)
             const newContent = evt.detail.xhr.response;
             resultView.dispatch({
                 changes: { from: 0, to: resultView.state.doc.length, insert: newContent }
