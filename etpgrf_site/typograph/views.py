@@ -72,7 +72,7 @@ def process_text(request):
         }
         
         # --- ДИАГНОСТИКА ---
-        print("Typographer options:", options)
+        # print("Typographer options:", options)
         # -------------------
 
         # Создаем экземпляр типографа

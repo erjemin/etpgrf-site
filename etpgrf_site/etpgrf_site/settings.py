@@ -124,9 +124,16 @@ STATIC_URL = 'static/'
 
 # Поднимаемся на уровень выше от manage.py, чтобы попасть в корень репозитория
 # И кладем всё в папку public
-STATIC_ROOT = BASE_DIR.parent / 'public' / 'static'
+STATIC_ROOT = BASE_DIR.parent / 'public' / 'static_collected'
+STATICFILES_DIRS = [BASE_DIR.parent / 'public' / 'static']
 MEDIA_ROOT = BASE_DIR.parent / 'public' / 'media'
 MEDIA_URL = '/media/'
+
+# --- ДИАГНОСТИКА ПУТЕЙ ---
+# print(f"DEBUG: {DEBUG}")
+# print(f"BASE_DIR: {BASE_DIR}")
+# print(f"STATIC_ROOT: {STATIC_ROOT}")
+# -------------------------
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/6.0/ref/settings/#default-auto-field
