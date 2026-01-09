@@ -1,4 +1,5 @@
 {% extends 'typograph/base.html' %}
+{% load static %}
 
 {% block content %}
   <div class="row">
@@ -7,182 +8,228 @@
       <form hx-post="{% url 'process_text' %}" hx-target="#result-area" hx-swap="innerHTML">
         {% csrf_token %}
 
-        {# ГЛАВНОЕ ПОЛЕ ВВОДА: ТЕКСТ ДЛЯ ТИПОГРАФИРОВАНИЯ #}<div class="mb-3">
+        {# ГЛАВНОЕ ПОЛЕ ВВОДА: ТЕКСТ ДЛЯ ТИПОГРАФИРОВАНИЯ #}
+        <div class="mb-3">
           <textarea class="form-control" name="text" rows="10" placeholder="Вставьте текст сюда..."></textarea>
         </div>
-        {# Блок настроек (Collapse) #}<div class="mb-3">
+        {# Блок настроек (Collapse) #}
+        <div class="mb-3">
           <button class="btn btn-outline-secondary btn-sm mb-2" type="button" data-bs-toggle="collapse"
                   data-bs-target="#settingsCollapse" aria-expanded="false" aria-controls="settingsCollapse">
-            <i class="bi bi-gear-fill me-1"></i> Настройки типографики
+            <i class="bi bi-gear-fill me-1"></i> Настройки типографа
           </button>
 
           <div class="collapse" id="settingsCollapse">
             <div class="card card-body bg-light">
               <div class="row">
-                {# КОЛОНКА 1 #}<div class="col-md-4">
-                  {# Выбор языка (Alpine.js) #}<div class="mb-3"
-                    x-data="{ desc: 'Только русская типографика: кавычки «ёлочки» („вложенные“); длинное тире (—) с&nbsp;пробелами; «прилипающие» союзы и&nbsp;предлоги только для&nbsp;русского языка, переносы слов и&nbsp;т.&thinsp;д.' }">
+                {# КОЛОНКА 1 #}
+                <div class="col-md-4">
+                  {# Выбор языка (Alpine.js) #}
+                  <div class="mb-3"
+                       x-data="{ desc: 'Только русская типографика: кавычки «ёлочки» („вложенные“); длинное тире (—) с&nbsp;пробелами; «прили&shy;пающие» союзы и&nbsp;предлоги только для&nbsp;русского языка, переносы слов и&nbsp;т.&thinsp;д.' }">
                     <div class="d-flex align-items-center mb-1">
-                        {# Иконка вместо чекбокса #}<div class="me-2 text-center" style="width: 1.25em;">
-                            <i class="bi bi-globe"></i>
-                        </div>
-                        <label class="form-check-label fw-bold me-2">Язык</label>
-                        <select class="form-select form-select-sm w-auto" name="langs"
-                                @change="desc = $event.target.options[$event.target.selectedIndex].dataset.desc">
-                          <option value="ru" selected
-                                  data-desc="Только русская типографика: кавычки «ёлочки» („вложенные“); длинное тире (—) с&nbsp;пробелами; «прилипающие» союзы и&nbsp;предлоги только для&nbsp;русского языка, переносы слов и&nbsp;т.&thinsp;д.">
-                            Русский
-                          </option>
-                          <option value="en"
-                                  data-desc="Только английская типографика: кавычки &ldquo;лапки&rdquo; (&lsquo;вложенные&rsquo;); длинное тире (&mdash;) вплотную; &ldquo;прилипающие&rdquo; союзы и&nbsp;предлоги только для&nbsp;английского языка, переносы слов и&nbsp;т.&thinsp;д.">
-                            Английский
-                          </option>
-                          <option value="ru+en"
-                                  data-desc="Основной русский <small>(кавычки и&nbsp;тире)</small> + поддержка английского языка для&nbsp;других правил типографики.">
-                            Русский + Английский
-                          </option>
-                          <option value="en+ru" data-desc="Основной английский <small>(кавычки и&nbsp;тире)</small> + поддержка русского  языка для&nbsp;других правил типографики.">Английский +
-                            Русский
-                          </option>
-                        </select>
+                      {# Иконка вместо чекбокса #}
+                      <div class="me-2 text-center" style="width: 1.25em;">
+                        <i class="bi bi-globe"></i>
+                      </div>
+                      <label class="form-check-label fw-bold me-2">Язык</label>
+                      <select class="form-select form-select-sm w-auto" name="langs"
+                              @change="desc = $event.target.options[$event.target.selectedIndex].dataset.desc">
+                        <option value="ru" selected
+                                data-desc="Только русская типографика: кавычки «ёлочки» („вложенные“); длинное тире (—) с&nbsp;пробелами; «прили&shy;пающие» союзы и&nbsp;предлоги только для&nbsp;русского языка, переносы слов и&nbsp;т.&thinsp;д.">
+                          Русский
+                        </option>
+                        <option value="en"
+                                data-desc="Только английская типографика: кавычки “лапки” (‘вложенные’); длинное тире (—) вплотную; «прили&shy;пающие» союзы и&nbsp;предлоги только для&nbsp;англий&shy;ского языка, переносы слов и&nbsp;т.&thinsp;д.">
+                          Английский
+                        </option>
+                        <option value="ru+en"
+                                data-desc="Основной русский <small>(кавычки и&nbsp;тире)</small> + поддержка англий&shy;ского языка для&nbsp;других правил типографики.">
+                          Русский + Английский
+                        </option>
+                        <option value="en+ru"
+                                data-desc="Основной английский <small>(кавычки и&nbsp;тире)</small> + поддержка русского  языка для&nbsp;других правил типографики.">
+                          Английский +
+                          Русский
+                        </option>
+                      </select>
                     </div>
                     {# Описание с отступом, чтобы было под текстом #}<div class="ms-4 ps-1 form-text text-muted small" style="min-height: 2.5em;" x-html="desc"></div>
                   </div>
-                  {# ========== #}<hr class="my-2" />
-                  {# Группа "Кавычки" #}<div x-data="{ enabled: true }" class="mb-2">
+                  {# ========== #}
+                  <hr class="my-2"/>
+                  {# Группа "Кавычки" #}
+                  <div x-data="{ enabled: true }" class="mb-2">
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="quotes" id="optQuotes" checked x-model="enabled">
-                        <label class="form-check-label fw-bold" for="optQuotes">Обработка кавычек</label>
+                      <input class="form-check-input" type="checkbox" name="quotes" id="optQuotes" checked
+                             x-model="enabled">
+                      <label class="form-check-label fw-bold" for="optQuotes">Обработка кавычек</label>
                     </div>
-                    {# Описание (видно, когда выключено) #}<div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
-                        Прямые кавычки (&quot;) не&nbsp;будут заменяться на&nbsp;типографские («…ёлочки…» или&nbsp;“…лапки…”).
+                    {# Описание (видно, когда выключено) #}
+                    <div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
+                      Прямые кавычки (&quot;) не&nbsp;будут заменяться на&nbsp;типогра&shy;фские («…ёлочки…» или&nbsp;“…лапки…”).
                     </div>
                   </div>
-                  {# ========== #}<hr class="my-2" />
-                  {# Группа "Компоновка и отбивка" (Layout)  #}<div x-data="{ enabled: true }" class="mb-2">
+                  {# ========== #}
+                  <hr class="my-2"/>
+                  {# Группа "Компоновка и отбивка" (Layout)  #}
+                  <div x-data="{ enabled: true }" class="mb-2">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="layout" id="optLayout" checked
+                             x-model="enabled">
+                      <label class="form-check-label fw-bold" for="optLayout">Компоновка и&nbsp;отбивка</label>
+                    </div>
+                    {# Настройки группы "Компоновка и отбивка" (видны, когда включено) #}
+                    <div class="ms-3" x-show="enabled" x-transition>
                       <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="layout" id="optLayout" checked x-model="enabled">
-                        <label class="form-check-label fw-bold" for="optLayout">Компоновка и&nbsp;отбивка</label>
+                        <input class="form-check-input" type="checkbox" name="layout_initials" id="optLayoutInitials"
+                               checked>
+                        <label class="form-check-label" for="optLayoutInitials">Инициалы <small class="text-muted">(А.&thinsp;С.&thinsp;Пушкин)</small></label>
                       </div>
-                      {# Настройки группы "Компоновка и отбивка" (видны, когда включено) #}<div class="ms-3" x-show="enabled" x-transition>
-                          <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="layout_initials" id="optLayoutInitials" checked>
-                            <label class="form-check-label" for="optLayoutInitials">Инициалы <small class="text-muted">(А.&thinsp;С.&thinsp;Пушкин)</small></label>
-                          </div>
-                          {# Единицы измерения с кастомным полем #}<div x-data="{ unitsEnabled: true }" class="form-check">
-                            <input class="form-check-input" type="checkbox" name="layout_units" id="optLayoutUnits" checked
-                                   x-model="unitsEnabled">
-                            <label class="form-check-label" for="optLayoutUnits">Единицы измерения <small class="text-muted">(10&thinsp;км)</small></label>
-                            {# Поле для кастомных единиц #}<div class="mt-1" x-show="unitsEnabled" x-transition>
-                                <input type="text" class="form-control form-control-sm" name="layout_units_custom"
-                                       placeholder="Доп. единицы (через пробел): бит байт">
-                            </div>
-                          </div>
-                      </div>
-                      {# Описание группа "Компоновка и отбивка" (видно, когда выключено) #}<div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
-                          Если отключено, то&nbsp;отбивка тире, инициалов, устойчивых сокращений, единиц измерения
-                          не&nbsp;будет произведена.
-                      </div>
-                  </div>
-                </div>
-                {# КОЛОНКА 2 #}<div class="col-md-4">
-                  {# Группа "Неразрывные пробелы" #}<div x-data="{ enabled: true }" class="mb-2">
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="unbreakables" id="optUnbreakables" checked x-model="enabled">
-                        <label class="form-check-label fw-bold" for="optUnbreakables">Неразрывные пробелы</label>
-                      </div>
-                      {# Описание группы "Неразрывные пробелы" (видно, когда выключено) #}<div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
-                          Если отключено, то&nbsp;предлоги, союзы и&nbsp;артикли могут оставаться в&nbsp;конце строки, частицы (<em>бы,&nbsp;же&mldr;</em>) могут отрываться от&nbsp;слов.
-                      </div>
-                  </div>
-                  {# ========== #}<hr class="my-2" />
-                  {# Группа "Переносы" #}<div x-data="{ enabled: true }" class="mb-2">
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="hyphenation" id="optHyphenation" checked x-model="enabled">
-                        <label class="form-check-label fw-bold" for="optHyphenation">Переносы внутри длинных слов</label>
-                      </div>
-                      {# Настройки переносов #}<div class="ms-3 mt-1" x-show="enabled" x-transition>
-                          <label class="form-label small text-muted mb-0">Максимальная длина слова без переноса:</label>
-                          <select class="form-select form-select-sm" name="hyphenation_len">
-                              <option value="8">8 символов</option>
-                              <option value="10">10 символов</option>
-                              <option value="12" selected>12 символов</option>
-                              <option value="14">14 символов</option>
-                              <option value="16">16 символов</option>
-                          </select>
-                      </div>
-                      {# Описание (видно, когда выключено) #}<div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
-                Если отключено, мягкие переносы (<tt>&amp;shy;</tt>) не&nbsp;будут расставляться.
-                      </div>
-                  </div>
-                  {# ========== #}<hr class="my-2" />
-                  {# Группа "Символы" #}<div x-data="{ enabled: true }" class="mb-2">
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="symbols" id="optSymbols" checked x-model="enabled">
-                        <label class="form-check-label fw-bold" for="optSymbols">Символы ((c) &rarr; ©)</label>
-                      </div>
-                      {# Описание (видно, когда выключено) #}<div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
-                          Замена псевдографики (стрелочки, копирайты) и&nbsp;обработка числовых диапазонов (10-20 &rarr; 10&ndash;20) отключена.
-                      </div>
-                  </div>
-                </div>
-                {# КОЛОНКА 3 #}<div class="col-md-4">
-                  {# Группа "Висячая пунктуация" #}<div x-data="{ enabled: false }" class="mb-2">
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="hanging_enabled" id="optHanging" x-model="enabled">
-                        <label class="form-check-label fw-bold" for="optHanging">Висячая пунктуация</label>
-                      </div>
-                      {# Настройки группы "Висячая пунктуация" (видны, когда включено) #}<div class="ms-3 mt-1" x-show="enabled" x-transition>
-                          <select class="form-select form-select-sm" name="hanging_punctuation">
-                            <option value="left" selected>Только слева</option>
-                            <option value="right">Только справа</option>
-                            <option value="both">С обеих сторон</option>
-                          </select>
-                      </div>
-                      {# Описание (видно, когда выключено) #}<div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
-                          Кавычки, скобки, точки и&nbsp;запятые не&nbsp;будут выноситься за&nbsp;границы текстового блока.
-                      </div>
-                  </div>
-                {# ========== #}<hr class="my-2" />
-                  {# Группа "Санитайзер" #}<div x-data="{ enabled: false }" class="mb-2">
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="sanitizer_enabled" id="optSanitizer" x-model="enabled">
-                        <label class="form-check-label fw-bold" for="optSanitizer">Очистка от HTML (Sanitizer)</label>
-                      </div>
-                      {# Настройки группы "Санитайзер" (видны, когда включено) #}<div class="ms-3 mt-1" x-show="enabled" x-transition>
-                          <select class="form-select form-select-sm" name="sanitizer">
-                              <option value="etp" selected>Очистить разметку висячей пунктуации</option>
-                              <option value="html">Очистить все HTML-теги</option>
-                          </select>
-                      </div>
-                      {# Описание группы "Санитайзер" (видно, когда выключено) #}<div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
-                          Текст будет обработан «как&nbsp;есть», без предва­рительной очистки от&nbsp;HTML-тегов или&nbsp;старой разметки.
-                      </div>
-                  </div>
-                   {# ========== #}<hr class="my-2" />
-                  {# Группа "Режим вывода" #}<div x-data="{ desc: 'Оптимально. Спецсимволы (—, ©) как&nbsp;есть, неразрывные пробелы как&nbsp;<tt>&amp;amp;nbsp;.</tt>' }">
-                    <div class="d-flex align-items-center mb-1">
-                        <div class="me-2 text-center" style="width: 1.25em;">
-                            <i class="bi bi-code-slash"></i>
+                      {# Единицы измерения с кастомным полем #}
+                      <div x-data="{ unitsEnabled: true }" class="form-check">
+                        <input class="form-check-input" type="checkbox" name="layout_units" id="optLayoutUnits" checked
+                               x-model="unitsEnabled">
+                        <label class="form-check-label" for="optLayoutUnits">Единицы измерения <small
+                          class="text-muted">(10&thinsp;км)</small></label>
+                        {# Поле для кастомных единиц #}
+                        <div class="mt-1" x-show="unitsEnabled" x-transition>
+                          <input type="text" class="form-control form-control-sm" name="layout_units_custom"
+                                 placeholder="Доп. единицы (через пробел): бит байт">
                         </div>
-                        <label class="form-check-label fw-bold me-2">Режим вывода</label>
-                        <select class="form-select form-select-sm w-auto" name="mode"
-                                @change="desc = $event.target.options[$event.target.selectedIndex].dataset.desc">
-                          <option value="mixed" selected
-                                  data-desc="Оптимально. Спецсимволы (—, ©) как есть, неразрывные пробелы как&nbsp;<tt>&amp;amp;nbsp;</tt>.">
-                            Смешанный (Mixed)
-                          </option>
-                          <option value="unicode"
-                                  data-desc="Компактно. Все символы в UTF-8 (включая неразрывный пробел U+00A0).">
-                            Юникод (Unicode)
-                          </option>
-                          <option value="mnemonic"
-                                  data-desc="Совместимость. Все спецсимволы заменяются на HTML-мнемоники (&amp;amp;mdash;, &amp;amp;copy; …).">
-                            Мнемоники (Mnemonic)
-                          </option>
-                        </select>
+                      </div>
                     </div>
-                    <div class="ms-4 ps-1 form-text text-muted small mb-2" style="min-height: 2.5em;" x-html="desc"></div>
+                    {# Описание группа "Компоновка и отбивка" (видно, когда выключено) #}
+                    <div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
+                      Если отключено, то&nbsp;отбивка тире, инициалов, устойчивых сокращений, единиц измерения не&nbsp;будет произведена.
+                    </div>
+                  </div>
+                </div>
+                {# КОЛОНКА 2 #}
+                <div class="col-md-4">
+                  {# Группа "Неразрывные пробелы" #}
+                  <div x-data="{ enabled: true }" class="mb-2">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="unbreakables" id="optUnbreakables" checked
+                             x-model="enabled">
+                      <label class="form-check-label fw-bold" for="optUnbreakables">Неразрывные пробелы</label>
+                    </div>
+                    {# Описание группы "Неразрывные пробелы" (видно, когда выключено) #}
+                    <div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
+                      Если отключено, то&nbsp;предлоги, союзы и&nbsp;артикли могут оставаться в&nbsp;конце строки, частицы (<em>бы,&nbsp;же…</em>) могут отрываться от&nbsp;слов.
+                    </div>
+                  </div>
+                  {# ========== #}
+                  <hr class="my-2"/>
+                  {# Группа "Переносы" #}
+                  <div x-data="{ enabled: true }" class="mb-2">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="hyphenation" id="optHyphenation" checked
+                             x-model="enabled">
+                      <label class="form-check-label fw-bold" for="optHyphenation">Переносы внутри длинных слов</label>
+                    </div>
+                    {# Настройки переносов #}
+                    <div class="ms-3 mt-1" x-show="enabled" x-transition>
+                      <label class="form-label small text-muted mb-0">Макси&shy;мальная длина слова без&nbsp;переноса:</label>
+                      <select class="form-select form-select-sm" name="hyphenation_len">
+                        <option value="8">8 символов</option>
+                        <option value="10">10 символов</option>
+                        <option value="12" selected>12 символов</option>
+                        <option value="14">14 символов</option>
+                        <option value="16">16 символов</option>
+                      </select>
+                    </div>
+                    {# Описание (видно, когда выключено) #}
+                    <div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
+                      Если отключено, мягкие переносы (<tt>&amp;shy;</tt>) не&nbsp;будут расста&shy;вляться.
+                    </div>
+                  </div>
+                  {# ========== #}
+                  <hr class="my-2"/>
+                  {# Группа "Обработка псевдографики" #}
+                  <div x-data="{ enabled: true }" class="mb-2">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="symbols" id="optSymbols" checked
+                             x-model="enabled">
+                      <label class="form-check-label fw-bold" for="optSymbols">Обработка псевдо&shy;графики ((c) &rarr; ©)</label>
+                    </div>
+                    {# Описание (видно, когда выключено) #}
+                    <div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
+                      Замена псевдо&shy;графики (стрелочки, копирайты) и&nbsp;обработка числовых диапазонов (10–20 → 10–20) отключена.
+                    </div>
+                  </div>
+                </div>
+                {# КОЛОНКА 3 #}
+                <div class="col-md-4">
+                  {# Группа "Висячая пунктуация" #}
+                  <div x-data="{ enabled: false }" class="mb-2">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="hanging_enabled" id="optHanging"
+                             x-model="enabled">
+                      <label class="form-check-label fw-bold" for="optHanging">Висячая пунктуация</label>
+                    </div>
+                    {# Настройки группы "Висячая пунктуация" (видны, когда включено) #}
+                    <div class="ms-3 mt-1" x-show="enabled" x-transition>
+                      <select class="form-select form-select-sm" name="hanging_punctuation">
+                        <option value="left" selected>Только слева</option>
+                        <option value="right">Только справа</option>
+                        <option value="both">С обеих сторон</option>
+                      </select>
+                    </div>
+                    {# Описание (видно, когда выключено) #}
+                    <div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
+                      Кавычки, скобки, точки и&nbsp;запятые не&nbsp;будут выноситься за&nbsp;границы текстового блока.
+                    </div>
+                  </div>
+                  {# ========== #}
+                  <hr class="my-2"/>
+                  {# Группа "Санитайзер" #}
+                  <div x-data="{ enabled: false }" class="mb-2">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="sanitizer_enabled" id="optSanitizer"
+                             x-model="enabled">
+                      <label class="form-check-label fw-bold" for="optSanitizer">Очистка от HTML (Sanitizer)</label>
+                    </div>
+                    {# Настройки группы "Санитайзер" (видны, когда включено) #}
+                    <div class="ms-3 mt-1" x-show="enabled" x-transition>
+                      <select class="form-select form-select-sm" name="sanitizer">
+                        <option value="etp" selected>Очистить разметку висячей пунктуации</option>
+                        <option value="html">Очистить все HTML-теги</option>
+                      </select>
+                    </div>
+                    {# Описание группы "Санитайзер" (видно, когда выключено) #}
+                    <div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
+                      Текст будет обработан «как&nbsp;есть», без&nbsp;предва&shy;рительной очистки от&nbsp;HTML-тегов или&nbsp;старой разметки.
+                    </div>
+                  </div>
+                  {# ========== #}
+                  <hr class="my-2"/>
+                  {# Группа "Режим вывода" #}
+                  <div
+                    x-data="{ desc: 'Оптимально. Спецсимволы (—, ©) как&nbsp;есть, неразрывные пробелы как&nbsp;<tt>&amp;amp;nbsp;.</tt>' }">
+                    <div class="d-flex align-items-center mb-1">
+                      <div class="me-2 text-center" style="width: 1.25em;">
+                        <i class="bi bi-code-slash"></i>
+                      </div>
+                      <label class="form-check-label fw-bold me-2">Режим вывода</label>
+                      <select class="form-select form-select-sm w-auto" name="mode"
+                              @change="desc = $event.target.options[$event.target.selectedIndex].dataset.desc">
+                        <option value="mixed" selected
+                                data-desc="Оптимально. Спецсимволы (—, ©) как есть, неразрывные пробелы как&nbsp;<tt>&amp;amp;nbsp;</tt>.">
+                          Смешанный (Mixed)
+                        </option>
+                        <option value="unicode"
+                                data-desc="Компактно. Все символы в&nbsp;UTF-8 (включая неразрывный пробел U+00A0).">
+                          Юникод (Unicode)
+                        </option>
+                        <option value="mnemonic"
+                                data-desc="Совместимость. Все спецсимволы заменяются на&nbsp;HTML-мнемоники (&amp;amp;mdash;, &amp;amp;copy; …).">
+                          Мнемоники (Mnemonic)
+                        </option>
+                      </select>
+                    </div>
+                    <div class="ms-4 ps-1 form-text text-muted small mb-2" style="min-height: 2.5em;"
+                         x-html="desc"></div>
                   </div>
                 </div>
               </div>
@@ -202,43 +249,91 @@
     </div>
   </div>
 
-<script type="module">
-    // Используем esm.sh с фиксированной версией для всех пакетов
-    import {EditorView, lineNumbers, highlightActiveLineGutter, highlightWhitespace, highlightTrailingWhitespace, drawSelection, keymap} from "https://esm.sh/@codemirror/view@6.17.1?deps=@codemirror/state@6.2.1";
-    import {html} from "https://esm.sh/@codemirror/lang-html@6.4.5?deps=@codemirror/state@6.2.1";
-    import {oneDark} from "https://esm.sh/@codemirror/theme-one-dark@6.1.2?deps=@codemirror/state@6.2.1";
-    import {EditorState} from "https://esm.sh/@codemirror/state@6.2.1";
-    import {defaultKeymap} from "https://esm.sh/@codemirror/commands@6.2.4?deps=@codemirror/state@6.2.1";
+  <script type="module">
+    // Импортируем из локального бандла
+    import {
+      EditorView,
+      EditorState,
+      lineNumbers,
+      highlightActiveLineGutter,
+      highlightWhitespace,
+      highlightTrailingWhitespace,
+      drawSelection,
+      keymap,
+      highlightSpecialChars,
+      html,
+      oneDark,
+      syntaxHighlighting,
+      defaultHighlightStyle,
+      bracketMatching,
+      defaultKeymap
+    } from "{% static 'codemirror/editor.js' %}";
 
     const resultWrapper = document.getElementById('cm-result-wrapper');
 
+    // Словарь названий для спецсимволов
+    const charNames = {
+      0x00a0: "NoBreakable Space (неразрывный пробел — &nbsp;)",
+      0x2002: "En Space (полужирный пробел — &ensp;)",
+      0x2003: "Em Space (жирный пробел — &emsp;)",
+      0x2007: "Figure Space (цифровой пробел — &numsp;)",
+      0x2008: "Punctuation Space (пунктуационный пробел — &puncsp;)",
+      0x2009: "Thin Space (тонкий пробел — &thinsp;)",
+      0x200A: "Hair Space (толщина волоса — &hairsp;)",
+      0x200B: "Negative Space (негативный пробел — &NegativeThinSpace;)",
+      0x200C: "Zero Width Non-Joiner (пробел нулевой ширины, без объединения — &zwj;)",
+      0x200D: "Zero Width Joiner (пробел нулевой ширины, с объединением — &zwnj;)",
+      0x200E: "Left-to-Right Mark (изменить направление текста на слева-направо — &lrm;)",
+      0x200F: "Right-to-Left Mark (изменить направление текста на справа-налево — &rlm;)",
+      0x205F: "Medium Mathematical Space (средний пробел — &MediumSpace;)",
+      0x2060: "NoBreak (без разрыва — &NoBreak;)",
+      0x2062: "Invisible Times (невидимое умножение для семантической разметки математических выражений — &InvisibleTimes;)",
+      0x2063: "Invisible Comma (невидимая запятая для семантической разметки математических выражений — &InvisibleComma;)",
+    };
+
     const resultState = EditorState.create({
-        doc: "Здесь появится результат...",
-        extensions: [
-            lineNumbers(),
-            highlightActiveLineGutter(),
-            highlightWhitespace(), // Подсветка всех пробелов
-            highlightTrailingWhitespace(), // Подсветка пробелов в конце
-            drawSelection(),
-            keymap.of(defaultKeymap),
-            html(),
-            oneDark,
-            EditorState.readOnly.of(true)
-        ]
+      doc: "Здесь появится результат...",
+      extensions: [
+        lineNumbers(),
+        highlightActiveLineGutter(),
+        // Подсветка NBSP и других специальных пробелов
+        highlightSpecialChars({
+          specialChars: /[\u2002\u2003\u2007\u2009\u00a0\u200A\u200B\u200C\u200D\u200E\u200F\u205F\u2060\u2062\u2063]/,
+          addSpecialChars: true,
+          render: (code) => {
+            let span = document.createElement("span");
+            span.textContent = "•";
+            span.style.background = "#ff000044";  // Полупрозрачный красный фон
+            span.style.color = "#ffff00";  // Желтый цвет точки
+            // Используем словарь для title
+            span.title = "U+" + code.toString(16).toUpperCase().padStart(4, '0') + " / " + (charNames[code] || "Special Char");
+            return span;
+          }
+        }),
+        highlightWhitespace(),
+        highlightTrailingWhitespace(),
+        drawSelection(),
+        syntaxHighlighting(defaultHighlightStyle, {fallback: true}),
+        bracketMatching(),
+        keymap.of(defaultKeymap),
+        html(),
+        oneDark,
+        EditorState.readOnly.of(true)
+      ]
     });
 
     const resultView = new EditorView({
-        state: resultState,
-        parent: resultWrapper
+      state: resultState,
+      parent: resultWrapper
     });
 
-    document.body.addEventListener('htmx:afterSwap', function(evt) {
-        if (evt.detail.target.id === 'result-area') {
-            const newContent = evt.detail.xhr.response;
-            resultView.dispatch({
-                changes: { from: 0, to: resultView.state.doc.length, insert: newContent }
-            });
-        }
+    document.body.addEventListener('htmx:afterSwap', function (evt) {
+      if (evt.detail.target.id === 'result-area') {
+        const newContent = evt.detail.xhr.response;
+        resultView.dispatch({
+          changes: {from: 0, to: resultView.state.doc.length, insert: newContent}
+        });
+      }
     });
-</script>
+  </script>
 {% endblock %}
