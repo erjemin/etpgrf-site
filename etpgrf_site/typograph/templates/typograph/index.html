@@ -266,10 +266,16 @@
       syntaxHighlighting,
       defaultHighlightStyle,
       bracketMatching,
-      defaultKeymap
+      defaultKeymap,
+      Compartment
     } from "{% static 'codemirror/editor.js' %}";
 
     const resultWrapper = document.getElementById('cm-result-wrapper');
+
+    const themeCompartment = new Compartment();
+    function getTheme() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? oneDark : [];
+    }
 
     // Словарь названий для спецсимволов
     const charNames = {
@@ -317,7 +323,7 @@
         bracketMatching(),
         keymap.of(defaultKeymap),
         html(),
-        oneDark,
+        themeCompartment.of(getTheme()),
         EditorState.readOnly.of(true)
       ]
     });
@@ -334,6 +340,12 @@
           changes: {from: 0, to: resultView.state.doc.length, insert: newContent}
         });
       }
+    });
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      resultView.dispatch({
+        effects: themeCompartment.reconfigure(getTheme())
+      });
     });
   </script>
 {% endblock %}

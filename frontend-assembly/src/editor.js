@@ -1,6 +1,9 @@
 // Реэкспорт всех необходимых модулей для использования в браузере (через <script type="module">)
 
-export { EditorState } from "@codemirror/state";
+export {
+  EditorState,
+  Compartment
+} from "@codemirror/state";
 export {
   EditorView,
   lineNumbers,

@@ -22853,6 +22853,7 @@ var oneDark = [oneDarkTheme, /* @__PURE__ */ syntaxHighlighting(oneDarkHighlight
 function createReadOnlyEditor(parent, text) {
 }
 export {
+  Compartment,
   Decoration,
   EditorState,
   EditorView,
