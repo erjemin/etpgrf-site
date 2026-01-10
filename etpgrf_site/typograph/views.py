@@ -80,6 +80,8 @@ def process_text(request):
         
         # Обрабатываем текст
         processed = typo.process(text)
+        print("Processed text length:", len(processed))
+        print("Processed text:", processed)
         
         return render(
             request, 
