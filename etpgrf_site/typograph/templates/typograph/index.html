@@ -178,7 +178,8 @@
                     </div>
                     {# Описание (видно, когда выключено) #}
                     <div class="ms-3 form-text text-muted small" x-show="!enabled" x-transition>
-                      Кавычки, скобки, точки и&nbsp;запятые не&nbsp;будут выноситься за&nbsp;границы текстового блока.
+                      Кавычки, скобки, точки и&nbsp;запятые не&nbsp;будут выноситься за&nbsp;границы текстового блока.<br />
+                      <b class="small">Не&nbsp;злоупо&shy;требляйте висячей пунктуацией. Она оправдана и&nbsp;наиболее эффектно выглядит только в&nbsp;заголовках, тизерах, выносах и&nbsp;врезках (например, для&nbsp;цитат).</b>
                     </div>
                   </div>
                   {# ========== #}
@@ -279,7 +280,8 @@
 
     // Словарь названий для спецсимволов
     const charNames = {
-      0x00a0: "NoBreakable Space (неразрывный пробел — &nbsp;)",
+      0x00A0: "NoBreakable Space (неразрывный пробел — &nbsp;)",
+      0x00AD: "Soft Hyphen (мягкий перенос — &shy;)",
       0x2002: "En Space (полужирный пробел — &ensp;)",
       0x2003: "Em Space (жирный пробел — &emsp;)",
       0x2007: "Figure Space (цифровой пробел — &numsp;)",
@@ -304,7 +306,7 @@
         highlightActiveLineGutter(),
         // Подсветка NBSP и других специальных пробелов
         highlightSpecialChars({
-          specialChars: /[\u2002\u2003\u2007\u2009\u00a0\u200A\u200B\u200C\u200D\u200E\u200F\u205F\u2060\u2062\u2063]/,
+          specialChars: /[\u2002\u00AD\u2003\u2007\u2009\u00a0\u200A\u200B\u200C\u200D\u200E\u200F\u205F\u2060\u2062\u2063]/,
           addSpecialChars: true,
           render: (code) => {
             let span = document.createElement("span");
