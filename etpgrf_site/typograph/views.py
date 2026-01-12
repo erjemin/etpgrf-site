@@ -68,7 +68,7 @@ def process_text(request):
             'symbols': request.POST.get(key='symbols') == 'on',
             'hanging_punctuation': hanging_option,
             'mode': request.POST.get(key='mode', default='mixed'),
-            'sanitizer': sanitizer_option
+            'sanitizer': sanitizer_option,
         }
         
         # --- ДИАГНОСТИКА ---
@@ -80,8 +80,8 @@ def process_text(request):
         
         # Обрабатываем текст
         processed = typo.process(text)
-        print("Processed text length:", len(processed))
-        print("Processed text:", processed)
+        # print("Processed text length:", len(processed))
+        # print("Processed text:", processed)
         
         return render(
             request, 
