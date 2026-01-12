@@ -65,7 +65,7 @@
             /* Цвет фокуса для полей ввода */
             --bs-focus-ring-color: rgba(176, 190, 197, 0.25);
 
-            /* Фон navbar в темной теме */
+            /* Фон навбара в темной теме */
             --bs-navbar-bg: #55558555;
             --bs-navbar-color: #b0bec5;
         }
@@ -73,17 +73,33 @@
         /* Небольшие стили для красоты */
         body { background-color: var(--bs-body-bg); }
 
-        /* Navbar: используем переменную для фона */
+        /* Навбар: используем переменную для фона */
         .navbar {
             background-color: var(--bs-navbar-bg) !important;
             border-bottom: 1px solid var(--bs-border-color);
+            padding: 0; /* Убираем отступы у навбара */
         }
         .navbar-brand {
-            color: var(--bs-navbar-color) !important;
-            font-weight: bold;
+            padding: 0; /* Убираем отступы у бренда */
+        }
+        
+        /* Логотип */
+        .logo-img {
+            width: 70%;
+            height: auto;
+            margin-left: -3%; /* Немного сдвигаем влево, чтобы буквы ETPGRF логотипа выровнять */
+            max-height: 150px; /* Ограничиваем высоту */
+            object-fit: contain; /* Вписываем, сохраняя пропорции */
         }
 
+        /* Переключение логотипов */
+        [data-bs-theme="dark"] .logo-light { display: none; }
+        [data-bs-theme="dark"] .logo-dark { display: block; }
+        [data-bs-theme="light"] .logo-light { display: block; }
+        [data-bs-theme="light"] .logo-dark { display: none; }
+
         /* === ПЕРЕОПРЕДЕЛЕНИЕ КОМПОНЕНТОВ BOOTSTRAP === */
+
         /* Кнопки Primary */
         .btn-primary {
             --bs-btn-bg: var(--bs-primary);
@@ -99,6 +115,7 @@
             --bs-btn-hover-color: #151111;
             --bs-btn-active-color: #151111;
         }
+
         /* Чекбоксы и Радио */
         .form-check-input:checked {
             background-color: var(--bs-primary);
@@ -109,11 +126,13 @@
              /* SVG галочки черного цвета (закодирован в base64) */
              background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23151111' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e");
         }
+
         /* Фокус на полях ввода */
         .form-control:focus, .form-select:focus, .form-check-input:focus {
             border-color: var(--bs-primary);
             box-shadow: 0 0 0 0.25rem var(--bs-focus-ring-color);
         }
+
         .result-box {
             background: var(--bs-body-bg);
             color: var(--bs-body-color);
@@ -176,10 +195,12 @@
 <body>
 
 {# ШАПКА и главное меню #}
-{# Убрал bg-dark и navbar-dark, теперь цвета управляются через CSS #}
 <nav class="navbar navbar-expand-lg mb-4">
-  <div class="container">
-    <a class="navbar-brand" href="/">ETPGRF — единая типографика для веба</a>
+  <div class="container"> {# Вернул container для выравнивания #}
+    <a class="navbar-brand" href="/">
+        <img src="{% static 'svg/logo-etpgrf-site-light.svg' %}" class="logo-img logo-light" alt="ETPGRF — единая типографика для веба">
+        <img src="{% static 'svg/logo-etpgrf-site-dark.svg' %}" class="logo-img logo-dark" alt="ETPGRF — единая типографика для веба">
+    </a>
   </div>
 </nav>
 
