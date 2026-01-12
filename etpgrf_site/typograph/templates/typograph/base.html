@@ -73,10 +73,61 @@
         .result-box .etp-r-dot   { margin-right: -0.2em; }
         .result-box .etp-r-comma { margin-right: -0.2em; }
         .result-box .etp-r-colon { margin-right: -0.2em; }
+
+        /* --- Стили для Cookie Banner --- */
+        #cookie-banner {
+            backdrop-filter: blur(10px); /* Эффект размытия фона */
+            border-top: 1px solid var(--bs-border-color);
+            z-index: 1050; /* Поверх всего */
+        }
+        /* Светлая тема: темная плашка */
+        [data-bs-theme="light"] #cookie-banner {
+            background-color: rgba(33, 37, 41, 0.85); /* bg-dark с прозрачностью */
+            color: #fff;
+        }
+        [data-bs-theme="light"] #cookie-banner a {
+            color: #fff;
+            text-decoration: none;
+            border-bottom: 1px dotted #fff;
+        }
+        [data-bs-theme="light"] #cookie-banner a:hover {
+            border-bottom-style: solid;
+        }
+        [data-bs-theme="light"] #cookie-accept {
+            color: #fff;
+            border: 1px dashed #fff;
+            background: transparent;
+        }
+        [data-bs-theme="light"] #cookie-accept:hover {
+            background: rgba(255,255,255, 0.2);
+        }
+
+        /* Темная тема: светлая плашка */
+        [data-bs-theme="dark"] #cookie-banner {
+            background-color: rgba(248, 249, 250, 0.85); /* bg-light с прозрачностью */
+            color: #000;
+        }
+        [data-bs-theme="dark"] #cookie-banner a {
+            color: #000;
+            text-decoration: none;
+            border-bottom: 1px dotted #000;
+        }
+        [data-bs-theme="dark"] #cookie-banner a:hover {
+            border-bottom-style: solid;
+        }
+        [data-bs-theme="dark"] #cookie-accept {
+            color: #000;
+            border: 1px dashed #000;
+            background: transparent;
+        }
+        [data-bs-theme="dark"] #cookie-accept:hover {
+            background: rgba(0,0,0, 0.1);
+        }
     </style>
 </head>
 <body>
 
+{# ШАПКА и главное меню #}
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
   <div class="container">
     <a class="navbar-brand" href="/">ETPGRF — единая типографика для веба</a>
@@ -84,9 +135,88 @@
 </nav>
 
 <div class="container">
-    {% block content %}{% endblock %}
+  {% block content %}{% endblock %}
+</div>
+
+{# Плашка о куках #}
+<div id="cookie-banner" class="fixed-bottom p-4 fs-5" style="display: none;">
+  <div class="container d-flex justify-content-between align-items-center">
+    <p class="mb-0 pe-5">
+      В&nbsp;соответствии с&nbsp;GDPR и&nbsp;152-ФЗ, уведомляем вас, что настоящий сайт использует файлы cookie
+      для&nbsp;сбора данных о&nbsp;поведении пользо&shy;вателей, с&nbsp;целью аналитики и&nbsp;улучшения работы
+      сайта. Оставаясь на&nbsp;сайте, вы&nbsp;соглашаетесь с&nbsp;нашей
+      <a href="/privacy-policy">политикой конфи&shy;денциаль&shy;ности</a>.
+    </p>
+    <button id="cookie-accept" class="btn btn-lg ms-3">Принять</button>
+  </div>
 </div>
 
 {# Bootstrap JS #}<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+{# Логика куки-баннера и счетчиков #}
+<script>
+  (function () {
+    const COOKIE_KEY = 'cookie_consent';
+    const TTL_MS =60 * 1000; // 1 минута для отладки (потом поставить 90 дней: 90 * 24 * 60 * 60 * 1000 = 7776000000)
+
+    const banner = document.getElementById('cookie-banner');
+    const acceptButton = document.getElementById('cookie-accept');
+
+    function loadCounters() {
+      console.log("Загрузка счетчиков (Яндекс, Google)...");
+      // Код Яндекс.Метрики
+      // (function(m,e,t,r,i,k,a){...})(window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+      // ym(XXXXXX, "init", {...});
+
+      // Код Google Analytics
+      // window.dataLayer = window.dataLayer || [];
+      // function gtag(){dataLayer.push(arguments);}
+      // gtag('js', new Date());
+      // gtag('config', 'G-XXXXXXXXXX');
+
+      // Код Top.Mail.Ru
+      // (function(w, d, c) { ... })(window, document, "topmailru");
+
+      // и т.д.
+
+      // alert("Отладка. Счетчики загружены (здесь должен быть реальный код счетчиков).");
+    }
+
+    function checkConsent() {
+      const stored = localStorage.getItem(COOKIE_KEY);
+      if (!stored) return false;
+
+      try {
+        const data = JSON.parse(stored);
+        const now = Date.now();
+        // Проверяем, не истек ли срок
+        if (now - data.timestamp > TTL_MS) {
+          localStorage.removeItem(COOKIE_KEY);
+          return false;
+        }
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    if (checkConsent()) {
+      loadCounters();
+    } else {
+      banner.style.display = 'block';
+    }
+
+    acceptButton.addEventListener('click', function () {
+      const data = {
+        value: true,
+        timestamp: Date.now()
+      };
+      localStorage.setItem(COOKIE_KEY, JSON.stringify(data));
+      banner.style.display = 'none';
+      loadCounters();
+    });
+  })();
+</script>
+
 </body>
 </html>
