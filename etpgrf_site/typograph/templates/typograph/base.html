@@ -92,12 +92,6 @@
             object-fit: contain; /* Вписываем, сохраняя пропорции */
         }
 
-        /* Переключение логотипов */
-        [data-bs-theme="dark"] .logo-light { display: none; }
-        [data-bs-theme="dark"] .logo-dark { display: block; }
-        [data-bs-theme="light"] .logo-light { display: block; }
-        [data-bs-theme="light"] .logo-dark { display: none; }
-
         /* === ПЕРЕОПРЕДЕЛЕНИЕ КОМПОНЕНТОВ BOOTSTRAP === */
 
         /* Кнопки Primary */
@@ -196,10 +190,14 @@
 
 {# ШАПКА и главное меню #}
 <nav class="navbar navbar-expand-lg mb-4">
-  <div class="container"> {# Вернул container для выравнивания #}
+  <div class="container">
     <a class="navbar-brand" href="/">
-        <img src="{% static 'svg/logo-etpgrf-site-light.svg' %}" class="logo-img logo-light" alt="ETPGRF — единая типографика для веба">
-        <img src="{% static 'svg/logo-etpgrf-site-dark.svg' %}" class="logo-img logo-dark" alt="ETPGRF — единая типографика для веба">
+        <img id="logo-img" class="logo-img" src=""
+             data-src-light="{% static 'svg/logo-etpgrf-site-light.svg' %}"
+             data-src-light-compact="{% static 'svg/logo-etpgrf-site-light-compact_old.svg' %}"
+             data-src-dark="{% static 'svg/logo-etpgrf-site-dark.svg' %}"
+             data-src-dark-compact="{% static 'svg/logo-etpgrf-site-dark-compact_old.svg' %}"
+             alt="ETPGRF — единая типографика для веба">
     </a>
   </div>
 </nav>
@@ -228,6 +226,13 @@
 {# Логика куки-баннера и счетчиков #}
 <script>
   (function () {
+    // Динамическая загрузка логотипа в соответствии с темой (темная/светлая)
+    document.addEventListener('DOMContentLoaded', function() {
+        const logoImg = document.getElementById('logo-img');
+        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        logoImg.src = isDark ? logoImg.dataset.srcDark : logoImg.dataset.srcLight;
+    });
+
     const COOKIE_KEY = 'cookie_consent';
     const TTL_MS =60 * 1000; // 1 минута для отладки (потом поставить 90 дней: 90 * 24 * 60 * 60 * 1000 = 7776000000)
 
