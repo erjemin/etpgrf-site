@@ -2,11 +2,18 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic.base import RedirectView
+from django.contrib.staticfiles.storage import staticfiles_storage
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('typograph.urls')),
+    path(route='adm-in/', view=admin.site.urls),
+    path(
+        route="favicon.ico",
+        view=RedirectView.as_view(url=staticfiles_storage.url("favicon.ico")),
+        name="favicon",
+    ),
+    path(route='', view=include('typograph.urls')),
 ]
 
 if settings.DEBUG:
-    urlpatterns = static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + urlpatterns
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
