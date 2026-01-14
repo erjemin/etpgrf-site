@@ -17,18 +17,7 @@
     {# Alpine.js #}<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     {# Polyfill for Import Maps #}<script async src="https://ga.jspm.io/npm:es-module-shims@1.10.0/dist/es-module-shims.js"></script>
 
-    <script type="text/javascript">
-        // Автоматическое переключение темы (Dark/Light)
-        (function() {
-            function updateTheme(e) {
-                const theme = e.matches ? 'dark' : 'light';
-                document.documentElement.setAttribute('data-bs-theme', theme);
-            }
-            const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-            updateTheme(darkModeMediaQuery); // Установить при загрузке
-            darkModeMediaQuery.addEventListener('change', updateTheme); // Слушать изменения
-        })();
-    </script>
+
 
     <style>
         /* === ЦВЕТОВАЯ СХЕМА === */
@@ -78,18 +67,34 @@
             background-color: var(--bs-navbar-bg) !important;
             border-bottom: 1px solid var(--bs-border-color);
             padding: 0; /* Убираем отступы у навбара */
+            position: sticky;
+            top: 0;
+            height: 105px;
+            z-index: 1000;
+            backdrop-filter: blur(4px); /* Эффект размытия */
+            box-shadow: 0 -25px 30px 15px var(--bs-border-color);
         }
         .navbar-brand {
             padding: 0; /* Убираем отступы у бренда */
+        }
+
+        /* Стили для скролла */
+        .navbar-scrolled {
+            height: 55px;
         }
         
         /* Логотип */
         .logo-img {
             width: 70%;
-            height: auto;
             margin-left: -3%; /* Немного сдвигаем влево, чтобы буквы ETPGRF логотипа выровнять */
-            max-height: 150px; /* Ограничиваем высоту */
+            height: 151px; /* Ограничиваем высоту */
             object-fit: contain; /* Вписываем, сохраняя пропорции */
+        }
+
+        /* Уменьшаем логотип при скролле */
+        .navbar-scrolled .logo-img {
+            height: 78px; /* Компактная высота */
+            margin-left: -5%;
         }
 
         /* === ПЕРЕОПРЕДЕЛЕНИЕ КОМПОНЕНТОВ BOOTSTRAP === */
@@ -175,6 +180,7 @@
         }
         #cookie-banner a:hover {
             border-bottom-style: solid;
+            color: var(--bs-link-hover-color);
         }
         #cookie-accept {
             color: var(--bs-primary);
@@ -189,20 +195,20 @@
 <body>
 
 {# ШАПКА и главное меню #}
-<nav class="navbar navbar-expand-lg mb-4">
+<nav id="main-navbar" class="navbar navbar-expand-lg mb-4">
   <div class="container">
     <a class="navbar-brand" href="/">
         <img id="logo-img" class="logo-img" src=""
              data-src-light="{% static 'svg/logo-etpgrf-site-light.svg' %}"
-             data-src-light-compact="{% static 'svg/logo-etpgrf-site-light-compact_old.svg' %}"
+             data-src-light-compact="{% static 'svg/logo-etpgrf-site-light-compact.svg' %}"
              data-src-dark="{% static 'svg/logo-etpgrf-site-dark.svg' %}"
-             data-src-dark-compact="{% static 'svg/logo-etpgrf-site-dark-compact_old.svg' %}"
+             data-src-dark-compact="{% static 'svg/logo-etpgrf-site-dark-compact.svg' %}"
              alt="ETPGRF — единая типографика для веба">
     </a>
   </div>
 </nav>
 
-<div class="container">
+<div id="content-container" class="container">
   {% block content %}{% endblock %}
 </div>
 
@@ -226,15 +232,43 @@
 {# Логика куки-баннера и счетчиков #}
 <script>
   (function () {
-    // Динамическая загрузка логотипа в соответствии с темой (темная/светлая)
-    document.addEventListener('DOMContentLoaded', function() {
-        const logoImg = document.getElementById('logo-img');
-        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        logoImg.src = isDark ? logoImg.dataset.srcDark : logoImg.dataset.srcLight;
-    });
+    const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const logoImg = document.getElementById('logo-img');
+    const navbar = document.getElementById('main-navbar');
 
+    // --- АВТОМАТИЧЕСКОЕ ПЕРЕКЛЮЧЕНИЕ ТЕМЫ (Dark/Light) ---
+    function updateTheme(e) {
+      const theme = e.matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-bs-theme', theme);
+    }
+
+    // --- ОБНОВЛЕНИЕ ЛОГОТИПА ПРИ СКРОЛЛЕ И СМЕНЕ ТЕМЫ ---
+    function updateLogo() {
+      const isDark = darkModeMediaQuery.matches;
+      // Используем getBoundingClientRect для определения позиции контента
+      if (document.getElementById('content-container').getBoundingClientRect().top < 78) {
+        navbar.classList.add('navbar-scrolled');
+        logoImg.src = isDark ? logoImg.dataset.srcDarkCompact : logoImg.dataset.srcLightCompact;
+      } else {
+        navbar.classList.remove('navbar-scrolled');
+        logoImg.src = isDark ? logoImg.dataset.srcDark : logoImg.dataset.srcLight;
+      }
+    }
+
+    // Инициализация
+    updateTheme(darkModeMediaQuery);
+    updateLogo();
+    document.addEventListener('DOMContentLoaded', updateLogo);
+
+    // Слушаем скролл
+    window.addEventListener('scroll', updateLogo);
+
+    // Слушаем смену темы
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateLogo);
+
+    // --- КУКИ ---
     const COOKIE_KEY = 'cookie_consent';
-    const TTL_MS =60 * 1000; // 1 минута для отладки (потом поставить 90 дней: 90 * 24 * 60 * 60 * 1000 = 7776000000)
+    const TTL_MS = 60 * 1000; // 1 минута для отладки (потом поставить 90 дней: 90 * 24 * 60 * 60 * 1000 = 7776000000)
 
     const banner = document.getElementById('cookie-banner');
     const acceptButton = document.getElementById('cookie-accept');
