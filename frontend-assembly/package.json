@@ -1,10 +1,12 @@
 {
-  "name": "tmp-frontend",
+  "name": "frontend-assembly",
   "version": "1.0.0",
-  "description": "",
+  "description": "CodeMirror build for ETPGRF",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "esbuild src/editor.js --bundle --format=esm --outfile=dist/editor.js --minify",
+    "dev": "esbuild src/editor.js --bundle --format=esm --outfile=../public/static/codemirror/editor.js --minify",
+    "watch": "esbuild src/editor.js --bundle --format=esm --outfile=../public/static/codemirror/editor.js --watch"
   },
   "keywords": [],
   "author": "",

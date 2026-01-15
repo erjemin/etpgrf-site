@@ -3,12 +3,26 @@ version: '3.8'
 services:
   web:
     build: .
-    # Путь к manage.py
-    command: python etpgrf_site/manage.py runserver 0.0.0.0:8000
+    # Команда запуска (Gunicorn) уже в Dockerfile
+    
     volumes:
-      - .:/app
-    ports:
-      - "8000:8000"
+      # Монтируем папку с базой данных
+      - ./data:/app/data
+      # Монтируем статику в именованный том, чтобы Nginx мог её читать
+      - static_volume:/app/public/static_collected
+    
     env_file:
-      # Подключаем файл .env с переменными окружения (секретами)
       - .env
+
+  nginx:
+    image: nginx:1.25-alpine
+    volumes:
+      - ./config/nginx/etpgrf--internal-nginx.conf:/etc/nginx/nginx.conf:ro
+      - static_volume:/app/public/static_collected
+    ports:
+      - "8000:80" # Слушаем 8000 снаружи, проксируем на 80 внутри
+    depends_on:
+      - web
+
+volumes:
+  static_volume:

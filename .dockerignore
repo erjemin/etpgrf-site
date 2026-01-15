@@ -1,0 +1,31 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+
+# Node.js
+node_modules/
+frontend-assembly/node_modules/
+npm-debug.log
+
+# Django
+db.sqlite3
+media/
+staticfiles/
+public/static/static_collected/
+
+# IDE
+.idea/
+.vscode/
+
+# Env
+.env
