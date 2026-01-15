@@ -14,6 +14,12 @@ services:
     
     env_file:
       - .env
+    # Настройка ротации логов (чтобы не забить диск)
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "25m"
+        max-file: "3"
 
   etpgrf-nginx:
     image: nginx:1.25-alpine
@@ -24,6 +30,12 @@ services:
       - "8000:80" # Слушаем 8000 снаружи, проксируем на 80 внутри
     depends_on:
       - etpgrf-backend
+    # Настройка ротации логов
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "25m"
+        max-file: "3"
 
 volumes:
   static_volume:
