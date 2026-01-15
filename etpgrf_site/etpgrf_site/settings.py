@@ -21,6 +21,9 @@ DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
+# CSRF Trusted Origins (важно для работы через Nginx/Docker)
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'http://localhost:8000,http://127.0.0.1:8000').split(',')
+
 
 # Application definition
 
@@ -36,6 +39,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    # 'whitenoise.middleware.WhiteNoiseMiddleware', # Лишнее, так как в контейнере используем Nginx для статики
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -66,11 +70,12 @@ WSGI_APPLICATION = 'etpgrf_site.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
+# print(f"DEBUG: Database path is: {DB_PATH}") # <-- ОТЛАДКА
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db-etpgrf.sqlite3',
+        'NAME': BASE_DIR.parent / 'data' / 'db-etpgrf.sqlite3',
     }
 }
 
@@ -79,10 +84,18 @@ DATABASES = {
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    { 'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator', },
-    { 'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator', },
-    { 'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator', },
-    { 'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator', },
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
 ]
 
 
@@ -91,17 +104,23 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'ru-RU'
 TIME_ZONE = 'Europe/Moscow'
 USE_I18N = True
+
 USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
+
 STATIC_URL = 'static/'
 
 # Поднимаемся на уровень выше от manage.py, чтобы попасть в корень репозитория
 # И кладем всё в папку public
 STATIC_ROOT = BASE_DIR.parent / 'public' / 'static_collected'
 STATICFILES_DIRS = [BASE_DIR.parent / 'public' / 'static']
+
+# Убираем настройки WhiteNoise, так как в продакшене статику будет раздавать Nginx
+# STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 MEDIA_ROOT = BASE_DIR.parent / 'public' / 'media'
 MEDIA_URL = '/media/'
 
