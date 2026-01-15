@@ -28,23 +28,24 @@
 ## 3. API: Класс Typographer
 
 ### Инициализация
+
 ```python
-from etpgrf import Typographer
+from etpgrf_site.etpgrf import Typographer
 
 typo = Typographer(
-    langs='ru',                 # Языки: 'ru', 'en', 'ru+en'
-    mode='mixed',               # Режим вывода: 'unicode', 'mnemonic', 'mixed'
-    process_html=True,          # Обрабатывать HTML-теги (иначе экранирует их)
-    
+    langs='ru',  # Языки: 'ru', 'en', 'ru+en'
+    mode='mixed',  # Режим вывода: 'unicode', 'mnemonic', 'mixed'
+    process_html=True,  # Обрабатывать HTML-теги (иначе экранирует их)
+
     # Модули (можно отключить, передав False)
-    hyphenation=True,           # Переносы слов
-    quotes=True,                # Кавычки
-    unbreakables=True,          # Неразрывные пробелы (предлоги, союзы)
-    layout=True,                # Тире, спецсимволы, инициалы, единицы измерения
-    symbols=True,               # Псевдографика (стрелочки, копирайт)
-    
+    hyphenation=True,  # Переносы слов
+    quotes=True,  # Кавычки
+    unbreakables=True,  # Неразрывные пробелы (предлоги, союзы)
+    layout=True,  # Тире, спецсимволы, инициалы, единицы измерения
+    symbols=True,  # Псевдографика (стрелочки, копирайт)
+
     # Специфические настройки
-    sanitizer='etp',            # Очистка перед обработкой: 'etp' (удалить висячую), 'html' (удалить все теги)
+    sanitizer='etp',  # Очистка перед обработкой: 'etp' (удалить висячую), 'html' (удалить все теги)
     hanging_punctuation='both'  # Висячая пунктуация: 'left', 'right', 'both', None
 )
 ```
@@ -90,10 +91,11 @@ result = typo.process(html)
 ## 6. Пример использования (FastAPI/Flask/Django)
 
 ```python
-from etpgrf import Typographer
+from etpgrf_site.etpgrf import Typographer
 
 # Создаем экземпляр один раз (он stateless, кроме конфигурации)
 typo = Typographer(langs='ru', process_html=True, hanging_punctuation='both')
+
 
 def process_request(text):
     return typo.process(text)

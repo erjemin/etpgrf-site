@@ -6,24 +6,30 @@ ENV PYTHONUNBUFFERED 1
 
 WORKDIR /app
 
-# Установка системных зависимостей (для сборки psycopg2 и работы poetry)
-RUN apt-get update && apt-get install -y \
-    gcc \
-    libpq-dev \
-    && apt-get clean
-
 # Установка Poetry
-RUN pip install poetry
+RUN pip install --no-cache-dir poetry
 
 # Копируем файлы зависимостей
 COPY pyproject.toml poetry.lock* /app/
 
-# Настройка Poetry: не создавать venv (в докере он не нужен) и установка зависимостей
+# Настройка Poetry: не создавать venv и установка зависимостей (без dev-зависимостей для продакшена)
 RUN poetry config virtualenvs.create false \
-    && poetry install --no-interaction --no-ansi --no-root
+    && poetry install --no-interaction --no-ansi --no-root --only main
 
-# Делаем зкркало всего кода проекта
+# Создаем непривилегированного пользователя
+RUN useradd -m -r appuser
+
+# Копируем код проекта
 COPY . /app/
 
-# Порт, который будет слушать контейнер
+# Меняем владельца папки
+RUN chown -R appuser:appuser /app
+
+# Переключаемся на пользователя
+USER appuser
+
+# Порт
 EXPOSE 8000
+
+# Команда запуска через Gunicorn
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "etpgrf_site.wsgi"]

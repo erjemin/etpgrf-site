@@ -9,14 +9,12 @@ package-mode = false
 [tool.poetry.dependencies]
 python = "^3.13"
 django = "^6.0"
-psycopg2-binary = "^2.9.11"
 gunicorn = "^23.0.0"
 python-dotenv = "^1.2.1"
-# Зависимости для локальной библиотеки etpgrf
-# etpgrf = {path = "./etpgrf", develop = true}
-beautifulsoup4 = "^4.12"
-lxml = "^5.1"
-regex = "^2023.12"
+etpgrf = "^0.1.3"
+# lxml = "^5.1" # etpgrf подтянет как зависимость
+# beautifulsoup4 = "^4.12" # etpgrf подтянет как зависимость
+# regex = "^2023.12" # и это тоже
 
 [build-system]
 requires = ["poetry-core"]
