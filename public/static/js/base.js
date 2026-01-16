@@ -35,7 +35,7 @@
 
   // --- КУКИ ---
   const COOKIE_KEY = 'cookie_consent';
-  const TTL_MS = 60 * 1000; // 1 минута для отладки (потом поставить 90 дней: 90 * 24 * 60 * 60 * 1000 = 7776000000)
+  const TTL_MS = 90 * 24 * 60 * 60 * 1000; // 90 дней: 90 * 24 * 60 * 60 * 1000 = 7776000000)
 
   const banner = document.getElementById('cookie-banner');
   const acceptButton = document.getElementById('cookie-accept');
