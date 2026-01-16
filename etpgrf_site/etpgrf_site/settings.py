@@ -70,11 +70,11 @@ WSGI_APPLICATION = 'etpgrf_site.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-# print(f"DEBUG: Database path is: {DB_PATH}") # <-- ОТЛАДКА
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
+        # База данных лежит в папке data в корне проекта
         'NAME': BASE_DIR.parent / 'data' / 'db-etpgrf.sqlite3',
     }
 }
@@ -121,7 +121,8 @@ STATICFILES_DIRS = [BASE_DIR.parent / 'public' / 'static']
 # Убираем настройки WhiteNoise, так как в продакшене статику будет раздавать Nginx
 # STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-MEDIA_ROOT = BASE_DIR.parent / 'public' / 'media'
+# Медиа файлы (загружаемые пользователем)
+MEDIA_ROOT = BASE_DIR.parent / 'media'
 MEDIA_URL = '/media/'
 
 # Default primary key field type

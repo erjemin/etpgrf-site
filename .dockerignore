@@ -19,7 +19,9 @@ npm-debug.log
 
 # Django
 db.sqlite3
+# Исключаем медиа, так как они должны быть внешними (volume)
 media/
+public/media/
 staticfiles/
 public/static/static_collected/
 
@@ -29,3 +31,7 @@ public/static/static_collected/
 
 # Env
 .env
+
+# ETPGRF Custom
+public/static/codemirror/editor.js
+frontend-assembly/dist/

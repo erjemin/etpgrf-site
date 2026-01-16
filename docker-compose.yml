@@ -11,8 +11,8 @@ services:
       - ./data:/app/data
       # Монтируем статику в именованный том, чтобы Nginx мог её читать
       - static_volume:/app/public/static_collected
-      # Монтируем медиа (загружаемые файлы) в локальную папку на хосте
-      - ./media:/app/public/media
+      # Монтируем медиа в /app/media (унификация путей)
+      - ./media:/app/media
     
     env_file:
       - .env
@@ -29,8 +29,8 @@ services:
     volumes:
       - ./config/nginx/etpgrf--internal-nginx.conf:/etc/nginx/nginx.conf:ro
       - static_volume:/app/public/static_collected
-      # Nginx тоже должен видеть медиа, чтобы раздавать их
-      - ./media:/app/public/media
+      # Nginx тоже должен видеть медиа
+      - ./media:/app/media
     ports:
       - "8000:80" # Слушаем 8000 снаружи, проксируем на 80 внутри
     depends_on:
