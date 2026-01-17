@@ -38,8 +38,14 @@
 }
 
 /* Небольшие стили для красоты */
+html, body {
+  height: 100%;
+}
+
 body {
   background-color: var(--bs-body-bg);
+  display: flex;
+  flex-direction: column;
 }
 
 /* Навбар: используем переменную для фона */
@@ -76,6 +82,22 @@ body {
 .navbar-scrolled .logo-img {
   height: 78px; /* Компактная высота */
   margin-left: -5%;
+}
+
+/* Контент растягивается, чтобы прижать футер */
+#content-container {
+  flex: 1 0 auto;
+}
+
+/* Футер */
+.footer {
+  flex-shrink: 0;
+  padding: 1rem 0;
+  margin-top: 2rem;
+  border-top: 1px solid var(--bs-border-color);
+  background-color: var(--bs-navbar-bg);
+  color: var(--bs-navbar-color);
+  font-size: 0.9rem;
 }
 
 /* === ПЕРЕОПРЕДЕЛЕНИЕ КОМПОНЕНТОВ BOOTSTRAP === */

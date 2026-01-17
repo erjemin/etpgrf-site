@@ -38,6 +38,14 @@
   {% block content %}{% endblock %}
 </div>
 
+{# Футер #}
+<footer class="footer mt-auto py-3">
+  <div class="container">
+    <span class="text-muted small">&copy; Sergei Erjemin, 2025&ndash;{% now 'Y' %}</span>
+    <span class="text-muted small float-end">версия 0.1.0</span>
+  </div>
+</footer>
+
 {# Плашка о куках #}
 <div id="cookie-banner" class="fixed-bottom p-4 fs-5" style="display: none;">
   <div class="container d-flex justify-content-between align-items-center">
@@ -52,8 +60,13 @@
   </div>
 </div>
 
-{# Bootstrap JS #}<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-{# Custom JS #}<script src="{% static 'js/base.js' %}" defer></script>
+{# Bootstrap JS #}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+{# Custom JS #}
+<script src="{% static 'js/base.js' %}" defer></script>
+
 {% block scripts %}{% endblock %}
+
 </body>
 </html>
