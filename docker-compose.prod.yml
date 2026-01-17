@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+    # Бэкенд сервис
+  etpgrf-backend:
+    # Используем готовый образ из Gitea Registry
+    image: git.cube2.ru/erjemin/2026-etpgrf-site:latest
+    # Перезапускать всегда (если упал или сервер перезагрузился)
+    restart: always
+    
+    # Метка для Watchtower, чтобы он обновлял только этот контейнер
+    labels:
+      - "com.centurylinklabs.watchtower.scope=etpgrf"
+    
+    # Запускаем collectstatic перед стартом
+    command: sh -c "python etpgrf_site/manage.py collectstatic --noinput && gunicorn --bind 0.0.0.0:8000 --chdir /app/etpgrf_site etpgrf_site.wsgi"
+    
+    volumes:
+      # База данных (папка data должна быть создана на хосте)
+      - ./data:/app/data
+      # Статика (общий том)
+      - static_volume:/app/public/static_collected
+      # Медиа (папка media должна быть создана на хосте)
+      - ./media:/app/public/media
+    
+    env_file:
+      - .env
+      
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Nginx для отдачи статики и проксирования запросов к бэкенду
+  etpgrf-nginx:
+    image: nginx:1.25-alpine
+    restart: always
+    
+    # Метка для Watchtower (хотя nginx:alpine обновляется редко, но пусть будет)
+    labels:
+      - "com.centurylinklabs.watchtower.scope=etpgrf"
+      
+    volumes:
+      # Конфиг берем из репозитория
+      - ./config/nginx/etpgrf--internal-nginx.conf:/etc/nginx/nginx.conf:ro
+      - static_volume:/app/public/static_collected
+      - ./media:/app/public/media
+    
+    # Внешний порт. Если у тебя на хосте уже есть Nginx (прокси), 
+    # то можно пробросить на 127.0.0.1:8000 или использовать внутреннюю сеть.
+    # Но пока оставим так:
+    ports:
+      - "127.0.0.1:8080:80" # Используем 8080, чтобы не конфликтовать с Portainer (8000) или основным Nginx (80)
+    
+    depends_on:
+      - etpgrf-backend
+      
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Сервис для автоматического обновления образов из реестра
+  watchtower:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DOCKER_API_VERSION=1.44
+      # Берем учетные данные из .env файла
+      - REPO_USER=${REPO_USER}
+      - REPO_PASS=${REPO_PASS}
+      - WATCHTOWER_REGISTRY_URL=git.cube2.ru
+      # Ограничиваем область видимости только этим проектом
+      - WATCHTOWER_SCOPE=etpgrf
+      # Если нужно указать реестр явно (обычно watchtower сам понимает из имени образа)
+      # - WATCHTOWER_REGISTRY_URL=git.cube2.ru 
+    command: --interval 300 --cleanup # Проверять каждые 5 минут
+
+
+volumes:
+  static_volume:
