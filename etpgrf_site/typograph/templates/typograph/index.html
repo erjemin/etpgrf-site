@@ -4,14 +4,40 @@
 {% block content %}
   <div class="row">
     <div class="col-md-12">
-      <h3>Типограф</h3>
+
+      {# SEO-текст и описание #}
+      <div class="mb-4">
+        <h1 class="h3 mb-3">Онлайн-типограф для веба</h1>
+        <p>
+          Интернет-типограф <strong>etpgrf</strong>&nbsp;— инструмент для&nbsp;подготовки текста для&nbsp;публикации
+          в&nbsp;вебе. Расстановка неразрывных пробелов перед&nbsp;союзами и&nbsp;предлогами, замена кавычек
+          на&nbsp;«ёлочки» (или&nbsp;“лапки” для&nbsp;англоя&shy;зычного текста), отбивка и&nbsp;компоновка тире,
+          инициалов, единиц измерения, переносы в&nbsp;словах, обработка псевдо&shy;графики и&nbsp;преобра&shy;зование
+          их&nbsp;в&nbsp;спецсимволы, висячая пунктуация. Получите готовый и&nbsp;валидный HTML-код для&nbsp;вставки
+          на&nbsp;ваш сайт или публикации в&nbsp;блог.
+        </p>
+        <p class="text-muted small">
+          Исходный код etpgrf-типографа доступен в&nbsp;нескольких репози&shy;ториях
+          (<a href="https://github.com/erjemin/etpgrf" target="_blank">GitHub</a>,
+          <a href="https://gitverse.ru/erjemin/etpgrf" target="_blank">GitVerse</a>,
+          <a href="https://git.cube2.ru/erjemin/2025-etpgrf" target="_blank">Сube2</a>, и&nbsp;<a
+          href="https://pypi.org/project/etpgrf/" target="_blank">PyPI</a>), распрос&shy;траняется под&nbsp;лицензией
+          <a href="https://opensource.org/licenses/MIT" target="_blank">MIT</a>, может быть установлен
+          локально, на&nbsp;ваш сайт или&nbsp;интегри&shy;рован в&nbsp;ваши проекты как&nbsp;Python-библиотека.
+        </p>
+      </div>
+
       <form hx-post="{% url 'process_text' %}" hx-target="#result-area" hx-swap="innerHTML">
         {% csrf_token %}
 
-        {# ГЛАВНОЕ ПОЛЕ ВВОДА: ТЕКСТ ДЛЯ ТИПОГРАФИРОВАНИЯ #}
+        {# ГЛАВНОЕ ПОЛЕ ВВОДА #}
         <div class="mb-3">
+          <label class="form-label fw-bold small text-muted ls-1">
+            <i class="bi bi-file-text me-1"></i> Исходный текст:
+          </label>
           <textarea class="form-control" name="text" rows="10" placeholder="Вставьте текст сюда..."></textarea>
         </div>
+
         {# Блок настроек (Collapse) #}
         <div class="mb-3">
           <button class="btn btn-outline-secondary btn-sm mb-2" type="button" data-bs-toggle="collapse"
@@ -244,7 +270,9 @@
     </div>
 
     <div class="col-md-12 mt-4">
-      <h3>Результат</h3>
+      <label class="form-label fw-bold small text-muted ls-1">
+        <i class="bi bi-code-slash me-1"></i> Результат обработки:
+      </label>
       <div id="cm-result-wrapper" class="result-box p-0"></div>
       <div id="result-area" style="display: none;"></div>
     </div>
