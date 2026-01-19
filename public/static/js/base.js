@@ -1,115 +1,133 @@
 (function () {
-  const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-  const logoImg = document.getElementById('logo-img');
-  const navbar = document.getElementById('main-navbar');
+    "use strict";
 
-  // --- АВТОМАТИЧЕСКОЕ ПЕРЕКЛЮЧЕНИЕ ТЕМЫ (Dark/Light) ---
-  function updateTheme(e) {
-    const theme = e.matches ? 'dark' : 'light';
-    document.documentElement.setAttribute('data-bs-theme', theme);
-  }
+    // --- АВТОМАТИЧЕСКОЕ ПЕРЕКЛЮЧЕНИЕ ТЕМЫ (Dark/Light) ---
+    const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
-  // --- ОБНОВЛЕНИЕ ЛОГОТИПА ПРИ СКРОЛЛЕ И СМЕНЕ ТЕМЫ ---
-  function updateLogo() {
-    const isDark = darkModeMediaQuery.matches;
-    // Используем getBoundingClientRect для определения позиции контента
-    if (document.getElementById('content-container').getBoundingClientRect().top < 78) {
-      navbar.classList.add('navbar-scrolled');
-      logoImg.src = isDark ? logoImg.dataset.srcDarkCompact : logoImg.dataset.srcLightCompact;
-    } else {
-      navbar.classList.remove('navbar-scrolled');
-      logoImg.src = isDark ? logoImg.dataset.srcDark : logoImg.dataset.srcLight;
+    function updateTheme(e) {
+        const theme = e.matches ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-bs-theme', theme);
+        // При смене темы обновляем и логотип
+        updateLogo();
     }
-  }
 
-  // Инициализация
-  updateTheme(darkModeMediaQuery);
-  updateLogo();
-  document.addEventListener('DOMContentLoaded', updateLogo);
+    // --- ЛОГОТИП И СКРОЛЛ ---
+    function updateLogo() {
+        const logoImg = document.getElementById('logo-img');
+        const navbar = document.getElementById('main-navbar');
+        
+        if (!logoImg || !navbar) return;
 
-  // Слушаем скролл
-  window.addEventListener('scroll', updateLogo);
+        const isDark = darkModeMediaQuery.matches;
+        // Используем window.scrollY для определения прокрутки
+        // Если прокрутили больше 50px, уменьшаем шапку
+        const isScrolled = window.scrollY > 50; 
 
-  // Слушаем смену темы
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateLogo);
+        if (isScrolled) {
+            navbar.classList.add('navbar-scrolled');
+            logoImg.src = isDark ? logoImg.dataset.srcDarkCompact : logoImg.dataset.srcLightCompact;
+        } else {
+            navbar.classList.remove('navbar-scrolled');
+            logoImg.src = isDark ? logoImg.dataset.srcDark : logoImg.dataset.srcLight;
+        }
+    }
 
-  // --- КУКИ ---
-  const COOKIE_KEY = 'cookie_consent';
-  const TTL_MS = 90 * 24 * 60 * 60 * 1000; // 90 дней: 90 * 24 * 60 * 60 * 1000 = 7776000000)
+    // Инициализация темы и логотипа
+    updateTheme(darkModeMediaQuery);
+    darkModeMediaQuery.addEventListener('change', updateTheme);
+    
+    // Инициализация логотипа при загрузке и скролле
+    document.addEventListener('DOMContentLoaded', updateLogo);
+    window.addEventListener('scroll', updateLogo);
 
-  const banner = document.getElementById('cookie-banner');
-  const acceptButton = document.getElementById('cookie-accept');
 
-  // Функция загрузки счетчиков аналитики
-  function loadCounters() {
-    // console.log("Загрузка счетчиков (Яндекс, Google)...");
-    // Код Яндекс.Метрики
-    (function (m, e, t, r, i, k, a) {
-      m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments) };
-      m[i].l = 1 * new Date();
-      for (var j = 0; j < document.scripts.length; j++) { if (document.scripts[j].src === r) { return; } }
-      k = e.createElement(t), a = e.getElementsByTagName(t)[0], k.async = 1, k.src = r, a.parentNode.insertBefore(k, a)
-    })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js?id=106310834', 'ym');
-    ym(106310834, 'init', {
-      ssr: true, webvisor: true, clickmap: true, ecommerce: "dataLayer",
-      accurateTrackBounce: true, trackLinks: true
+    // --- КУКИ И СЧЕТЧИКИ ---
+    const COOKIE_KEY = 'cookie_consent';
+    const TTL_MS = 90 * 24 * 60 * 60 * 1000; // 90 дней
+    const MAILRU_ID = "3734603";
+    const YANDEX_ID = "106310834";
+
+    function loadCounters() {
+        // console.log("Загрузка счетчиков...");
+        try {
+            // Mail.ru
+            var _tmr = window._tmr || (window._tmr = []);
+            _tmr.push({id: MAILRU_ID, type: "pageView", start: (new Date()).getTime()});
+            (function (d, w, id) {
+              if (d.getElementById(id)) return;
+              var ts = d.createElement("script"); ts.type = "text/javascript"; ts.async = true; ts.id = id;
+              ts.src = "https://top-fwz1.mail.ru/js/code.js";
+              var f = d.getElementsByTagName("script")[0]; f.parentNode.insertBefore(ts, f);
+            })(document, window, "topmailru-code");
+            
+            // Яндекс.Метрика
+            (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+            m[i].l=1*new Date();
+            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+            (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+            window.ym(YANDEX_ID, "init", {
+                 clickmap:true,
+                 trackLinks:true,
+                 accurateTrackBounce:true
+            });
+        } catch (e) {
+            console.error("Ошибка загрузки счетчиков:", e);
+        }
+    }
+
+    function checkConsent() {
+        try {
+            const stored = localStorage.getItem(COOKIE_KEY);
+            if (!stored) return false;
+            const data = JSON.parse(stored);
+            const now = Date.now();
+            if (now - data.timestamp > TTL_MS) {
+                localStorage.removeItem(COOKIE_KEY);
+                return false;
+            }
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    // Инициализация куки-баннера
+    document.addEventListener('DOMContentLoaded', function() {
+        const banner = document.getElementById('cookie-banner');
+        const acceptButton = document.getElementById('cookie-accept');
+
+        if (banner && acceptButton) {
+            if (checkConsent()) {
+                loadCounters();
+            } else {
+                banner.style.display = 'block';
+            }
+
+            acceptButton.addEventListener('click', function () {
+                const data = { value: true, timestamp: Date.now() };
+                localStorage.setItem(COOKIE_KEY, JSON.stringify(data));
+                banner.style.display = 'none';
+                loadCounters();
+            });
+        }
     });
-
-    // Код Google Analytics
-    // window.dataLayer = window.dataLayer || [];
-    // function gtag(){dataLayer.push(arguments);}
-    // gtag('js', new Date());
-    // gtag('config', 'G-XXXXXXXXXX');
-
-    // Код Top.Mail.Ru
-    var _tmr = window._tmr || (window._tmr = []);
-    _tmr.push({id: "3734603", type: "pageView", start: (new Date()).getTime()});
-    (function (d, w, id) {
-      if (d.getElementById(id)) return;
-      var ts = d.createElement("script");
-      ts.type = "text/javascript"; ts.async = true; ts.id = id; ts.src = "https://top-fwz1.mail.ru/js/code.js";
-      var f = function () {
-        var s = d.getElementsByTagName("script")[0]; s.parentNode.insertBefore(ts, s);
-      };
-      if (w.opera == "[object Opera]") {
-        d.addEventListener("DOMContentLoaded", f, false);
-      } else { f(); }
-    })(document, window, "tmr-code");
-    // <noscript><div><img src="https://top-fwz1.mail.ru/counter?id=3734603;js=na" style="position:absolute;left:-9999px;" alt="Top.Mail.Ru" /></div></noscript>
-    // alert("Отладка. Счетчики загружены (здесь должен быть реальный код счетчиков).");
-  }
-
-  function checkConsent() {
-    const stored = localStorage.getItem(COOKIE_KEY);
-    if (!stored) return false;
-
-    try {
-      const data = JSON.parse(stored);
-      const now = Date.now();
-      // Проверяем, не истек ли срок
-      if (now - data.timestamp > TTL_MS) {
-        localStorage.removeItem(COOKIE_KEY);
-        return false;
-      }
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  if (checkConsent()) {
-    loadCounters();
-  } else {
-    banner.style.display = 'block';
-  }
-
-  acceptButton.addEventListener('click', function () {
-    const data = {
-      value: true,
-      timestamp: Date.now()
+    
+    // Глобальная функция для отправки целей
+    window.sendGoal = function(goalName) {
+        if (!checkConsent()) return;
+        // console.log("Sending goal:", goalName);
+        
+        try {
+            if (window._tmr) {
+                window._tmr.push({ id: MAILRU_ID, type: "reachGoal", goal: goalName, value: 1 });
+            }
+            if (typeof window.ym === 'function') {
+                window.ym(YANDEX_ID, 'reachGoal', goalName);
+            }
+        } catch (e) {
+            console.error("Ошибка отправки цели:", e);
+        }
     };
-    localStorage.setItem(COOKIE_KEY, JSON.stringify(data));
-    banner.style.display = 'none';
-    loadCounters();
-  });
 })();

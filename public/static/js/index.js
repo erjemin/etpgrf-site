@@ -19,9 +19,12 @@ import {
 } from "../codemirror/editor.js";
 
 const resultWrapper = document.getElementById('cm-result-wrapper');
+const btnCopy = document.getElementById('btn-copy');
+const sourceTextarea = document.querySelector('textarea[name="text"]');
+
+// console.log("Index.js loaded. btnCopy:", !!btnCopy, "sourceTextarea:", !!sourceTextarea); // DEBUG
 
 const themeCompartment = new Compartment();
-
 function getTheme() {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? oneDark : [];
 }
@@ -47,8 +50,10 @@ const charNames = {
   0x2063: "Invisible Comma (невидимая запятая для семантической разметки математических выражений — &InvisibleComma;)",
 };
 
+const PLACEHOLDER_TEXT = "Здесь появится результат...";
+
 const resultState = EditorState.create({
-  doc: "Здесь появится результат...",
+  doc: PLACEHOLDER_TEXT,
   extensions: [
     lineNumbers(),
     highlightActiveLineGutter(),
@@ -83,17 +88,77 @@ const resultView = new EditorView({
   parent: resultWrapper
 });
 
+// Обработка ответа от сервера (HTMX)
 document.body.addEventListener('htmx:afterSwap', function (evt) {
+  // console.log("HTMX afterSwap event:", evt.detail.target.id); // DEBUG
   if (evt.detail.target.id === 'result-area') {
     const newContent = evt.detail.xhr.response;
+    
+    // Обновляем редактор
     resultView.dispatch({
       changes: {from: 0, to: resultView.state.doc.length, insert: newContent}
     });
+    
+    // Показываем кнопку копирования
+    if (btnCopy) {
+        // console.log("Showing copy button"); // DEBUG
+        btnCopy.classList.remove('d-none');
+    }
   }
 });
+
+// Скрываем кнопку и сбрасываем редактор при изменении исходного текста
+if (sourceTextarea) {
+  sourceTextarea.addEventListener('input', () => {
+    if (btnCopy) {
+      btnCopy.classList.add('d-none');
+    }
+    // Сбрасываем редактор на плейсхолдер
+    if (resultView.state.doc.toString() !== PLACEHOLDER_TEXT) {
+        resultView.dispatch({
+          changes: {from: 0, to: resultView.state.doc.length, insert: PLACEHOLDER_TEXT}
+        });
+    }
+  });
+}
 
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
   resultView.dispatch({
     effects: themeCompartment.reconfigure(getTheme())
   });
 });
+
+// --- КОПИРОВАНИЕ В БУФЕР ---
+if (btnCopy) {
+  btnCopy.addEventListener('click', async () => {
+    const text = resultView.state.doc.toString();
+    // console.log("Copying text:", text.substring(0, 20) + "..."); // DEBUG
+    
+    // Отправляем цель в метрику
+    if (typeof window.sendGoal === 'function') {
+        window.sendGoal('etpgrf-copy-pressed');
+    }
+    
+    try {
+      await navigator.clipboard.writeText(text);
+      
+      // Визуальное подтверждение
+      const originalHtml = btnCopy.innerHTML;
+      const originalClass = btnCopy.className; 
+      
+      btnCopy.innerHTML = '<i class="bi bi-check-lg me-1"></i> Скопировано!';
+      btnCopy.classList.remove('btn-outline-secondary', 'btn-outline-primary');
+      btnCopy.classList.add('btn-success');
+      
+      setTimeout(() => {
+        btnCopy.innerHTML = originalHtml;
+        btnCopy.className = originalClass;
+        btnCopy.classList.remove('d-none'); 
+      }, 2000);
+      
+    } catch (err) {
+      console.error('Ошибка копирования:', err);
+      alert('Не удалось скопировать текст.');
+    }
+  });
+}

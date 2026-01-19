@@ -14,7 +14,7 @@
           на&nbsp;«ёлочки» (или&nbsp;“лапки” для&nbsp;англоя&shy;зычного текста), отбивка и&nbsp;компоновка тире,
           инициалов, единиц измерения, переносы в&nbsp;словах, обработка псевдо&shy;графики и&nbsp;преобра&shy;зование
           их&nbsp;в&nbsp;спецсимволы, висячая пунктуация. Получите готовый и&nbsp;валидный HTML-код для&nbsp;вставки
-          на&nbsp;ваш сайт или публикации в&nbsp;блог.
+          на&nbsp;ваш сайт или публикацию в&nbsp;блог.
         </p>
         <p class="text-muted small">
           Исходный код etpgrf-типографа доступен в&nbsp;нескольких репози&shy;ториях
@@ -265,14 +265,19 @@
         </div>
 
         <!-- Кнопка отправки -->
-        <button type="submit" class="btn btn-primary btn-lg w-100">Типографировать</button>
+        <button type="submit" class="btn btn-primary btn-lg w-100" onclick="sendGoal('etpgrf-btn-pressed')">Типографировать</button>
       </form>
     </div>
 
     <div class="col-md-12 mt-4">
-      <label class="form-label fw-bold small text-muted ls-1">
-        <i class="bi bi-code-slash me-1"></i> Результат обработки:
-      </label>
+      <div class="d-flex justify-content-between align-items-end mb-2">
+        <label class="form-label fw-bold small text-muted ls-1 mb-0">
+          <i class="bi bi-code-slash me-1"></i> Результат обработки:
+        </label>
+        <button id="btn-copy" class="btn btn-sm btn-outline-secondary d-none" title="Копировать в буфер обмена">
+          <i class="bi bi-clipboard me-1"></i> Копировать в&nbsp;буфер обмена
+        </button>
+      </div>
       <div id="cm-result-wrapper" class="result-box p-0"></div>
       <div id="result-area" style="display: none;"></div>
     </div>
