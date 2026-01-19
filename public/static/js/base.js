@@ -40,6 +40,7 @@
   const banner = document.getElementById('cookie-banner');
   const acceptButton = document.getElementById('cookie-accept');
 
+  // Функция загрузки счетчиков аналитики
   function loadCounters() {
     // console.log("Загрузка счетчиков (Яндекс, Google)...");
     // Код Яндекс.Метрики
