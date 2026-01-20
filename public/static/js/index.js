@@ -22,8 +22,6 @@ const resultWrapper = document.getElementById('cm-result-wrapper');
 const btnCopy = document.getElementById('btn-copy');
 const sourceTextarea = document.querySelector('textarea[name="text"]');
 
-// console.log("Index.js loaded. btnCopy:", !!btnCopy, "sourceTextarea:", !!sourceTextarea); // DEBUG
-
 const themeCompartment = new Compartment();
 function getTheme() {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? oneDark : [];
@@ -90,7 +88,6 @@ const resultView = new EditorView({
 
 // Обработка ответа от сервера (HTMX)
 document.body.addEventListener('htmx:afterSwap', function (evt) {
-  // console.log("HTMX afterSwap event:", evt.detail.target.id); // DEBUG
   if (evt.detail.target.id === 'result-area') {
     const newContent = evt.detail.xhr.response;
     
@@ -101,7 +98,6 @@ document.body.addEventListener('htmx:afterSwap', function (evt) {
     
     // Показываем кнопку копирования
     if (btnCopy) {
-        // console.log("Showing copy button"); // DEBUG
         btnCopy.classList.remove('d-none');
     }
   }
@@ -132,12 +128,23 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () 
 if (btnCopy) {
   btnCopy.addEventListener('click', async () => {
     const text = resultView.state.doc.toString();
-    // console.log("Copying text:", text.substring(0, 20) + "..."); // DEBUG
     
     // Отправляем цель в метрику
     if (typeof window.sendGoal === 'function') {
         window.sendGoal('etpgrf-copy-pressed');
     }
+    
+    // Отправляем статистику на сервер
+    const ch_count_copy2clipboard = new FormData();
+    ch_count_copy2clipboard.append('char_count', text.length);
+    
+    fetch('/stats/track-copy/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: ch_count_copy2clipboard
+    }).catch(err => console.error("Ошибка отправки статистики:", err));
     
     try {
       await navigator.clipboard.writeText(text);

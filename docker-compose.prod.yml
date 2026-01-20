@@ -12,8 +12,8 @@ services:
     labels:
       - "com.centurylinklabs.watchtower.scope=etpgrf"
     
-    # Запускаем collectstatic перед стартом
-    command: sh -c "python etpgrf_site/manage.py collectstatic --noinput && gunicorn --bind 0.0.0.0:8000 --chdir /app/etpgrf_site etpgrf_site.wsgi"
+    # Запускаем миграции, потом collectstatic, потом сервер
+    command: sh -c "python etpgrf_site/manage.py migrate --noinput && python etpgrf_site/manage.py collectstatic --noinput && gunicorn --bind 0.0.0.0:8000 --chdir /app/etpgrf_site etpgrf_site.wsgi"
     
     volumes:
       # База данных (папка data должна быть создана на хосте)
@@ -72,7 +72,6 @@ services:
       # Берем учетные данные из .env файла
       - REPO_USER=${REPO_USER}
       - REPO_PASS=${REPO_PASS}
-      - WATCHTOWER_REGISTRY_URL=git.cube2.ru
       # Ограничиваем область видимости только этим проектом
       - WATCHTOWER_SCOPE=etpgrf
       # Если нужно указать реестр явно (обычно watchtower сам понимает из имени образа)
