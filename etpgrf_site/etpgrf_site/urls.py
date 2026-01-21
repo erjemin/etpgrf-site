@@ -7,11 +7,6 @@ from django.contrib.staticfiles.storage import staticfiles_storage
 
 urlpatterns = [
     path(route='adm-in/', view=admin.site.urls),
-    path(
-        route="favicon.ico",
-        view=RedirectView.as_view(url=staticfiles_storage.url("favicon.ico")),
-        name="favicon",
-    ),
     path(route='', view=include('typograph.urls')),
 ]
 
