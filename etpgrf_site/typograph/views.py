@@ -7,6 +7,7 @@ from etpgrf.typograph import Typographer
 from etpgrf.layout import LayoutProcessor
 from etpgrf.hyphenation import Hyphenator
 from .models import DailyStat
+import time
 
 
 def index(request):
@@ -131,39 +132,71 @@ def process_text(request):
             'sanitizer': sanitizer_option,
         }
 
-        # --- ДИАГНОСТИКА ---
-        # print("Typographer options:", options)
-        # -------------------
-
-        # Создаем экземпляр типографа
+        # Обрабатываем текст с замером времени
+        start_time = time.perf_counter()
+        # Создаем экземпляр типографа и передаем настройки в него
         typo = Typographer(**options)
-
-        # Обрабатываем текст
+        # Обрабатываем текст в Типографе
         processed = typo.process(text)
+        end_time = time.perf_counter()
+        
+        duration_ms = (end_time - start_time) * 1000
         
         # --- СБОР СТАТИСТИКИ ---
         try:
             today = timezone.now().date()
             stat, created = DailyStat.objects.get_or_create(date=today)
             
-            # Обновляем атомарные поля
+            # 1. Атомарное обновление счетчиков
             DailyStat.objects.filter(pk=stat.pk).update(
                 process_requests=F('process_requests') + 1,
                 chars_in=F('chars_in') + len(text),
                 chars_out=F('chars_out') + len(processed),
-                # total_processing_time_ms мы пока не считаем, чтобы не усложнять
+                total_processing_time_ms=F('total_processing_time_ms') + duration_ms
             )
             
-            # JSON с настройками пока не пишем, чтобы не усложнять (как договаривались)
+            # 2. Обновление JSON с настройками (не атомарно, а значит при высокой нагрузке возможны потери данных)
+            # Перечитываем объект, чтобы получить актуальный JSON
+            stat.refresh_from_db()
+            current_stats = stat.settings_stats
+            
+            def inc_stat(key, value):
+                k = f"{key}:{value}"
+                current_stats[k] = current_stats.get(k, 0) + 1
+
+            # Собираем статистику по опциям
+            # langs может быть строкой или списком
+            lang_val = options['langs']
+            if isinstance(lang_val, list):
+                lang_val = lang_val[0] if lang_val else 'ru'
+            inc_stat('lang', lang_val)
+            
+            inc_stat('mode', options['mode'])
+            
+            if options['quotes']: inc_stat('feature', 'quotes')
+            if layout_enabled: inc_stat('feature', 'layout')
+            if options['unbreakables']: inc_stat('feature', 'unbreakables')
+            if hyphenation_enabled: inc_stat('feature', 'hyphenation')
+            if options['symbols']: inc_stat('feature', 'symbols')
+            if hanging_enabled: inc_stat('feature', 'hanging')
+            if sanitizer_enabled: inc_stat('feature', 'sanitizer')
+            
+            stat.settings_stats = current_stats
+            stat.save(update_fields=['settings_stats'])
             
         except Exception as e:
             print(f"Stat error: {e}")
         # -----------------------
 
-        return render(
+        response = render(
             request,
             template_name='typograph/result_fragment.html',
             context={'processed_text': processed}
         )
+        
+        # Добавляем заголовок с временем обработки (с запятой вместо точки)
+        response['X-Processing-Time'] = f"{duration_ms:.4f}".replace('.', ',')
+        
+        return response
 
     return HttpResponse(status=405)

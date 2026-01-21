@@ -21,6 +21,7 @@ import {
 const resultWrapper = document.getElementById('cm-result-wrapper');
 const btnCopy = document.getElementById('btn-copy');
 const sourceTextarea = document.querySelector('textarea[name="text"]');
+const processingTimeSpan = document.getElementById('processing-time');
 
 const themeCompartment = new Compartment();
 function getTheme() {
@@ -100,6 +101,17 @@ document.body.addEventListener('htmx:afterSwap', function (evt) {
     if (btnCopy) {
         btnCopy.classList.remove('d-none');
     }
+    
+    // Показываем время обработки из заголовка
+    if (processingTimeSpan) {
+        const time = evt.detail.xhr.getResponseHeader('X-Processing-Time');
+        if (time) {
+            processingTimeSpan.innerHTML = `<i class="bi bi-cpu me-1"></i>${time}&thinsp;ms`;
+            processingTimeSpan.style.display = 'inline';
+        } else {
+            processingTimeSpan.style.display = 'none';
+        }
+    }
   }
 });
 
@@ -108,6 +120,9 @@ if (sourceTextarea) {
   sourceTextarea.addEventListener('input', () => {
     if (btnCopy) {
       btnCopy.classList.add('d-none');
+    }
+    if (processingTimeSpan) {
+        processingTimeSpan.innerText = '';
     }
     // Сбрасываем редактор на плейсхолдер
     if (resultView.state.doc.toString() !== PLACEHOLDER_TEXT) {
