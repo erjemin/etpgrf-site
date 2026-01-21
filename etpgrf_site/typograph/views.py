@@ -23,35 +23,28 @@ def index(request):
 
 def get_stats_summary(request):
     """Возвращает сводную статистику."""
-    # Убираем try...except для отладки
-    stats = DailyStat.objects.aggregate(
-        views=Sum('index_views'),
-        processed=Sum('process_requests'),
-        copied=Sum('copy_count'),
-        chars_in=Sum('chars_in'),
-        chars_out=Sum('chars_out'),
-        chars_copied=Sum('chars_copied')
-    )
-    # print("Aggregated stats:", stats) # DEBUG
-    
-    # Функция для форматирования чисел с сокращениями (M, k)
-    def format_large_number(num):
-        if num > 1_000_000:
-            return f"{num / 1_000_000:.3f}M".replace(".", ",")
-        elif num > 1_000:
-            return f"{num / 1_000:.2f}k".replace(".", ",")
-        return str(num)
+    try:
+        stats = DailyStat.objects.aggregate(
+            views=Sum('index_views'),
+            processed=Sum('process_requests'),
+            copied=Sum('copy_count'),
+            chars_in=Sum('chars_in'),
+            chars_out=Sum('chars_out'),
+            chars_copied=Sum('chars_copied')
+        )
+        
+        context = {
+            'views': stats['views'] or 0,
+            'processed': stats['processed'] or 0,
+            'copied': stats['copied'] or 0,
+            'chars_in': stats['chars_in'] or 0,
+            'chars_out': stats['chars_out'] or 0,
+            'chars_copied': stats['chars_copied'] or 0,
+        }
 
-    context = {
-        'views': f"{(stats['views'] or 0):,}".replace(",", "&thinsp;"),
-        'processed': f"{(stats['processed'] or 0):,}".replace(",", "&thinsp;"),
-        'copied': f"{(stats['copied'] or 0):,}".replace(",", "&thinsp;"),
-        'chars_in': format_large_number(stats['chars_in'] or 0),
-        'chars_out': format_large_number(stats['chars_out'] or 0),
-        'chars_copied': format_large_number(stats['chars_copied'] or 0),
-    }
-
-    return render(request, 'typograph/stats_summary.html', context)
+        return render(request, 'typograph/stats_summary.html', context)
+    except Exception:
+        return HttpResponse("...")
 
 
 @require_POST

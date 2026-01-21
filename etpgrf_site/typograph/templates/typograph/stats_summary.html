@@ -1,12 +1,16 @@
-<span class="me-3" title="Просмотров">
-  <i class="bi bi-eye me-1"></i>{{ views }}
-</span>
-<span class="me-3 nowrap" title="На вход обработано текстов/символов">
-  <i class="bi bi-box-arrow-in-right me-1"></i>{{ processed }}/{{ chars_in }}
-</span>
-<span class="me-3" title="На выход получено символов">
-  <i class="bi bi-box-arrow-right me-1"></i>{{ chars_out }}
-</span>
-<span class="nowrap" title="Скопировано в буфер текстов/символов">
-  <i class="bi bi-clipboard-check me-1"></i>{{ copied }}/{{ chars_copied }}
-</span>
+{% load typograph_extras %}
+<nobr class="ms-3 float-end" title="Скопировано в буфер текстов/символов">
+    <i class="bi bi-clipboard-check me-1"></i>{{ copied|humanize_num }} / {{ chars_copied|humanize_num }}
+</nobr>
+<nobr class="ms-3 float-end" title="На выход получено символов">
+    <i class="bi bi-box-arrow-right me-1"></i>{{ chars_out|humanize_num }}
+</nobr>
+<nobr class="ms-3 float-end" title="На вход обработано текстов/символов">
+    <i class="bi bi-box-arrow-in-right me-1"></i>{{ processed|humanize_num }} / {{ chars_in|humanize_num }}
+</nobr>
+<nobr class="ms-3 float-end"  title="Просмотров">
+    <i class="bi bi-eye me-1"></i>{{ views|humanize_num }}
+</nobr>
+
+
+
