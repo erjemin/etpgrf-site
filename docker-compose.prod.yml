@@ -7,14 +7,43 @@ services:
     image: git.cube2.ru/erjemin/2026-etpgrf-site:latest
     # Перезапускать всегда (если упал или сервер перезагрузился)
     restart: always
-    
     # Метка для Watchtower, чтобы он обновлял только этот контейнер
     labels:
       - "com.centurylinklabs.watchtower.scope=etpgrf"
-    
-    # Запускаем миграции, потом collectstatic, потом сервер
-    command: sh -c "python etpgrf_site/manage.py migrate --noinput && python etpgrf_site/manage.py collectstatic --noinput && gunicorn --bind 0.0.0.0:8000 --chdir /app/etpgrf_site etpgrf_site.wsgi"
-    
+
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # При первом старте, временно запускаем как root, чтобы контейнер мог создать файл БД в хостовом томе
+    # ser: "0:0"
+    # command: >
+    #   sh -c "mkdir -p /app/data &&
+    #          chown -R 1000:1000 /app/data 2>/dev/null || true &&
+    #          chmod -R 0775 /app/data 2>/dev/null || true &&
+    #          python etpgrf_site/manage.py migrate --noinput &&
+    #          python etpgrf_site/manage.py collectstatic --noinput &&
+    #          gunicorn --bind 0.0.0.0:8000 --chdir /app/etpgrf_site etpgrf_site.wsgi"
+    #
+    # После первого запуска, на хосте убедиться что файл БД создан. Возвращаем docker-compose.yml (это тот фал который
+    # вы сейчас читаете). После останавливаем контейнеры:  и сменить владельца папки data. Для этого останавливаем контейнеры:
+    #   `sudo docker-compose -f stop`
+    # возвращаем docker-compose.ym в исходный вид (этот файл). И снова запускаем:
+    #   `sudo docker-compose -f docker-compose.prod.yml up -d`
+    # Теперь нам нужно узнать UID/GID пользователя внутри контейнера, выполнив на хосте команду:
+    #   `sudo docker exec -it etpgrf-site-etpgrf-backend-1 id`
+    # Увидим что-то типа `uid=999(appuser) gid=999(appuser) groups=999(appuser)`. После этого сменить владельца папки
+    # data на хосте:
+    #   `sudo chown -R 999:999 ./data`
+    # С папкой media можно сделать то же самое, если там будут проблемы с правами.
+    #   `sudo chown -R 999:999 ./media`
+    #
+
+
+    # А обычно запускаем в безопасном режиме. Просто миграции, потом collectstatic, потом сервер
+    command: >
+      sh -c "python etpgrf_site/manage.py migrate --noinput &&
+             python etpgrf_site/manage.py collectstatic --noinput &&
+             gunicorn --bind 0.0.0.0:8000 --chdir /app/etpgrf_site etpgrf_site.wsgi"
+    # command: sh -c "python etpgrf_site/manage.py collectstatic --noinput && gunicorn --bind 0.0.0.0:8000 --chdir /app/etpgrf_site etpgrf_site.wsgi"
+
     volumes:
       # База данных (папка data должна быть создана на хосте)
       - ./data:/app/data
@@ -22,10 +51,10 @@ services:
       - static_volume:/app/public/static_collected
       # Медиа (папка media должна быть создана на хосте)
       - ./media:/app/public/media
-    
+
     env_file:
       - .env
-      
+
     logging:
       driver: "json-file"
       options:
@@ -36,26 +65,21 @@ services:
   etpgrf-nginx:
     image: nginx:1.25-alpine
     restart: always
-    
-    # Метка для Watchtower (хотя nginx:alpine обновляется редко, но пусть будет)
-    labels:
-      - "com.centurylinklabs.watchtower.scope=etpgrf"
-      
     volumes:
       # Конфиг берем из репозитория
       - ./config/nginx/etpgrf--internal-nginx.conf:/etc/nginx/nginx.conf:ro
       - static_volume:/app/public/static_collected
       - ./media:/app/public/media
-    
-    # Внешний порт. Если у тебя на хосте уже есть Nginx (прокси), 
+
+    # Внешний порт. Если у тебя на хосте уже есть Nginx (прокси),
     # то можно пробросить на 127.0.0.1:8000 или использовать внутреннюю сеть.
     # Но пока оставим так:
     ports:
       - "127.0.0.1:8080:80" # Используем 8080, чтобы не конфликтовать с Portainer (8000) или основным Nginx (80)
-    
+
     depends_on:
       - etpgrf-backend
-      
+
     logging:
       driver: "json-file"
       options:
@@ -75,8 +99,8 @@ services:
       # Ограничиваем область видимости только этим проектом
       - WATCHTOWER_SCOPE=etpgrf
       # Если нужно указать реестр явно (обычно watchtower сам понимает из имени образа)
-      # - WATCHTOWER_REGISTRY_URL=git.cube2.ru 
-    command: --interval 300 --cleanup # Проверять каждые 5 минут
+      # - WATCHTOWER_REGISTRY_URL=git.cube2.ru
+    command: --interval 1800 --cleanup # Проверять каждые 30 минут
 
 
 volumes:
