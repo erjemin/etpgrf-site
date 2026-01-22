@@ -1,3 +1,11 @@
+# Этот файл предназначен для продакшен окружения. Его необходимо скопировать на продакшн-сервер под именем
+# `docker-compose.yml` в корневой каталог проекта.
+# Перед запуском убедитесь, что в корне проекта есть файл `.env` с необходимыми переменными окружения.
+# Также необходимо создать папки `data` и `media` в корне проекта и убедиться, что у пользователя, под которым
+# запускается docker-контейнер, есть права на запись в эти папки.
+# Для первого запуска backend-контейнера, возможно, потребуется временно изменить владельца папки `data` на root
+# и раскомментировать соответствующие строки в секции etpgrf-backend (смотри комментарии в коде ниже).
+
 version: '3.8'
 
 services:
@@ -20,6 +28,7 @@ services:
     #          chmod -R 0775 /app/data 2>/dev/null || true &&
     #          python etpgrf_site/manage.py migrate --noinput &&
     #          python etpgrf_site/manage.py collectstatic --noinput &&
+    #          cp /app/etpgrf_site/typograph/templates/500.html /app/public/static_collected/50x.html &&
     #          gunicorn --bind 0.0.0.0:8000 --chdir /app/etpgrf_site etpgrf_site.wsgi"
     #
     # После первого запуска, на хосте убедиться что файл БД создан. Возвращаем docker-compose.yml (это тот фал который
@@ -37,12 +46,12 @@ services:
     #
 
 
-    # А обычно запускаем в безопасном режиме. Просто миграции, потом collectstatic, потом сервер
+    # А обычно запускаем в безопасном режиме: миграции, потом collectstatic, потом копируем 500.html для Nginx, потом сервер
     command: >
       sh -c "python etpgrf_site/manage.py migrate --noinput &&
              python etpgrf_site/manage.py collectstatic --noinput &&
+             cp /app/etpgrf_site/typograph/templates/500.html /app/public/static_collected/500.html &&
              gunicorn --bind 0.0.0.0:8000 --chdir /app/etpgrf_site etpgrf_site.wsgi"
-    # command: sh -c "python etpgrf_site/manage.py collectstatic --noinput && gunicorn --bind 0.0.0.0:8000 --chdir /app/etpgrf_site etpgrf_site.wsgi"
 
     volumes:
       # База данных (папка data должна быть создана на хосте)

@@ -1,5 +1,4 @@
-{% load typograph_extras %}
-<nobr class="ms-3 float-end" title="Скопировано в буфер текстов/символов">
+{% load typograph_extras %}<nobr class="ms-3 float-end" title="Скопировано в буфер текстов/символов">
     <i class="bi bi-clipboard-check me-1"></i>{{ copied|humanize_num }} / {{ chars_copied|humanize_num }}
 </nobr>
 <nobr class="ms-3 float-end" title="На выход получено символов">
@@ -11,6 +10,3 @@
 <nobr class="ms-3 float-end"  title="Просмотров">
     <i class="bi bi-eye me-1"></i>{{ views|humanize_num }}
 </nobr>
-
-
-

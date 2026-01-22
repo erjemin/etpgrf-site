@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ошибка сервера 503 — ETPGRF</title>
+  <style>
+    body {
+      background-color: #f8f8f2;
+      color: #1f1f19;
+      display: flex;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #151111;
+        color: #eceff1;
+      }
+    }
+
+    h1 {
+      font-size: 3.5rem;
+      font-weight: lighter;
+      margin-bottom: 1rem;
+      color: #00ccff99;
+      margin-left: 28px;
+    }
+
+    p {
+      font-size: 1.5rem;
+      margin-bottom: 2rem;
+      margin-left: 28px;
+      opacity: 0.8;
+      line-height: 150%;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      margin-top: 1.5rem;
+      font-size: 1rem;
+      font-weight: 500;
+      text-decoration: none;
+      color: #151111;
+      background-color: transparent;
+      border: #4a4a44 dashed 1px;
+      border-radius: 0.375rem;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      h1 {
+        color: #00ccff99;
+      }
+
+      .btn {
+        border: #b0bec5 dashed 1px;
+        color: #fff;
+      }
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+<div style="top: 20%; position: relative;">
+  <a href="/">
+    <picture>
+      <source srcset="/static/svg/logo-etpgrf-site-dark.svg" media="(prefers-color-scheme: dark)">
+      <img src="/static/svg/logo-etpgrf-site-light.svg"
+           alt="ETPGRF — единая типографика для веба" width="717" height="151">
+    </picture>
+  </a>
+  <h1>503: Слишком много запросов</h1>
+  <p>
+    Сервер временно перегружен запросами или&nbsp;находится на&nbsp;техническом обслуживании.<br/>
+    Пожалуйста, попробуйте позже.<br/>
+    <a class="btn" href="/">На&nbsp;главную</a>
+  </p>
+</div>
+</body>
+</html>
