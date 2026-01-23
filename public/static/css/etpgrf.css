@@ -48,40 +48,53 @@ body {
   flex-direction: column;
 }
 
-/* Навбар: используем переменную для фона */
-.navbar {
+#main-navbar {
+  z-index: 1000;
   background-color: var(--bs-navbar-bg) !important;
   border-bottom: 1px solid var(--bs-border-color);
-  padding: 0; /* Убираем отступы у навбара */
+  padding: 0;
   position: sticky;
   top: 0;
-  height: 105px;
-  z-index: 1000;
   backdrop-filter: blur(4px); /* Эффект размытия */
   box-shadow: 0 -25px 30px 15px var(--bs-border-color);
+  /* transition: height 0.3s ease, background-color 0.3s ease; /* Анимация высоты */
 }
 
-.navbar-brand {
+#main-navbar > .container {
+  background: no-repeat left;
+  background-size: contain;
+}
+
+#main-navbar > .container.logo-big {
+  background-image: var(--bg-image-text);
+  transition: .4s ease;
+}
+
+#main-navbar > .container:not(.logo-big) {
+  background-image: none;
+  transition: .4s ease;
+}
+
+#main-navbar > #logo > .navbar-brand {
   padding: 0; /* Убираем отступы у бренда */
+  display: block; /* Блок, чтобы работали размеры */
+  background: no-repeat left;
+  background-size: contain;
+  margin-left: -1.5%;
 }
 
-/* Стили для скролла */
-.navbar-scrolled {
-  height: 55px;
+#main-navbar > #logo.logo-big > .navbar-brand {
+  height: 105px;
+  width: 500px;
+  opacity: 1;
+  transition: .4s ease;
 }
 
-/* Логотип */
-.logo-img {
-  width: 70%;
-  margin-left: -3%; /* Немного сдвигаем влево, чтобы буквы ETPGRF логотипа выровнять */
-  height: 151px; /* Ограничиваем высоту */
-  object-fit: contain; /* Вписываем, сохраняя пропорции */
-}
-
-/* Уменьшаем логотип при скролле */
-.navbar-scrolled .logo-img {
-  height: 78px; /* Компактная высота */
-  margin-left: -5%;
+#main-navbar > #logo:not(.logo-big) > .navbar-brand {
+  height: 60px;
+  width: 285px;
+  transition: .4s ease;
+  opacity: 0;
 }
 
 /* Контент растягивается, чтобы прижать футер */

@@ -7,39 +7,30 @@
     function updateTheme(e) {
         const theme = e.matches ? 'dark' : 'light';
         document.documentElement.setAttribute('data-bs-theme', theme);
-        // При смене темы обновляем и логотип
-        updateLogo();
     }
+
+    // Установить при загрузке
+    updateTheme(darkModeMediaQuery);
+    // Слушать изменения
+    darkModeMediaQuery.addEventListener('change', updateTheme);
 
     // --- ЛОГОТИП И СКРОЛЛ ---
     function updateLogo() {
-        const logoImg = document.getElementById('logo-img');
-        const navbar = document.getElementById('main-navbar');
-        
-        if (!logoImg || !navbar) return;
+        if (!navbar) return;
+        const navbar = document.getElementById('logo');
+        const scrollY = window.scrollY;
 
-        const isDark = darkModeMediaQuery.matches;
-        // Используем window.scrollY для определения прокрутки
-        // Если прокрутили больше 50px, уменьшаем шапку
-        const isScrolled = window.scrollY > 50; 
-
-        if (isScrolled) {
-            navbar.classList.add('navbar-scrolled');
-            logoImg.src = isDark ? logoImg.dataset.srcDarkCompact : logoImg.dataset.srcLightCompact;
-        } else {
-            navbar.classList.remove('navbar-scrolled');
-            logoImg.src = isDark ? logoImg.dataset.srcDark : logoImg.dataset.srcLight;
+        // Гистерезис: включаем после 60px, выключаем до 10px
+        // Это предотвращает дребезг на границе
+        if (scrollY > 60) {
+            navbar.classList.remove('logo-big');
+        } else if (scrollY < 10) {
+            navbar.classList.add('logo-big');
         }
     }
 
-    // Инициализация темы и логотипа
-    updateTheme(darkModeMediaQuery);
-    darkModeMediaQuery.addEventListener('change', updateTheme);
-    
     // Инициализация логотипа при загрузке и скролле
-    document.addEventListener('DOMContentLoaded', updateLogo);
-    window.addEventListener('scroll', updateLogo);
-
+    window.addEventListener('scroll', updateLogo, { passive: true });
 
     // --- КУКИ И СЧЕТЧИКИ ---
     const COOKIE_KEY = 'cookie_consent';
