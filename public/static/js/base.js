@@ -14,7 +14,6 @@
     // Слушать изменения
     darkModeMediaQuery.addEventListener('change', updateTheme);
 
-
     // --- ЛОГОТИП И СКРОЛЛ ---
     function updateLogo() {
         const navbar = document.getElementById('logo');
@@ -30,17 +29,15 @@
         }
     }
 
-
     // Инициализация логотипа при загрузке и скролле
-    // document.addEventListener('DOMContentLoaded', updateLogo);
     window.addEventListener('scroll', updateLogo, { passive: true });
-
 
     // --- КУКИ И СЧЕТЧИКИ ---
     const COOKIE_KEY = 'cookie_consent';
     const TTL_MS = 90 * 24 * 60 * 60 * 1000; // 90 дней
     const MAILRU_ID = "3734603";
     const YANDEX_ID = "106310834";
+    const GOOGLE_ID = "G-03WY2S9FXB";
 
     function loadCounters() {
         // console.log("Загрузка счетчиков...");
@@ -67,6 +64,22 @@
                  trackLinks:true,
                  accurateTrackBounce:true
             });
+            
+            // Google Analytics
+            (function() {
+                var script = document.createElement('script');
+                script.async = true;
+                script.src = 'https://www.googletagmanager.com/gtag/js?id=' + GOOGLE_ID;
+                document.head.appendChild(script);
+            })();
+
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            // Делаем gtag глобальной, чтобы вызывать из sendGoal
+            window.gtag = gtag; 
+            gtag('js', new Date());
+            gtag('config', GOOGLE_ID);
+            
         } catch (e) {
             console.error("Ошибка загрузки счетчиков:", e);
         }
@@ -115,11 +128,17 @@
         // console.log("Sending goal:", goalName);
         
         try {
+            // Mail.ru
             if (window._tmr) {
                 window._tmr.push({ id: MAILRU_ID, type: "reachGoal", goal: goalName, value: 1 });
             }
+            // Яндекс.Метрика
             if (typeof window.ym === 'function') {
                 window.ym(YANDEX_ID, 'reachGoal', goalName);
+            }
+            // Google Analytics
+            if (typeof window.gtag === 'function') {
+                window.gtag('event', goalName);
             }
         } catch (e) {
             console.error("Ошибка отправки цели:", e);
