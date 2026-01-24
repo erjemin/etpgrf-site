@@ -55,7 +55,7 @@ body {
   padding: 0;
   position: sticky;
   top: 0;
-  backdrop-filter: blur(4px); /* Эффект размытия */
+  backdrop-filter: blur(8px); /* Эффект размытия */
   box-shadow: 0 -25px 30px 15px var(--bs-border-color);
   /* transition: height 0.3s ease, background-color 0.3s ease; /* Анимация высоты */
 }
@@ -76,7 +76,6 @@ body {
 }
 
 #main-navbar > #logo > .navbar-brand {
-  padding: 0; /* Убираем отступы у бренда */
   display: block; /* Блок, чтобы работали размеры */
   background: no-repeat left;
   background-size: contain;

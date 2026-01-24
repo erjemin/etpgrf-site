@@ -14,10 +14,11 @@
     // Слушать изменения
     darkModeMediaQuery.addEventListener('change', updateTheme);
 
+
     // --- ЛОГОТИП И СКРОЛЛ ---
     function updateLogo() {
-        if (!navbar) return;
         const navbar = document.getElementById('logo');
+        if (!navbar) return;
         const scrollY = window.scrollY;
 
         // Гистерезис: включаем после 60px, выключаем до 10px
@@ -29,8 +30,11 @@
         }
     }
 
+
     // Инициализация логотипа при загрузке и скролле
+    // document.addEventListener('DOMContentLoaded', updateLogo);
     window.addEventListener('scroll', updateLogo, { passive: true });
+
 
     // --- КУКИ И СЧЕТЧИКИ ---
     const COOKIE_KEY = 'cookie_consent';
