@@ -27,17 +27,20 @@ class Post(models.Model):
         max_length=1,
         choices=PostType.choices,
         default=PostType.BLOG,
+        db_index=True,
         help_text="Страница доступна по адресу /slug/, Пост — по адресу /blog/slug/"
     )
     
     is_published = models.BooleanField(
         verbose_name="Опубликовано",
         default=True,
+        db_index=True,
         help_text="Снимите галочку, чтобы скрыть публикацию (черновик)."
     )
     published_at = models.DateTimeField(
         verbose_name="Дата публикации",
         default=timezone.now,
+        db_index=True,
         help_text="Дата, которая будет отображаться в блоге. Можно запланировать на будущее."
     )
     
@@ -83,6 +86,12 @@ class Post(models.Model):
         verbose_name = "Публикация"
         verbose_name_plural = "Публикации"
         ordering = ['-published_at']
+        indexes = [
+            # Индекс для быстрого поиска и сортировки постов блога
+            models.Index(fields=['post_type', 'is_published', '-published_at'], name='blog_post_idx'),
+            # Индекс для быстрых страниц (если post_type='P')
+            models.Index(fields=['post_type', 'slug'], name='blog_page_slug_idx'),
+        ]
 
     def __str__(self):
         return self.title

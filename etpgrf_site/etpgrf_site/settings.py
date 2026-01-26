@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'typograph',
+    'blog', # Наше новое приложение
 ]
 
 MIDDLEWARE = [
@@ -53,7 +54,7 @@ ROOT_URLCONF = 'etpgrf_site.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [], # Шаблоны ищем внутри приложений (APP_DIRS=True)
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
