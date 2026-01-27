@@ -2,19 +2,22 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from django.views.generic.base import RedirectView
-from django.contrib.staticfiles.storage import staticfiles_storage
+from blog import views as blog_views # Импортируем views из приложения blog
+from blog.models import PostType # Для использования в корневом urls.py
 
 urlpatterns = [
-    path(route='adm-in/', view=admin.site.urls),
-    path(route='', view=include('typograph.urls')),
+    path('adm-in/', admin.site.urls),
+    path('', include('typograph.urls')), # Основное приложение типографа
+
+    # Блог
+    path('blog/', include('blog.urls')),
+
+    # Статические страницы (ловушка в самом конце, чтобы не перехватывать другие URL)
+    # Исключаем слаги, которые могут конфликтовать с другими URL-ами
+    # Например, 'admin', 'blog', 'static', 'media'
+    path('<slug:slug>/', blog_views.page_detail, name='page_detail'),
 ]
 
+# Для отдачи медиафайлов в режиме разработки
 if settings.DEBUG:
-    # urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    # runserver автоматически раздает статику из STATICFILES_DIRS,
-    # поэтому добавлять static(settings.STATIC_URL...) НЕ НУЖНО.
-    # Это только ломает путь, направляя его в STATIC_ROOT.
-    
-    # А вот медиа runserver не раздает, поэтому это нужно:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
