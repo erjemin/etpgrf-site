@@ -34,8 +34,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'typograph',
-    'blog', # Наше новое приложение
+    'typograph',    # Основное приложение типографа
+    'blog',         # Приложение для блога и страниц
 ]
 
 MIDDLEWARE = [

@@ -18,6 +18,7 @@
     function updateLogo() {
         const navbar = document.getElementById('logo');
         if (!navbar) return;
+        
         const scrollY = window.scrollY;
 
         // Гистерезис: включаем после 60px, выключаем до 10px
@@ -31,6 +32,23 @@
 
     // Инициализация логотипа при загрузке и скролле
     window.addEventListener('scroll', updateLogo, { passive: true });
+    
+    // --- МОБИЛЬНОЕ МЕНЮ (Скрытие логотипа при открытии) ---
+    document.addEventListener('DOMContentLoaded', function() {
+        const navbarNav = document.getElementById('navbarNav');
+        const navbarBrand = document.querySelector('.navbar-brand');
+        
+        if (navbarNav && navbarBrand) {
+            navbarNav.addEventListener('show.bs.collapse', function () {
+                navbarBrand.style.opacity = '0';
+                navbarBrand.style.transition = 'opacity 0.3s ease';
+            });
+            
+            navbarNav.addEventListener('hide.bs.collapse', function () {
+                navbarBrand.style.opacity = '1';
+            });
+        }
+    });
 
     // --- КУКИ И СЧЕТЧИКИ ---
     const COOKIE_KEY = 'cookie_consent';
@@ -78,7 +96,7 @@
             // Делаем gtag глобальной, чтобы вызывать из sendGoal
             window.gtag = gtag; 
             gtag('js', new Date());
-            gtag('config', GOOGLE_ID);
+            gtag('config', '\'' + GOOGLE_ID + '\'');
             
         } catch (e) {
             console.error("Ошибка загрузки счетчиков:", e);

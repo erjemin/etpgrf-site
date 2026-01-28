@@ -23,9 +23,9 @@
       </p>
       <p>
           {% if post.image %}
-            <img src="{{ post.image.url }}" class="w-100 rounded" alt="{{ post.title }}" />
+            <img src="{{ post.image.url }}" class="w-100" alt="{{ post.title }}" />
           {% else %}
-            <img src="{% static 'img/etpgrf-logo-for-fb-vk-x.gif' %}" class="w-100 rounded opacity-50" alt="{{ post.title }}" />
+            <img src="{% static 'img/etpgrf-logo-for-fb-vk-x.gif' %}" class="w-100" alt="{{ post.title }}" />
           {% endif %}
       </p>
 
@@ -35,7 +35,7 @@
     </div>
 
     {# Правая колонка: Контент #}
-    <div class="col-lg-10 border-start ps-lg-4">
+    <div class="col-lg-10 border-start ps-lg-4 post-page-content">
 
         <h1 class="display-4 mb-4">{{ post.title }}</h1>
 
@@ -54,5 +54,5 @@
         </div>
 
     </div>
-  </div>
+</div>
 {% endblock %}

@@ -3,6 +3,7 @@
 
 {% block title %}{{ page.seo_title|default:page.title }} — ETPGRF{% endblock %}
 {% block description %}{{ page.seo_description|default:page.content|striptags|truncatechars:160 }}{% endblock %}
+{% block keywords %}{{ page.seo_keywords|default:'типограф, типографика, онлайн типограф, подготовка текста для веба, html типограф, неразрывные пробелы, кавычки елочки, длинное тире, очистка текста от мусора, интернет верстка, муравьев' }} seo_keywords  {% endblock %}
 {% block og_title %}{{ page.seo_title|default:page.title }}{% endblock %}
 {% block og_description %}{{ page.seo_description|default:page.content|striptags|truncatechars:160 }}{% endblock %}
 {% block og_image %}{% if page.image %}{{ request.scheme }}://{{ request.get_host }}{{ page.image.url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/etpgrf-logo-for-fb-vk-x.gif' %}{% endif %}{% endblock %}
@@ -22,15 +23,15 @@
       </p>
       <p>
           {% if post.image %}
-            <img src="{{ post.image.url }}" class="w-100 rounded" alt="{{ post.title|safe }}" />
+            <img src="{{ post.image.url }}" class="w-100" alt="{{ post.title|safe }}" />
           {% else %}
-            <img src="{% static 'img/etpgrf-logo-for-fb-vk-x.gif' %}" class="w-100 rounded opacity-50" alt="{{ post.title|safe }}" />
+            <img src="{% static 'img/etpgrf-logo-for-fb-vk-x.gif' %}" class="w-100" alt="{{ post.title|safe }}" />
           {% endif %}
       </p>
     </div>
 
     {# Правая колонка: Контент #}
-    <div class="col-lg-10 border-start ps-lg-4">
+    <div class="col-lg-10 border-start ps-lg-4 post-page-content">
 
         <h1 class="display-4 mb-4">{{ page.title|safe }}</h1>
 
