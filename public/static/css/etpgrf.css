@@ -67,6 +67,7 @@ body {
 #main-navbar > .container {
   background: no-repeat left;
   background-size: contain;
+  flex-wrap: nowrap !important; /* Запрещаем перенос бургера */
 }
 
 #main-navbar > .container.logo-big {
@@ -315,11 +316,12 @@ body {
   font-size: 1.1rem;
 }
 
-.post-page-content ul, .post-page-conten ol {
+.post-content ul, .page-content ul,
+.post-content ol, .page-content ol {
     margin-bottom: 1.5rem;
 }
 
-.post-page-content  blockquote {
+.post-content blockquote, .page-content blockquote {
     border-left: 4px solid var(--bs-primary);
     padding-left: 1rem;
     margin: 1.5rem 0;
