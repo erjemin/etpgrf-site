@@ -2,19 +2,26 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from blog import views as blog_views # Импортируем views из приложения blog
-from blog.models import PostType # Для использования в корневом urls.py
+from django.contrib.sitemaps.views import sitemap # Импортируем view для sitemap
+from blog import views as blog_views
+from blog.sitemaps import PostSitemap # Импортируем наш класс Sitemap
+
+# Словарь с картами сайта
+sitemaps = {
+    'posts': PostSitemap,
+}
 
 urlpatterns = [
     path('adm-in/', admin.site.urls),
-    path('', include('typograph.urls')), # Основное приложение типографа
-
+    path('', include('typograph.urls')),
+    
     # Блог
     path('blog/', include('blog.urls')),
-
-    # Статические страницы (ловушка в самом конце, чтобы не перехватывать другие URL)
-    # Исключаем слаги, которые могут конфликтовать с другими URL-ами
-    # Например, 'admin', 'blog', 'static', 'media'
+    
+    # Sitemap.xml
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
+    
+    # Статические страницы (ловушка в самом конце)
     path('<slug:slug>/', blog_views.page_detail, name='page_detail'),
 ]
 
