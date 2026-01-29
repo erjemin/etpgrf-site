@@ -24,6 +24,10 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 # CSRF Trusted Origins (важно для работы через Nginx/Docker)
 CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'http://localhost:8000,http://127.0.0.1:8000').split(',')
 
+# URL админки (можно скрыть через .env)
+# По умолчанию 'admin/'
+ADMIN_URL = os.getenv('ADMIN_URL', 'admin/')
+
 
 # Application definition
 

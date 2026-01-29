@@ -12,7 +12,9 @@ sitemaps = {
 }
 
 urlpatterns = [
-    path('adm-in/', admin.site.urls),
+    # Админка по секретному URL
+    path(f'{settings.ADMIN_URL}', admin.site.urls),
+    
     path('', include('typograph.urls')),
     
     # Блог
@@ -25,6 +27,5 @@ urlpatterns = [
     path('<slug:slug>/', blog_views.page_detail, name='page_detail'),
 ]
 
-# Для отдачи медиафайлов в режиме разработки
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
