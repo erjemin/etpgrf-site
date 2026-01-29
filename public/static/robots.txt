@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /adm-in/
+
+Host: https://typograph.cube2.ru
+Sitemap: https://typograph.cube2.ru/sitemap.xml
