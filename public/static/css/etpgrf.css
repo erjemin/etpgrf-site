@@ -300,6 +300,11 @@ body {
 }
 
 /* --- Стили для контента блога (Typography) --- */
+.post-page-content {
+  padding-bottom: 2rem;
+  margin-bottom: 6rem;
+}
+
 .post-page-content h1, .post-page-content h2, .post-page-content h3,
 .post-page-content h4, .post-page-content h5, .post-page-content h6 {
   color: var(--bs-body-color);
@@ -309,11 +314,22 @@ body {
   padding-bottom: 0.5rem;
 }
 
-
 .post-page-content p, .post-page-content li  {
   margin-bottom: 0.5rem;
   line-height: 1.6;
   font-size: 1.1rem;
+}
+
+.post-page-content > div.lead {
+    font-size: 1.25rem;
+    font-weight: 400;
+    opacity: 95%;
+    border: 1px dashed var(--bs-border-color);
+}
+
+.post-page-content > div.lead > p {
+    margin-bottom: 0;
+    padding: 0.5rem;
 }
 
 .post-content ul, .page-content ul,
@@ -338,5 +354,4 @@ body {
 .post-page-content a:hover {
   color: var(--bs-linkclolor-hover);
   border-bottom: 1px solid var(--bs-linkclolor-hover);
-
 }
