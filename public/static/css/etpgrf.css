@@ -67,7 +67,7 @@ body {
 #main-navbar > .container {
   background: no-repeat left;
   background-size: contain;
-  flex-wrap: nowrap !important; /* Запрещаем перенос бургера */
+  position: relative; /* Для абсолютного позиционирования бургера */
 }
 
 #main-navbar > .container.logo-big {
@@ -102,16 +102,24 @@ body {
   opacity: 0;
 }
 
-/* --- Стили для ссылок в меню --- */
-.navbar {
-  /* position: fixed;  Убрал fixed, так как у нас sticky */
-  /* top: 0; */
-  /* width: 100%; */
-  /* background: var(--bs-navbar-bg); */
-  /* display: flex; */
-  /* justify-content: center; */
-  /* transition: all 0.8s; */
+/* --- Бургер меню --- */
+#main-navbar > #logo > .navbar-toggler {
+  position: absolute;
+  right: 0.75rem; /* Отступ справа как у контейнера */
+  transition: top 0.4s ease; /* Анимация позиции */
+  z-index: 1001;
 }
+
+#main-navbar > #logo.logo-big > .navbar-toggler {
+  top: 32px; /* Центрируем для высоты 105px */
+}
+
+/* При скролле меняем позицию бургера */
+#main-navbar > #logo:not(.logo-big) > .navbar-toggler {
+  top: 10px; /* Центрируем для высоты 60px */
+}
+
+/* --- Стили для ссылок в меню --- */
 .nav-item {
   color: var(--bs-body-bg);
   padding: 10px 15px;
@@ -119,13 +127,29 @@ body {
   position: relative;
 }
 
-/* Фикс для мобильной версии: ширина по контенту и прижатие вправо */
+/* Фикс для мобильных версий: ширина по контенту, прижатие вправо, логотипы */
 @media (max-width: 991.98px) {
-    .nav-item {
-        width: fit-content;
-        margin-left: auto;
+  .nav-item {
+    width: fit-content;
+    margin-left: auto;
+  }
+
+  .navbar-collapse {
+    margin-top: -10px;
+  }
+}
+@media (max-width: 767.98px) {
+  #main-navbar > #logo > .navbar-brand {
+    background: none !important;
+  }
+}
+@media (max-width: 456.98px) {
+  #main-navbar > .container {
+      background: no-repeat left;
+      background-size: 105px 500px !important;
     }
 }
+
 
 .nav-item:hover {
   background-color: var(--bs-navbar-bg);
