@@ -1,58 +1,53 @@
 {% extends 'typograph/base.html' %}
 {% load static %}
+{% load typograph_extras %}
 
-{% block title %}{{ post.seo_title|default:post.title }} — ETPGRF{% endblock %}
-{% block description %}{{ post.seo_description|default:post.excerpt|default:post.content|striptags|truncatechars:160 }}{% endblock %}
-{% block og_title %}{{ post.seo_title|default:post.title }}{% endblock %}
-{% block og_description %}{{ post.seo_description|default:post.excerpt|default:post.content|striptags|truncatechars:160 }}{% endblock %}
+{% block title %}{% if post.seo_title %}{{ post.seo_title }}{% else %}{{ post.title|striptags|unescape|safe }}{% endif %} — ETPGRF{% endblock %}
+{% block description %}{% if post.seo_description %}{{ post.seo_description }}{% else %}{{ post.excerpt|striptags|unescape|safe|truncatechars:160 }}{% endif %}{% endblock %}
+{% block keywords %}{% if post.seo_keywords %}{{ post.seo_keywords }}{% else %}типограф, типографика, блог типограф, онлайн типограф, подготовка текста для веба, html типограф, неразрывные пробелы, кавычки елочки, длинное тире, очистка текста от мусора, интернет верстка, муравьев, лебедев{% endif %}{% endblock %}
+
+{% block og_title %}{% if post.seo_title %}{{ post.seo_title }}{% else %}{{ post.title|striptags|unescape|safe }}{% endif %}{% endblock %}
+{% block og_description %}{% if post.seo_description %}{{ post.seo_description }}{% else %}{{ post.excerpt|striptags|unescape|safe|truncatechars:160 }}{% endif %}{% endblock %}
 {% block og_image %}{% if post.image %}{{ request.scheme }}://{{ request.get_host }}{{ post.image.url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/etpgrf-logo-for-fb-vk-x.gif' %}{% endif %}{% endblock %}
-{% block twitter_title %}{{ post.seo_title|default:post.title }}{% endblock %}
-{% block twitter_description %}{{ post.seo_description|default:post.excerpt|default:post.content|striptags|truncatechars:160 }}{% endblock %}
+{% block twitter_title %}{% if post.seo_title %}{{ post.seo_title }}{% else %}{{ post.title|striptags|unescape|safe }}{% endif %}{% endblock %}
+{% block twitter_description %}{% if post.seo_description %}{{ post.seo_description }}{% else %}{{ post.excerpt|striptags|unescape|safe|truncatechars:160 }}{% endif %}{% endblock %}
 {% block twitter_image %}{% if post.image %}{{ request.scheme }}://{{ request.get_host }}{{ post.image.url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/etpgrf-logo-for-fb-vk-x.gif' %}{% endif %}{% endblock %}
 
 
 {% block content %}
   <div class="row">
-
     {# Левая колонка: Дата и Картинка #}
     <div class="col-lg-2 align-self-start text-end mb-4">
       <p class="small align-self-end">
-          <small class="bg-secondary bg-opacity-10 p-2 text-nowrap">
-              {{ post.published_at|date:"d.M.Y"|lower }}
-          </small>
+        <small class="bg-secondary bg-opacity-10 p-2 text-nowrap">
+          {{ post.published_at|date:"d.M.Y"|lower }}
+        </small>
       </p>
-      <p>
-          {% if post.image %}
-            <img src="{{ post.image.url }}" class="w-100" alt="{{ post.title }}" />
-          {% else %}
-            <img src="{% static 'img/etpgrf-logo-for-fb-vk-x.gif' %}" class="w-100" alt="{{ post.title }}" />
-          {% endif %}
-      </p>
+      <p>{% if post.image %}
+        <img src="{{ post.image.url }}" class="w-100" alt="{{ post.title|striptags|unescape|safe }}"/>
+        {% else %}<img src="{% static 'img/etpgrf-logo-for-fb-vk-x.gif' %}" class="w-100" alt="{{ post.title|striptags|unescape|safe }}"/>
+      {% endif %}</p>
 
       <div class="d-none d-lg-block mt-5">
-          <a href="{% url 'blog:post_list' %}" class="btn btn-sm btn-outline-secondary w-100">&larr; В блог</a>
+        <a href="{% url 'blog:post_list' %}" class="btn btn-sm btn-outline-secondary w-100">&larr; В блог</a>
       </div>
     </div>
-
     {# Правая колонка: Контент #}
     <div class="col-lg-10 border-start ps-lg-4 post-page-content">
+      <h1 class="display-4 mb-4">{{ post.title|safe }}</h1>
 
-        <h1 class="display-4 mb-4">{{ post.title }}</h1>
+      {% if post.excerpt %}<div class="lead bg-secondary bg-opacity-10 p-3 rounded">
+        {{ post.excerpt|safe }}
+      </div>{% endif %}
 
-        {% if post.excerpt %}
-            <p class="lead bg-secondary bg-opacity-10 p-3 rounded">
-                {{ post.excerpt|linebreaksbr }}
-            </p>
-        {% endif %}
+      <div class="post-content mt-4">
+        {{ post.content|safe }}
+      </div>
 
-        <div class="post-content mt-4">
-            {{ post.content|safe }}
-        </div>
-
-        <div class="d-lg-none mt-5 border-top pt-3">
-            <a href="{% url 'blog:post_list' %}" class="btn btn-outline-secondary">&larr; Назад к списку статей</a>
-        </div>
+      <div class="d-lg-none mt-5 border-top pt-3">
+        <a href="{% url 'blog:post_list' %}" class="btn btn-outline-secondary">&larr; Назад к списку статей</a>
+      </div>
 
     </div>
-</div>
+  </div>
 {% endblock %}

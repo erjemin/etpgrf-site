@@ -1,5 +1,6 @@
 from django import template
 from django.utils.safestring import mark_safe
+import html
 
 register = template.Library()
 
@@ -40,6 +41,25 @@ def humanize_num(value):
         formatted = formatted.replace(",", "&thinsp;").replace(".", ",")
         
         return mark_safe(f"{formatted}{suffix}")
-
+        
     except (ValueError, TypeError):
         return value
+
+
+@register.filter(name='unescape')
+def unescape_filter(value):
+    """
+    Декодирует HTML-сущности (&nbsp; -> ' ', &mdash; -> —)
+    и удаляет лишние пробелы и переводы строк.
+    Полезно для мета-тегов (title, description, og:title).
+    """
+    if not value:
+        return ""
+        
+    # 1. Декодируем сущности
+    text = html.unescape(str(value))
+    
+    # 2. Удаляем лишние пробелы и переводы строк
+    # split() без аргументов разбивает по любым пробельным символам (\n, \t, space)
+    # " ".join(...) собирает обратно через один пробел
+    return " ".join(text.split())
