@@ -51,6 +51,8 @@ services:
       sh -c "python etpgrf_site/manage.py migrate --noinput &&
              python etpgrf_site/manage.py collectstatic --noinput &&
              cp /app/etpgrf_site/typograph/templates/500.html /app/public/static_collected/500.html &&
+             cp /app/etpgrf_site/typograph/templates/404.html /app/public/static_collected/404.html &&
+             cp /app/etpgrf_site/typograph/templates/typograph/403.html /app/public/static_collected/403.html &&
              gunicorn --bind 0.0.0.0:8000 --chdir /app/etpgrf_site etpgrf_site.wsgi"
 
     volumes:
@@ -59,7 +61,7 @@ services:
       # Статика (общий том)
       - static_volume:/app/public/static_collected
       # Медиа (папка media должна быть создана на хосте)
-      - ./media:/app/public/media
+      - ./media:/app/media
 
     env_file:
       - .env
@@ -78,7 +80,7 @@ services:
       # Конфиг берем из репозитория
       - ./config/nginx/etpgrf--internal-nginx.conf:/etc/nginx/nginx.conf:ro
       - static_volume:/app/public/static_collected
-      - ./media:/app/public/media
+      - ./media:/app/media
 
     # Внешний порт. Если у тебя на хосте уже есть Nginx (прокси),
     # то можно пробросить на 127.0.0.1:8000 или использовать внутреннюю сеть.
