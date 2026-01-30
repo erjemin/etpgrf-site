@@ -3,15 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  {# --- SEO & Meta Tags --- #}
-  <title>{% block title %}ETPGRF — единая типографика для веба{% endblock %}</title>
+  {# --- SEO & Meta Tags --- #}<title>{% block title %}ETPGRF — единая типографика для веба{% endblock %}</title>
   <meta name="description" content="{% block description %}Бесплатный онлайн-типограф для подготовки текстов к публикации в вебе. Расставка неразрывных пробелов, правильных кавычек («ёлочки»), тире, спецсимволы, отбивка, компоновка, висячая пунктуация. Идеально для верстки сайтов, статей и постов.{% endblock %}">
   <meta name="keywords" content="{% block keywords %}типограф, типографика, онлайн типограф, подготовка текста для веба, html типограф, неразрывные пробелы, кавычки елочки, длинное тире, очистка текста от мусора, интернет верстка, муравьев{% endblock %}">
   <meta name="author" content="Sergei Erjemin">
-
-  {# --- Open Graph (Facebook, VK, LinkedIn, Telegram) --- #}
-  <meta property="og:type" content="website" />
+  {# --- Open Graph (Facebook, VK, LinkedIn, Telegram) --- #}<meta property="og:type" content="website" />
   <meta property="og:site_name" content="ETPGRF" />
   <meta property="og:url" content="{{ request.build_absolute_uri }}" />
   <meta property="og:title" content="{% block og_title %}ETPGRF — единая типографика для веба{% endblock %}" />
@@ -19,15 +15,11 @@
   <meta property="og:image" content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/etpgrf-logo-for-fb-vk-x.gif' %}{% endblock %}" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-
-  {# --- Twitter Cards (X) --- #}
-  <meta name="twitter:card" content="summary_large_image">
+  {# --- Twitter Cards (X) --- #}<meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="{% block twitter_title %}ETPGRF — единая типографика для веба{% endblock %}" />
   <meta name="twitter:description" content="{% block twitter_description %}Сделайте ваш текст профессиональным и готовым к публикации в интернете за один клик.{% endblock %}" />
   <meta name="twitter:image" content="{% block twitter_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/etpgrf-logo-for-fb-vk-x.gif' %}{% endblock %}" />
-
-  {# --- Favicons --- #}
-  <link rel="icon" href="{{ request.scheme }}://{{ request.get_host }}{% static 'favicon.ico' %}" type="image/x-icon" />
+  {# --- Favicons --- #}<link rel="icon" href="{{ request.scheme }}://{{ request.get_host }}{% static 'favicon.ico' %}" type="image/x-icon" />
   <link rel="icon" type="image/png" href="{% static 'favicon-96x96.png' %}" />
   <link rel="icon" href="{% static 'favicon-light.svg' %}" type="image/svg+xml" media="(prefers-color-scheme: light)" />
   <link rel="icon" href="{% static 'favicon-dark.svg' %}" type="image/svg+xml" media="(prefers-color-scheme: dark)" />
@@ -87,8 +79,7 @@
 {# Футер #}<footer class="footer mt-auto py-2 mt-4">
   <div class="container d-flex justify-content-between align-items-center">
     <span class="text-muted small nowrap me-2">&copy; Sergei Erjemin, 2025&ndash;{% now 'Y' %}.</span>
-    <nobr class="text-muted small mx-2"><i class="bi bi-tags me-1" title="Версия библиотеки etpgrf / Версия сайта"></i>v0.1.3 / v0.2.0
-    </nobr>
+    <nobr class="text-muted small mx-2"><i class="bi bi-tags me-1" title="Версия библиотеки etpgrf / Версия сайта"></i><a href="/changelog">v0.1.3 / v0.2.1</a></nobr>
     {# Сводная статистика (HTMX) #}<span class="text-muted small ms-2" hx-get="{% url 'stats_summary' %}" hx-trigger="load">
       ...
     </span>
