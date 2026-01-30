@@ -50,7 +50,6 @@ class Post(models.Model):
     )
     excerpt = models.TextField(
         verbose_name="Краткое описание (тизер)",
-        blank=True, 
         help_text="Отображается в списке постов. Если оставить пустым, будет взято начало контента."
     )
     
