@@ -58,13 +58,13 @@ bcrypt = ["bcrypt (>=4.1.1)"]
 
 [[package]]
 name = "etpgrf"
-version = "0.1.3"
+version = "0.1.4"
 description = "Electro-Typographer: Python library for advanced web typography (non-breaking spaces, hyphenation, hanging punctuation and ."
 optional = false
 python-versions = ">=3.10"
 files = [
-    {file = "etpgrf-0.1.3-py3-none-any.whl", hash = "sha256:38212713f957ecf12d7e5fd6a11c77995bf41e16cbca4250411fa450ba290d62"},
-    {file = "etpgrf-0.1.3.tar.gz", hash = "sha256:f611948fe747c5470ba27b31d8af5c59a219d58efd033079491c9e61e011e4d0"},
+    {file = "etpgrf-0.1.4-py3-none-any.whl", hash = "sha256:62d4371e1b5fab06b99f79bd351767aed8baf7d041cae7e5d4eb63f7c9545114"},
+    {file = "etpgrf-0.1.4.tar.gz", hash = "sha256:c699382c292e3110915331dd5539e7dde0c961e4f4ca65cf8db0e01e84dab72f"},
 ]
 
 [package.dependencies]
@@ -572,4 +572,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.13"
-content-hash = "fad76f5756ffa133d1778a1976fd5216450ebf83881fcfacee259b7c41102317"
+content-hash = "9610a92fa47d1bd0849512ae842b0fdd68dc06d9917ab676cf5d8f6521700837"

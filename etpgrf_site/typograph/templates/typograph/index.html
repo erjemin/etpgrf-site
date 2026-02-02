@@ -221,7 +221,7 @@
                     <div class="form-check">
                       <input class="form-check-input" type="checkbox" name="sanitizer_enabled" id="optSanitizer"
                              x-model="enabled">
-                      <label class="form-check-label fw-bold" for="optSanitizer">Очистка от HTML (Sanitizer)</label>
+                      <label class="form-check-label fw-bold" for="optSanitizer">Очистка от&nbsp;HTML (Sanitizer)</label>
                     </div>
                     {# Настройки группы "Санитайзер" (видны, когда включено) #}
                     <div class="ms-3 mt-1" x-show="enabled" x-transition>
@@ -256,7 +256,7 @@
                           Юникод (Unicode)
                         </option>
                         <option value="mnemonic"
-                                data-desc="Совместимость c&nbsp;koi8r и&nbsp;cp1251. Cпецсимволы заменяются на&nbsp;HTML-мнемоники (&amp;amp;mdash;, &amp;amp;copy; и пр).">
+                                data-desc="Совместимость c&nbsp;koi8r и&nbsp;cp1251. Все спецсимволы заменяются на&nbsp;HTML-мнемоники (<tt>&amp;amp;mdash;</tt>, <tt>&amp;amp;copy;</tt> и&nbsp;пр.)">
                           Мнемоники (Mnemonic)
                         </option>
                       </select>
