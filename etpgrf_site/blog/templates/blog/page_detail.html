@@ -1,12 +1,31 @@
 {% extends 'typograph/base.html' %}
-{% load static %}
-{% load typograph_extras %}
+{% load static typograph_extras %}
 
-
-
+{# --- SEO --- #}
 {% block title %}{% if page.seo_title %}{{ page.seo_title }}{% else %}{{ page.title|striptags|unescape|safe }}{% endif %} — ETPGRF{% endblock %}
 {% block description %}{% if page.seo_description %}{{ page.seo_description }}{% else %}{{ page.excerpt|striptags|unescape|safe|truncatechars:160 }}{% endif %}{% endblock %}
 {% block keywords %}{% if page.seo_keywords %}{{ post.seo_keywords }}{% else %}типограф, типографика, блог типограф, онлайн типограф, подготовка текста для веба, html типограф, неразрывные пробелы, кавычки елочки, длинное тире, очистка текста от мусора, интернет верстка, муравьев, лебедев{% endif %}{% endblock %}
+
+{# --- Schema.org --- #}
+ {% block schema %}<script type="application/ld+json">
+ {
+   "@context": "https://schema.org",
+   "@type": "WebPage",
+   "headline": "{{ page.seo_title|default:page.title|striptags|unescape|escapejs }}",
+   "description": "{% if page.seo_description %}{{ page.seo_description|striptags|unescape|escapejs }}{% else %}{{ page.excerpt|default:page.content|striptags|unescape|truncatechars:160|escapejs }}{% endif %}",
+   "image": "{% if page.image %}{{ request.scheme }}://{{ request.get_host }}{{ page.image.url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/etpgrf-logo-for-fb-vk-x.gif' %}{% endif %}",
+   "publisher": {
+     "@type": "Organization",
+     "name": "ETPGRF",
+     "logo": {
+       "@type": "ImageObject",
+       "url": "{{ request.scheme }}://{{ request.get_host }}{% static 'img/etpgrf-logo-for-fb-vk-x.gif' %}"
+     }
+   },
+   "datePublished": "{{ page.published_at|date:'Y-m-d' }}",
+   "dateModified": "{{ page.published_at|date:'Y-m-d' }}"
+ }
+   </script>{% endblock %}
 
 {% block og_title %}{% if page.seo_title %}{{ page.seo_title }}{% else %}{{ page.title|striptags|unescape|safe }}{% endif %}{% endblock %}
 {% block og_description %}{% if page.seo_description %}{{ page.seo_description }}{% else %}{{ page.excerpt|safe|striptags|unescape|truncatechars:160 }}{% endif %}{% endblock %}
@@ -31,7 +50,6 @@
 
     {# Правая колонка: Контент #}
     <div class="col-lg-10 border-start ps-lg-4 post-page-content">
-
       <h1 class="display-4 mb-4">{{ page.title|safe }}</h1>
 
       {% if page.excerpt %}

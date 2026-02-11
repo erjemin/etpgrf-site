@@ -112,6 +112,7 @@ services:
       # Если нужно указать реестр явно (обычно watchtower сам понимает из имени образа)
       # - WATCHTOWER_REGISTRY_URL=git.cube2.ru
     command: --interval 1800 --cleanup # Проверять каждые 30 минут
+    restart: always
 
 
 volumes:

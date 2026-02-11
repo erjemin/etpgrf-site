@@ -1,10 +1,35 @@
 {% extends 'typograph/base.html' %}
-{% load static %}
-{% load typograph_extras %}
+{% load static typograph_extras %}
 
-{% block title %}{% if post.seo_title %}{{ post.seo_title }}{% else %}{{ post.title|striptags|unescape|safe }}{% endif %} — ETPGRF{% endblock %}
-{% block description %}{% if post.seo_description %}{{ post.seo_description }}{% else %}{{ post.excerpt|striptags|unescape|safe|truncatechars:160 }}{% endif %}{% endblock %}
+{# --- SEO --- #}
+{% block title %}{% if post.seo_title %}{{ post.seo_title }}{% else %}{{ post.title|striptags|unescape|safe|escapejs }}{% endif %} — ETPGRF{% endblock %}
+{% block description %}{% if post.seo_description %}{{ post.seo_description|escapejs }}{% else %}{{ post.excerpt|striptags|unescape|safe|truncatechars:160|escapejs }}{% endif %}{% endblock %}
 {% block keywords %}{% if post.seo_keywords %}{{ post.seo_keywords }}{% else %}типограф, типографика, блог типограф, онлайн типограф, подготовка текста для веба, html типограф, неразрывные пробелы, кавычки елочки, длинное тире, очистка текста от мусора, интернет верстка, муравьев, лебедев{% endif %}{% endblock %}
+
+{# --- Schema.org --- #}
+{% block schema %}<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "{{ post.seo_title|default:post.title|striptags|unescape|escapejs }}",
+  "description": "{% if post.seo_description %}{{ post.seo_description|striptags|unescape|escapejs }}{% else %}{{ post.excerpt|default:post.content|striptags|unescape|truncatechars:160|escapejs }}{% endif %}",
+  "image": "{% if post.image %}{{ request.scheme }}://{{ request.get_host }}{{ post.image.url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/etpgrf-logo-for-fb-vk-x.gif' %}{% endif %}",
+  "author": {
+    "@type": "Person",
+    "name": "Sergei Erjemin"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "ETPGRF",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "{{ request.scheme }}://{{ request.get_host }}{% static 'img/etpgrf-logo-for-fb-vk-x.gif' %}"
+    }
+  },
+  "datePublished": "{{ post.published_at|date:'Y-m-d' }}",
+  "dateModified": "{{ post.published_at|date:'Y-m-d' }}"
+}
+  </script>{% endblock %}
 
 {% block og_title %}{% if post.seo_title %}{{ post.seo_title }}{% else %}{{ post.title|striptags|unescape|safe }}{% endif %}{% endblock %}
 {% block og_description %}{% if post.seo_description %}{{ post.seo_description }}{% else %}{{ post.excerpt|striptags|unescape|safe|truncatechars:160 }}{% endif %}{% endblock %}
