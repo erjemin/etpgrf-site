@@ -43,6 +43,11 @@ class Post(models.Model):
         db_index=True,
         help_text="Дата, которая будет отображаться в блоге. Можно запланировать на будущее."
     )
+    updated_at = models.DateTimeField(
+        "Дата обновления",
+        auto_now=True,
+        help_text="Автоматически обновляется при каждом сохранении."
+    )
     
     content = models.TextField(
         verbose_name="Контент",

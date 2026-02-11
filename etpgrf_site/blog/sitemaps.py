@@ -11,4 +11,4 @@ class PostSitemap(Sitemap):
 
     def lastmod(self, obj):
         """Возвращает дату последнего изменения."""
-        return obj.published_at # Или можно добавить поле updated_at
+        return obj.updated_at # Используем дату обновления, а не публикации
