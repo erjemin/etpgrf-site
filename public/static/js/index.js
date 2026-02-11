@@ -23,6 +23,34 @@ const btnCopy = document.getElementById('btn-copy');
 const sourceTextarea = document.querySelector('textarea[name="text"]');
 const processingTimeSpan = document.getElementById('processing-time');
 
+// --- ОЧИСТКА И СЧЕТЧИК ---
+const btnClear = document.getElementById('btn-clear');
+const charCount = document.getElementById('char-count');
+
+if (sourceTextarea && charCount) {
+    function updateCharCount() {
+        const count = sourceTextarea.value.length;
+        // Форматируем число с разделителями тысяч (1 234)
+        charCount.textContent = `${count.toLocaleString('ru-RU')} симв.`;
+    }
+
+    sourceTextarea.addEventListener('input', updateCharCount);
+    
+    // Инициализация с задержкой, чтобы браузер успел восстановить состояние формы
+    setTimeout(updateCharCount, 100);
+    
+    if (btnClear) {
+        btnClear.addEventListener('click', () => {
+            sourceTextarea.value = '';
+            updateCharCount();
+            sourceTextarea.focus();
+            
+            // Сбрасываем результат (триггерим событие input, чтобы сработал существующий обработчик)
+            sourceTextarea.dispatchEvent(new Event('input'));
+        });
+    }
+}
+
 const themeCompartment = new Compartment();
 function getTheme() {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? oneDark : [];
