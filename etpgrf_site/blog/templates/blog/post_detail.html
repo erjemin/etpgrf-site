@@ -2,8 +2,8 @@
 {% load static typograph_extras %}
 
 {# --- SEO --- #}
-{% block title %}{% if post.seo_title %}{{ post.seo_title }}{% else %}{{ post.title|striptags|unescape|safe|escapejs }}{% endif %} — ETPGRF{% endblock %}
-{% block description %}{% if post.seo_description %}{{ post.seo_description|escapejs }}{% else %}{{ post.excerpt|striptags|unescape|safe|truncatechars:160|escapejs }}{% endif %}{% endblock %}
+{% block title %}{% if post.seo_title %}{{ post.seo_title }}{% else %}{{ post.title|striptags|unescape|safe }}{% endif %} — ETPGRF{% endblock %}
+{% block description %}{% if post.seo_description %}{{ post.seo_description }}{% else %}{{ post.excerpt|striptags|unescape|safe|truncatechars:160 }}{% endif %}{% endblock %}
 {% block keywords %}{% if post.seo_keywords %}{{ post.seo_keywords }}{% else %}типограф, типографика, блог типограф, онлайн типограф, подготовка текста для веба, html типограф, неразрывные пробелы, кавычки елочки, длинное тире, очистка текста от мусора, интернет верстка, муравьев, лебедев{% endif %}{% endblock %}
 
 {# --- Schema.org --- #}
