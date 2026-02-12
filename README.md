@@ -13,7 +13,7 @@
 Зеркала репозитория:
 *   [GitHub](https://github.com/erjemin/etpgrf-site)
 *   [GitVerse](https://gitverse.ru/erjemin/etpgrf-site)
-*   [Cube2](https://git.cube2.ru/erjemin/etpgrf-site) Gitea
+*   [Cube2](https://git.cube2.ru/erjemin/2026-etpgrf-site) Gitea
 
 ## Особенности
 
