@@ -382,6 +382,17 @@ files = [
 cli = ["click (>=5.0)"]
 
 [[package]]
+name = "pytils"
+version = "0.4.4"
+description = "Russian-specific string utils"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pytils-0.4.4-py3-none-any.whl", hash = "sha256:e54c16465a5fdb65d414e2da8045e6cc6de79889acda6143dcef2e1e86a1a840"},
+    {file = "pytils-0.4.4.tar.gz", hash = "sha256:9992a96caad57daa211584df1da4fd825f11e836d3ed93011785f1d02ab6f0ca"},
+]
+
+[[package]]
 name = "regex"
 version = "2026.1.15"
 description = "Alternative regular expression module, to replace re."
@@ -572,4 +583,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.13"
-content-hash = "9610a92fa47d1bd0849512ae842b0fdd68dc06d9917ab676cf5d8f6521700837"
+content-hash = "ce33b38ff06b069d35d46c795c2a5f81c0907f288bb662a001ab740760cc90b2"
