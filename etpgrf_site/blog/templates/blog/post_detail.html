@@ -2,6 +2,7 @@
 {% load static typograph_extras %}
 
 {# --- SEO --- #}
+{# В title и description НЕ используем escapejs, так как это HTML, а не JS #}
 {% block title %}{% if post.seo_title %}{{ post.seo_title }}{% else %}{{ post.title|striptags|unescape|safe }}{% endif %} — ETPGRF{% endblock %}
 {% block description %}{% if post.seo_description %}{{ post.seo_description }}{% else %}{{ post.excerpt|striptags|unescape|safe|truncatechars:160 }}{% endif %}{% endblock %}
 {% block keywords %}{% if post.seo_keywords %}{{ post.seo_keywords }}{% else %}типограф, типографика, блог типограф, онлайн типограф, подготовка текста для веба, html типограф, неразрывные пробелы, кавычки елочки, длинное тире, очистка текста от мусора, интернет верстка, муравьев, лебедев{% endif %}{% endblock %}
@@ -48,7 +49,8 @@
           {{ post.published_at|date:"d.M.Y"|lower }}
         </small>
       </p>
-      <p>{% if post.image %}
+      {# Картинка скрыта на мобильных (d-none), видна на больших экранах (d-lg-block) #}
+      <p class="d-none d-lg-block">{% if post.image %}
         <img src="{{ post.image.url }}" class="w-100" alt="{{ post.title|striptags|unescape|safe }}"/>
         {% else %}<img src="{% static 'img/etpgrf-logo-for-fb-vk-x.gif' %}" class="w-100" alt="{{ post.title|striptags|unescape|safe }}"/>
       {% endif %}</p>
