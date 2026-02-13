@@ -1,6 +1,6 @@
 # ETPGRF Site — Онлайн-типограф
 
-![Version](https://img.shields.io/badge/version-0.2.4-blue)
+![Version](https://img.shields.io/badge/version-0.2.5-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Python](https://img.shields.io/badge/python-3.13-yellow)
 ![Django](https://img.shields.io/badge/django-6.0-green)
