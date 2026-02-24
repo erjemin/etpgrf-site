@@ -21,208 +21,53 @@
     {# Правая колонка: Контент #}
     <div class="col-lg-10 border-start ps-lg-4 post-page-content">
 
-      <h1>Журнал изменений</h1>
+      <h1>Чистые, типогра&shy;фированные заголовки в&nbsp;админке Django: убираем HTML-мнемоники</h1>
 
       <div class="lead bg-secondary bg-opacity-10 p-3 rounded">
-        <p>На&nbsp;этой странице задокумен&shy;тированы заметные изменения в&nbsp;проекте: настоящего сайта для&nbsp;онлайн-типографа и&nbsp;библиотеки etpgrf.</p>
-        <p dir="auto">Формат основан на <a href="https://keepachangelog.com/en/1.0.0/" rel="nofollow" target="_blank">Keep a&nbsp;Changelog</a>, и&nbsp;придер&shy;живается <a href="https://semver.org/spec/v2.0.0.html" rel="nofollow" target="_blank">Semantic Versioning</a>.</p>
+        <p>Библиотека типографа <tt>etpgrf</tt> написана на&nbsp;Python, и&nbsp;потому его исполь&shy;зование в&nbsp;Django&nbsp;— наиболее распрос&shy;траненный случай. Когда в&nbsp;Django вы&nbsp;храните в&nbsp;базе данных типогра&shy;фированный текст (с&nbsp;HTML-мнемониками: неразрывными пробелами <code>&amp;nbsp;</code>, мягкими переносами <code>&amp;shy;</code> и&nbsp;тому подобное), то&nbsp;стандартный список в&nbsp;админке Django превращается в&nbsp;не&nbsp;очень удобо&shy;читаемую кашу из&nbsp;спецсимволов. Рассказываем, как&nbsp;это исправить за&nbsp;пару строк кода.</p>
       </div>
 
       <hr>
 
       <div class="row align-items-start">
 <div class="col border-end">
-<h3>Сайт typograph.cube2.ru</h3>
 
-          <p>Исходный код сайта онланй-типографа <tt>etpgrf</tt> доступен в&nbsp;нескольких репози&shy;ториях (<a href="https://github.com/erjemin/etpgrf-site" target="_blank">GitHub</a>, <a href="https://gitverse.ru/erjemin/etpgrf-site" target="_blank">GitVerse</a> и&nbsp;<a href="https://git.cube2.ru/erjemin/2026-etpgrf-site" target="_blank">Сube2</a>.  Наиболее заметные изменения сайта онлайн-типографа приводятся ниже в&nbsp;хронологическом порядке. Для&nbsp;полного списка изменений, включая мелкие фиксы и&nbsp;коммиты, пожалуйста, обратитесь к&nbsp;истории репозитория.</p>
+          <h2>Проблема</h2>
+<p>Представьте, что у&nbsp;вас есть модель <code>Post</code> в&nbsp;которой хранятся записи блога, и&nbsp;вы&nbsp;прогнали заголовки через&nbsp;типограф (например, через&nbsp;наш <a href="/">онлайн-типограф</a> или с&nbsp;помощью библиотеки <tt>etpgrf</tt>). В&nbsp;базе данных заголовок выглядит так:</p>
+<pre class="border p-3 my-3 bg-secondary bg-opacity-25">Политика безопасности и&amp;nbsp;конфи&amp;shy;денциаль&amp;shy;ности</pre>
+<p>На&nbsp;сайте это будет отлично выглядеть для&nbsp;браузера, но&nbsp;в&nbsp;панели админис&shy;тратора или контент-менеджера это ужасно, так как&nbsp;Django «маскирует» <code>&amp;</code> и&nbsp;все HTML-мнемоники будут видны во&nbsp;всей красе. В&nbsp;списке объектов (Change List) будет виден «сырой» HTML-код, и&nbsp;читать такое сложно, особенно если мнемоник много.</p>
+<h2>Решение</h2>
+<p>Нам нужно, чтобы в&nbsp;списке (<code>list_display</code>) отображался «чистый» текст, а&nbsp;в&nbsp;форме редакти&shy;рования оставался исходный HTML (чтобы его было легче править).</p>
+<p>Для&nbsp;этого мы&nbsp;добавим в&nbsp;класс <code>ModelAdmin</code> специальный метод, который будет декодировать HTML-мнемоники перед&nbsp;выводом в&nbsp;админку.</p>
+<h3>Шаг 1. Импортируем модуль html</h3>
+<p>В&nbsp;Python есть встроенная библиотека <code>html</code>, которая умеет делать <code>unescape</code> — превращать мнемоники, например <code>&amp;nbsp;</code> или <code>&amp;shy;</code>, unicode. <code>&amp;nbsp;</code> превратится в&nbsp;неразрывный пробел, а&nbsp;<code>&amp;shy;</code> в&nbsp;мягкий перенос.</p>
+<h3>Шаг 2. Создаем метод в&nbsp;админке</h3>
+<p>В&nbsp;файле <code>admin.py</code>:</p>
+<pre class="border p-3 my-3 rounded bg-secondary bg-opacity-25">from django.contrib import admin
+import html
+from .models import Post
 
-          <h4>[0.2.5]&nbsp;— 2025–02–13</h4>
-          <h5>Добавлено</h5>
-          <ul>
-            <li>Редизайн списка постов в&nbsp;блоге: шахматный порядок, вертикальные разделители, улучшенная адаптивность для&nbsp;мобильных
-              устройств.
-            </li>
-            <li>Поле <code>updated_at</code> (<em>Дата обновления</em>) в&nbsp;модели, админке, блогах, страницах, <tt>sitemaps.xml</tt> и&nbsp;микро&shy;разметке <tt>Schema.org</tt> для&nbsp;улучшения <abbr title="Search Engine Optimization / Поисковая оптимизация">SEO</abbr>, <abbr title="Generative Engine Optimization / Оптимизацию для Генеративных нейросетей и ИИ-поисковиков">GEO</abbr> и&nbsp;<abbr title="Large Language Model Optimization / Оптимизация под Большие Языковые Модели">LLMO</abbr>.
-            </li>
-            <li><tt>README.md</tt> с&nbsp;описанием проекта онлайн-типографа, его особенностей, технического стека и&nbsp;инструкциями по&nbsp;установке и&nbsp;запуску.
-            </li>
-            <li>Отображение заголовков постов в&nbsp;списке админки без&nbsp;HTML-мнемоник (декоди&shy;рование <code>&amp;nbsp;</code> и&nbsp;др.).
-            </li>
-          </ul>
-          <h5>Изменено</h5>
-          <ul>
-            <li>Исправлены ошибки в&nbsp;шаблоне <tt>post_list.html</tt> (и&nbsp;полностью переработан дизайн в&nbsp;целом).
-              <ul>
-                <li>Улучшено отображение даты и&nbsp;скрытие декоративных изображений в&nbsp;списке постов на&nbsp;мобильных устройствах.
-                </li>
-                <li>Оптими&shy;зированы отступы и&nbsp;типографика в&nbsp;списке постов.</li>
-              </ul>
-            </li>
-            <li>Формирование <code>slug</code> из&nbsp;<code>title</code> при&nbsp;сохранении&nbsp;поста или страницы с&nbsp;исполь&shy;зованием библиотеки <code>pytils</code> для&nbsp;трансли&shy;терации с&nbsp;очистикой от&nbsp;HTML-мнемоник и&nbsp;создания <abbr title="Uniform Resource Locator / Унифицированный Указатель Ресурса">URL</abbr>-дружес&shy;твенных строк.
-            </li>
-            <li>Дизайн и&nbsp;вёрстка страниц для&nbsp;постов блога и&nbsp;вспомо&shy;гательных страниц для&nbsp;мобильных устройств (адаптивность, скрытие картинки-обложки).
-            </li>
-          </ul>
+@admin.register(Post)
+class PostAdmin(admin.ModelAdmin):
+    # В list_display указываем не поле 'title', а наш метод 'clean_title'
+    list_display = ('clean_title', 'is_published', 'published_at')
 
-          <h4>[0.2.4]&nbsp;— 2025–02–12</h4>
-          <h5>Добавлено</h5>
-          <ul>
-            <li>Микро&shy;разметка <code>Schema.org</code> (JSON-LD) для&nbsp;постов и&nbsp;страниц для&nbsp;улучшения
-              SEO и&nbsp;понимания контента поисковиками и&nbsp;ИИ.
-            </li>
-            <li>Файл <code>llms.txt</code> для&nbsp;предоста&shy;вления информации о&nbsp;сайте и&nbsp;API для&nbsp;больших
-              языковых моделей (<abbr title="Large Language Model">LLM</abbr>) в&nbsp;соответвиии со&nbsp;стандартом GEO
-              и&nbsp;LLMO.
-            </li>
-            <li>Кастомный фильтр <code>unescape</code> для&nbsp;очистки мета-тегов от&nbsp;HTML-сущностей и&nbsp;переводов
-              строк.
-            </li>
-          </ul>
-          <h5>Исправлено</h5>
-          <ul>
-            <li>Исправлена ошибка, при&nbsp;которой счетчик символов не&nbsp;обновлялся при&nbsp;восста&shy;новлении&nbsp;вкладки
-              из&nbsp;истории браузера.
-            </li>
-            <li>Исправлена ошибка экрани&shy;рования кавычек в&nbsp;<tt>JSON-LD</tt>, <tt>Title</tt> и&nbsp;<tt>Description</tt>.
-            </li>
-            <li>В&nbsp;<code>docker-compose.yaml</code> додавлен перезапуск <code>watchtower</code> при&nbsp;его
-              остановке.
-            </li>
-          </ul>
-          <h4>[0.2.3]&nbsp;— 2025–02–11</h4>
-          <h5>Изменено</h5>
-          <ul>
-            <li>Добавлена кнопка очистки текста во&nbsp;вводном поле и&nbsp;счетчик вводимых символов.</li>
-          </ul>
-          <h4>[0.2.2]&nbsp;— 2025–02–03</h4>
-          <h5>Изменено</h5>
-          <ul>
-            <li>В&nbsp;онлайн-типографе подключена новая версия библиотеки etpgrf (v0.1.3 → v0.1.4).</li>
-            <li>Незначи&shy;тельные улучшения в&nbsp;оформлении.</li>
-          </ul>
-          <h4>v0.2.1&nbsp;— 2026–01–30</h4>
-          <h5>Исправлено</h5>
-          <ul>
-            <li>Исправление ошибок при&nbsp;формировании&nbsp;мета-тегов, картинок, <code>alt</code> под&nbsp;картинками
-              и&nbsp;т.&thinsp;п.
-            </li>
-            <li>Исправлена ошибка в&nbsp;настройках nginx внутри docker-контейнера возникавшая при&nbsp;отдаче
-              media-файлов.
-            </li>
-          </ul>
-          <h5>Изменено</h5>
-          <ul>
-            <li>При&nbsp;создании&nbsp;записи в&nbsp;блог или страницы «тизер» обязателен!</li>
-          </ul>
+    # ... остальные настройки ...
 
-          <h4>v0.2.0&nbsp;— 2026–01–28</h4>
-          <h5>Добавлено</h5>
-          <ul>
-            <li>Приложение blog (для&nbsp;страниц и&nbsp;постов) и&nbsp;соответ&shy;ствующие изменения в&nbsp;моделях базы, добавление новых view и&nbsp;шаблонов.</li>
-            <li>Песочница (шаблон <code>blog/templates/blog/tmp.html</code> для&nbsp;тестирования верстки (доступен только в&nbsp;режиме debug).</li>
-            <li>Динамическое создание sitemap.xml</li>
-            <li>robots.txt</li>
-            <li>Изменения в&nbsp;шапке сайта (меню и&nbsp;бургер)</li>
-          </ul>
-          <h5>Изменено</h5>
-          <ul>
-            <li>Спрятан <code>url</code> админки типографа. Его расположение теперь задается через&nbsp;переменные окружения в&nbsp;<code>.env</code>.</li>
-            <li><code>favicon.ico</code> оптими&shy;зирована для&nbsp;Яндекс (120х120px).</li>
-            <li>Исправлено поведение шапки и&nbsp;логотива для&nbsp;мобильных устройств.</li>
-            </ul>
-
-         <h4>v0.1.8&nbsp;— 2026–01–23</h4>
-            Коммит:
-            846c066
-
-          <h4>v0.1.7&nbsp;— 2026–01–23</h4>
-            Коммит:
-            d74bee2
-
-          <h4>v0.1.6&nbsp;— 2026–01–23</h4>
-            Коммит:
-            6b4dbaf
-
-          <h4>v0.1.5&nbsp;— 2026–01–21</h4>
-            Коммит:
-            78174a8
-
-          <h4>v0.1.4&nbsp;— 2026–01–20</h4>
-            Коммит:
-            2d09aef
-
-          <h4>v0.1.3&nbsp;— 2026–01–19</h4>
-            Коммит:
-            66f2228
-
-          <h4>v0.1.2&nbsp;— 2026–01–18</h4>
-            Коммит:
-            92711f5
-
-          <h4>v0.1.1&nbsp;— 2026–01–16</h4>v0.1.1
-            Коммит:
-            5d5d48d
-
-          <h4>v0.1.0&nbsp;— 2026–01–16</h4>
-            Коммит:
-            3a7bb29
-
-        </div>
-<div class="col border-start">
-<h3>Библиотека etpgrf</h3>
-<p>
-            Исходный код etpgrf-типографа доступен в&nbsp;нескольких репози&shy;ториях (<a href="https://github.com/erjemin/etpgrf" target="_blank">GitHub</a>, <a href="https://gitverse.ru/erjemin/etpgrf" target="_blank">GitVerse</a>, <a href="https://git.cube2.ru/erjemin/2025-etpgrf" target="_blank">Сube2</a>, и&nbsp;<a href="https://pypi.org/project/etpgrf/" target="_blank">PyPI</a>), распрос&shy;траняется под&nbsp;лицензией <a href="https://opensource.org/licenses/MIT" target="_blank">MIT</a>, может быть установлен локально, на&nbsp;ваш сайт или&nbsp;интегри&shy;рован в&nbsp;ваши проекты как&nbsp;Python-библиотека.
-          </p>
-<h4>[0.1.4] - 2025–02–03</h4>
-<h5>Изменено</h5>
+    # Декоратор @admin.display позволяет настроить название колонки и сортировку
+    @admin.display(description='Заголовок', ordering='title')
+    def clean_title(self, obj):
+        # Декодируем HTML-сущности (&nbsp; -&gt; U+00A0)
+        return html.unescape(obj.title)
+</pre>
+<h2>Как&nbsp;это работает?</h2>
 <ul>
-<li><b>Архите&shy;ктурное улучшение:</b> Полностью переработан механизм обработки HTML.</li>
-<li>Внедрены <b>маркеры границ узлов</b> (<code>\uFFFF</code>) при&nbsp;сборке текста. Это позволяет корректно восста&shy;навливать структуру HTML даже если длина текста изменилась в&nbsp;процессе обработки (например, при&nbsp;удалении&nbsp;лишних пробелов).</li>
-<li>Внедрены <b>плейсхолдеры</b> (<code>\uFFFC</code>) для&nbsp;защищенных тегов (<code>&lt;code&gt;</code>, <code>&lt;script&gt;</code> и&nbsp;др.). Теперь содержимое этих тегов физически изолируется перед&nbsp;обработкой, что предот&shy;вращает «протекание» контекста (например, склеивание слов, разделенных кодом).</li>
+<li>Метод <code>clean_title</code> получает объект модели.</li>
+<li><code>html.unescape(obj.title)</code> превращает HTML-мнемоники в&nbsp;Unicode: <code>&amp;nbsp;</code> в&nbsp;символ неразрывного пробела (<tt>U+00A0</tt>); <code>&amp;shy;</code> — в&nbsp;мягкий перенос (<tt>U+00AD</tt>) и&nbsp;так далее.</li>
+<li>Unicode не&nbsp;маскируется адимнкой Django, символы выглядят как&nbsp;обычный текст (или вообще не&nbsp;видны), поэтому список становится чистым и&nbsp;читаемым (и&nbsp;даже, более того, в&nbsp;списке уже будут типогра&shy;фированные поля <code>title</code>).</li>
+<li>При&nbsp;этом сортировка по&nbsp;колонке (<code>ordering='title'</code>) продолжает работать по&nbsp;ориги&shy;нальному полю в&nbsp;базе данных.</li>
 </ul>
-<h5>Исправлено</h5>
-<ul>
-<li>Исправлена ошибка смещения текста при&nbsp;наличии спецсимволов (мнемоник) или при&nbsp;изменении&nbsp;длины строки.</li>
-<li>Исправлена обработка кавычек, стоящих вплотную к&nbsp;границам тегов (например, <code>"&lt;b&gt;Текст&lt;/b&gt;"</code>).</li>
-</ul>
-<h4>v0.1.3&nbsp;— 2026–01–11</h4>
-<h5>Исправлено</h5>
-<ul>
-<li>Исправлена проблема с&nbsp;появлением лишних тегов <code>&lt;html&gt;</code> и&nbsp;<code>&lt;body&gt;</code> при&nbsp;обработке фрагментов HTML (когда исполь&shy;зуется парсер <code>lxml</code>). Теперь типограф автома&shy;тически определяет, был&nbsp;ли на&nbsp;входе полноценный документ или&nbsp;фрагмент, и&nbsp;возвращает соответ&shy;ствующий результат.</li>
-</ul>
-<h4>v0.1.2&nbsp;— 2025–12–27</h4>
-<h5>Исправлено</h5>
-<ul>
-<li><strong>Критическое исправление:</strong> Добавлена отсут&shy;ствующая зависимость <code>regex</code> в&nbsp;<code>pyproject.toml</code>. Без&nbsp;неё библиотека падала при&nbsp;импорте.</li>
-</ul>
-<h4>v0.1.1&nbsp;— 2025–12–23</h4>
-<h5>Добавлено</h5>
-<ul>
-<li>Ссылки на&nbsp;зеркала репозитория (GitVerse, Gitea) в&nbsp;<code>pyproject.toml</code> и&nbsp;<code>README.md</code>.</li>
-<li>Раздел Credits в&nbsp;документации.</li>
-</ul>
-<h4>v0.1.0&nbsp;— 2025–12–23</h4>
-<h5>Добавлено</h5>
-<ul>
-<li>Первый публичный релиз библиотеки <code>etpgrf</code>.</li>
-<li>
-                Основные модули:
-                <ul>
-<li><code>Typographer</code>: основной класс-оркестратор.</li>
-<li><code>Hyphenator</code>: расстановка мягких переносов (алгоритм Ляна-Кнута).</li>
-<li><code>QuotesProcessor</code>: замена кавычек («ёлочки», „лапки“).</li>
-<li><code>Unbreakables</code>: неразрывные пробелы для&nbsp;предлогов, союзов и&nbsp;частиц.</li>
-<li><code>LayoutProcessor</code>: типографика тире, инициалов, акронимов, единиц измерения, устойчивых сокращений (постпо&shy;зиционных и&nbsp;препози&shy;ционных).</li>
-<li><code>SymbolsProcessor</code>: псевдо&shy;графика (тире, стрелочки, копирайт и&nbsp;т.&thinsp;п.)</li>
-<li><code>HangingPunctuationProcessor</code>: висячая пунктуация.</li>
-<li><code>SanitizerProcessor</code>: очистка HTML перед&nbsp;обработкой.</li>
-</ul>
-</li>
-<li>Поддержка русского, русского дорефо&shy;рменного и&nbsp;английского языков.</li>
-<li>Поддержка обработки HTML (через&nbsp;BeautifulSoup).</li>
-</ul>
-</div>
-</div>
+<p>Теперь админка выглядит опрятно, а&nbsp;типографика на&nbsp;сайте остается безупречной!</p>
 
     </div>
   </div>
