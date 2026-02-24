@@ -21,54 +21,222 @@
     {# Правая колонка: Контент #}
     <div class="col-lg-10 border-start ps-lg-4 post-page-content">
 
-      <h1>Чистые, типогра&shy;фированные заголовки в&nbsp;админке Django: убираем HTML-мнемоники</h1>
+      <h1>Как&nbsp;«подружить» Django Admin и&nbsp;типограф etpgrf: Виртуальные поля для&nbsp;настроек</h1>
 
       <div class="lead bg-secondary bg-opacity-10 p-3 rounded">
-        <p>Библиотека типографа <tt>etpgrf</tt> написана на&nbsp;Python, и&nbsp;потому его исполь&shy;зование в&nbsp;Django&nbsp;— наиболее распрос&shy;траненный случай. Когда в&nbsp;Django вы&nbsp;храните в&nbsp;базе данных типогра&shy;фированный текст (с&nbsp;HTML-мнемониками: неразрывными пробелами <code>&amp;nbsp;</code>, мягкими переносами <code>&amp;shy;</code> и&nbsp;тому подобное), то&nbsp;стандартный список в&nbsp;админке Django превращается в&nbsp;не&nbsp;очень удобо&shy;читаемую кашу из&nbsp;спецсимволов. Рассказываем, как&nbsp;это исправить за&nbsp;пару строк кода.</p>
+
+        <p>Многие контент-проекты сталкиваются с&nbsp;дилеммой: хочется красивой типографики (правильные кавычки «ёлочки», длинные тире <code>—</code>, неразрывные пробелы <code>&amp;nbsp;</code>). Самое очевидное решение&nbsp;— переопре&shy;делить метод <code>safe()</code>, но&nbsp;каждый блок текста&nbsp;— заглоаок, тизер, статья&nbsp;— требуют разных настроек. В&nbsp;заголовках хочестя иметь «висячую пунктуацию» и&nbsp;запретить переносы в&nbsp;словах, для&nbsp;основного текста публикации&nbsp;— наоборот, одна публикация на&nbsp;английском и&nbsp;нужны кавычки “лапки”, другая на&nbsp;русском&nbsp;— и&nbsp;нужны «ёлочки».</p>
+        <p>Хранить все настройки в&nbsp;базе данных (добавляя десятки полей <code>bool</code> в&nbsp;модель)&nbsp;— плохая идея. Это «засоряет» схему данных параметрами отображения, раздувает базу «мусорной информацией» и&nbsp;некрасиво с&nbsp;точки зрения архитектуры.</p>
+        <p><strong>Решение:</strong> Если у&nbsp;вас Django в&nbsp;качестве бэкенда, то&nbsp;наилучший подход&nbsp;— использовать «Виртуальные поля» (Virtual Fields) в&nbsp;Django Admin: Добавить настройки типографа прямо в&nbsp;форму редакти&shy;рования админки, применить эти настройки при&nbsp;сохранении, и&nbsp;забыть о&nbsp;них, сохранив в&nbsp;базу только готовый, красивый HTML.</p>
+
       </div>
-
       <hr>
+      <div class="post-content mt-4">
 
-      <div class="row align-items-start">
-<div class="col border-end">
+        <p>Разберём задачу на&nbsp;конкретном примере. У&nbsp;меня есть сайт с&nbsp;цитатами (<a href="https://dq.cube2.ru/" target="_blank">DQ&nbsp;– коллекция цитат. Место для&nbsp;вдумчивого чтения</a>, в&nbsp;нем большое внимание уделяется типографике, а&nbsp;значит при&nbsp;размещении&nbsp;цитат через&nbsp;иметь возможность не&nbsp;только редакти&shy;ровать текст, но&nbsp;и&nbsp;управлять настройками типографа. В&nbsp;проекте есть модель <code>Dictum</code> с&nbsp;полем <code>content</code> (исходный текст) и&nbsp;<code>content_html</code> (типогра&shy;фированный HTML для&nbsp;вывода на&nbsp;сайте). Я&nbsp;хочу, чтобы редактор мог управлять настройками типографа (язык, кавычки, переносы) прямо в&nbsp;админке, не&nbsp;меняя структуру БД.</p>
+        <h2>Инструменты</h2>
+      <ul>
+      <li><strong>Django 6.0</strong> (или любая актуальная версия) – «движок».</li>
+      <li><strong>etpgrf</strong> — библиотека типографики.</li>
+      </ul>
+      <h2>Реализация</h2>
+      <p>Идея в&nbsp;том, чтобы создать в&nbsp;админке дополни&shy;тельные «Виртуальные поля», которых нет в&nbsp;модели. Эти поля будут исполь&shy;зоваться только для&nbsp;настройки типографа при&nbsp;сохранении. Например, можно добавить выпадающий список для&nbsp;выбора языка (русский, английский), галочку для&nbsp;включения обработки кавычек, и&nbsp;т.&thinsp;д. При&nbsp;сохранении&nbsp;мы&nbsp;будем читать эти поля, настраивать типограф и&nbsp;сохранять результат в&nbsp;базу.</p>
+      <h3>Шаг 1. Добавляем необходимые импорты модулей etpgrf-типографа в&nbsp;<tt>admin.py</tt></h3>
+      <pre class="border p-3 my-3 rounded bg-secondary bg-opacity-25">from django.contrib import admin
+# Импортируем классы из нашей библиотеки типографики etpgrf
+try:
+    from etpgrf.typograph import Typographer
+    from etpgrf.layout import LayoutProcessor
+    from etpgrf.hyphenation import Hyphenator
+    from etpgrf.sanitizer import Sanitizer
+except ImportError:
+    # Заглушки на случай, если библиотека не установлена
+    class Typographer:
+        def __init__(self, **kwargs): pass
+        def process(self, text): return text
+    class LayoutProcessor:
+        def __init__(self, **kwargs): pass
+    class Hyphenator:
+         def __init__(self, **kwargs): pass</pre>
+      <h3>Шаг 2. Создаем кастомную форму</h3>
+      <p>Вместо стандартной формы админки (в&nbsp;<tt>admin.py</tt>, мы&nbsp;определим свою, унаследовав её от&nbsp;<code>forms.ModelForm</code>. В&nbsp;ней мы&nbsp;добавим поля, которых <strong>нет в&nbsp;модели</strong>:</p>
+      <pre class="border p-3 my-3 rounded bg-secondary bg-opacity-25">
+from django import forms
+from .models import TbDictumAndQuotes
 
-          <h2>Проблема</h2>
-<p>Представьте, что у&nbsp;вас есть модель <code>Post</code> в&nbsp;которой хранятся записи блога, и&nbsp;вы&nbsp;прогнали заголовки через&nbsp;типограф (например, через&nbsp;наш <a href="/">онлайн-типограф</a> или с&nbsp;помощью библиотеки <tt>etpgrf</tt>). В&nbsp;базе данных заголовок выглядит так:</p>
-<pre class="border p-3 my-3 bg-secondary bg-opacity-25">Политика безопасности и&amp;nbsp;конфи&amp;shy;денциаль&amp;shy;ности</pre>
-<p>На&nbsp;сайте это будет отлично выглядеть для&nbsp;браузера, но&nbsp;в&nbsp;панели админис&shy;тратора или контент-менеджера это ужасно, так как&nbsp;Django «маскирует» <code>&amp;</code> и&nbsp;все HTML-мнемоники будут видны во&nbsp;всей красе. В&nbsp;списке объектов (Change List) будет виден «сырой» HTML-код, и&nbsp;читать такое сложно, особенно если мнемоник много.</p>
-<h2>Решение</h2>
-<p>Нам нужно, чтобы в&nbsp;списке (<code>list_display</code>) отображался «чистый» текст, а&nbsp;в&nbsp;форме редакти&shy;рования оставался исходный HTML (чтобы его было легче править).</p>
-<p>Для&nbsp;этого мы&nbsp;добавим в&nbsp;класс <code>ModelAdmin</code> специальный метод, который будет декодировать HTML-мнемоники перед&nbsp;выводом в&nbsp;админку.</p>
-<h3>Шаг 1. Импортируем модуль html</h3>
-<p>В&nbsp;Python есть встроенная библиотека <code>html</code>, которая умеет делать <code>unescape</code> — превращать мнемоники, например <code>&amp;nbsp;</code> или <code>&amp;shy;</code>, unicode. <code>&amp;nbsp;</code> превратится в&nbsp;неразрывный пробел, а&nbsp;<code>&amp;shy;</code> в&nbsp;мягкий перенос.</p>
-<h3>Шаг 2. Создаем метод в&nbsp;админке</h3>
-<p>В&nbsp;файле <code>admin.py</code>:</p>
-<pre class="border p-3 my-3 rounded bg-secondary bg-opacity-25">from django.contrib import admin
-import html
-from .models import Post
+class DictumAdminForm(forms.ModelForm):
+    # Виртуальные поля для настройки типографа
+    etp_language = forms.ChoiceField(
+        label="Язык типографики",
+        choices=[('ru', 'Русский'), ('en', 'English'), ('ru,en', 'Ru + En')],
+        initial='ru',
+        required=False
+    )
+    etp_quotes = forms.BooleanField(
+        label="Обработка кавычек",
+        initial=True,
+        required=False,
+        help_text="Заменять прямые кавычки на «ёлочки» или “лапки”"
+    )
+    etp_hanging_punctuation = forms.ChoiceField(
+        label="Висячая пунктуация",
+        choices=[('no', 'Нет'), ('left', 'Слева'), ('right', 'Справа'), ('both', 'Обе стороны')],
+        initial='left',
+        required=False,
+        help_text="Выносить кавычки за границу текстового блока"
+    )
+    etp_hyphenation = forms.BooleanField(
+        label="Переносы",
+        initial=True,
+        required=False,
+        help_text="Расставлять мягкие переносы (&amp;shy;)"
+    )
+    etp_mode = forms.ChoiceField(
+        label="Режим вывода",
+        choices=[('mixed', 'Смешанный (Mixed)'), ('unicode', 'Юникод (Unicode)'), ('mnemonic', 'Мнемоники')],
+        initial='mixed',
+        required=False,
+        help_text="Формат спецсимволов"
+    )
 
-@admin.register(Post)
-class PostAdmin(admin.ModelAdmin):
-    # В list_display указываем не поле 'title', а наш метод 'clean_title'
-    list_display = ('clean_title', 'is_published', 'published_at')
+    class Meta:
+        model = TbDictumAndQuotes
+        fields = '__all__'</pre>
+      <h3>Шаг 3. Настраиваем ModelAdmin</h3>
+      <p>Теперь, там&nbsp;же в&nbsp;<tt>admin.py</tt>, подключаем эту форму к&nbsp;нашему классу админки. Главный трюк&nbsp;— использовать <code>fieldsets</code>, чтобы сгруп&shy;пировать эти новые поля в&nbsp;отдельный, свора&shy;чиваемый блок «Настройки типографа».</p>
+      <pre class="border p-3 my-3 rounded bg-secondary bg-opacity-25">
+class AdmDictumAndQuotesAdmin(admin.ModelAdmin):
+    form = DictumAdminForm  # Подключаем нашу форму
+    # ... другие настройки админки (list_display, search_fields и т.д.) ...
+    # ...
+    # ...
 
-    # ... остальные настройки ...
+    # Группировка "виртуальных полей" типографа в отдельный блок
+    fieldsets = (
+        # Основные поля модели (можно оставить как есть, или сгруппировать по своему усмотрению).
+        # Поле szContent может быть в этом же блоке, так как мы его как раз типографируем.
+        # (None, {
+        #    'fields': ( ... 'szContent', ... )
+        # }),
+        ('Настройки типографа (Etpgrf)', {
+            'classes': ('collapse',),
+            'fields': (
+                ('etp_language', 'etp_mode'),
+                ('etp_hyphenation', 'etp_hanging_punctuation'),
+            ),
+            'description': 'Настройки применяются при сохранении. Результат записывается в скрытые HTML-поля.'
+        }),
+        # ... другие fieldsets, если нужно ...
+        # ...
+        # ... Например, можно добавить отдельный блок для отображения результата типографирования (только для чтения) ...
+        # ('HTML Результат (ReadOnly)', {
+        #     'classes': ('collapse',),
+        #     'fields': ('szContentHTML',),
+        # }),
+    )
 
-    # Декоратор @admin.display позволяет настроить название колонки и сортировку
-    @admin.display(description='Заголовок', ordering='title')
-    def clean_title(self, obj):
-        # Декодируем HTML-сущности (&nbsp; -&gt; U+00A0)
-        return html.unescape(obj.title)
-</pre>
-<h2>Как&nbsp;это работает?</h2>
-<ul>
-<li>Метод <code>clean_title</code> получает объект модели.</li>
-<li><code>html.unescape(obj.title)</code> превращает HTML-мнемоники в&nbsp;Unicode: <code>&amp;nbsp;</code> в&nbsp;символ неразрывного пробела (<tt>U+00A0</tt>); <code>&amp;shy;</code> — в&nbsp;мягкий перенос (<tt>U+00AD</tt>) и&nbsp;так далее.</li>
-<li>Unicode не&nbsp;маскируется адимнкой Django, символы выглядят как&nbsp;обычный текст (или вообще не&nbsp;видны), поэтому список становится чистым и&nbsp;читаемым (и&nbsp;даже, более того, в&nbsp;списке уже будут типогра&shy;фированные поля <code>title</code>).</li>
-<li>При&nbsp;этом сортировка по&nbsp;колонке (<code>ordering='title'</code>) продолжает работать по&nbsp;ориги&shy;нальному полю в&nbsp;базе данных.</li>
-</ul>
-<p>Теперь админка выглядит опрятно, а&nbsp;типографика на&nbsp;сайте остается безупречной!</p>
+    # ...</pre>
+      <h3>Шаг 4. Перехват сохранения (save_model)</h3>
+      <p>Сейчас, когда у&nbsp;нас есть форма с&nbsp;дополни&shy;тельными полями, нам нужно:</p>
+      <ol>
+      <li>Переопре&shy;делить метод <code>save_model</code> в&nbsp;нашем классе админки.</li>
+      <li>Внутри этого метода прочитать значения виртуальных полей из&nbsp;формы (<code>LayoutProcessor</code>, <code>Hyphenator</code> и&nbsp;другие).</li>
+      <li>Инициали&shy;зировать <code>Typographer</code> с&nbsp;этими настройками.</li>
+      <li>Обработать текст из&nbsp;полей <code>szContent</code>, сохранив результат в&nbsp;<code>szContentHTML</code>.</li>
+      </ol>
+      <pre class="border p-3 my-3 rounded bg-secondary bg-opacity-25">
+    def save_model(self, request, obj, form, change):
+        # 1. Читаем базовые настройки языка и режима из формы
+        langs = form.cleaned_data.get('etp_language', 'ru').split(',')
 
-    </div>
+        # 2. Собираем LayoutProcessor
+        layout_option = False
+        # Включаем layout по умолчанию с базовыми настройками (инициалы, юниты)
+        layout_option = LayoutProcessor(
+            langs=langs,
+            process_initials_and_acronyms=True,
+            process_units=True
+        )
+
+        # 3. Собираем Hyphenator (переносы слов)
+        hyphenation_enabled = form.cleaned_data.get('etp_hyphenation', True)
+        hyphenation_option = False
+        if hyphenation_enabled:
+            hyphenation_option = Hyphenator(
+                langs=langs,
+                max_unhyphenated_len=12
+            )
+
+        # 4. Читаем Hanging Punctuation (висячая пунктуация)
+        hanging_val = form.cleaned_data.get('etp_hanging_punctuation', 'no')
+        hanging_option = None
+        if hanging_val != 'no':
+            hanging_option = hanging_val
+
+        # 5. Собираем все настройки типографа в словарь
+        options = {
+            'langs': langs,
+            'process_html': True,
+            'quotes': form.cleaned_data.get('etp_quotes', True),
+            'layout': layout_option,
+            'unbreakables': True,
+            'hyphenation': hyphenation_option,
+            'symbols': True,
+            'hanging_punctuation': hanging_option,
+            'mode': form.cleaned_data.get('etp_mode', 'mixed'),
+        }
+
+        # Инициализируем типограф с настройками из формы
+        try:
+            # DEBUG: Проверка, какой класс используется
+            if Typographer.__module__ == __name__: # Если класс определен в этом же файле (заглушка)
+                 self.message_user(request, "ВНИМАНИЕ: Используется заглушка Typographer! Библиотека etpgrf не найдена.", level='WARNING')
+
+            t = Typographer(**options)
+
+            # Обрабатываем контент
+            if obj.szContent:
+                # В онлайн-типографе используется .process(text)
+                old_html = obj.szContentHTML or ""
+                processed = t.process(obj.szContent)
+                obj.szContentHTML = processed
+
+                # DEBUG: Проверка изменений
+                if processed != old_html and processed != obj.szContent:
+                     self.message_user(request, f"Типограф: szContentHTML обновлен (len changed: {len(old_html)} -&gt; {len(processed)})", level='INFO')
+
+
+        except Exception as e:
+            # Возникла ошибка при обработке типографом, сохраняем оригинальный текст и показываем сообщение об ошибке
+            self.message_user(request, f"Ошибка типографа: {e}", level='ERROR')
+            if not obj.szContentHTML: obj.szContentHTML = obj.szContent
+
+        super().save_model(request, obj, form, change)</pre>
+      <h3>Шаг 5. Очистка модели</h3>
+      <p>Так как&nbsp;логика обработки и&nbsp;сохранения поля <code>szContentHTML</code> «переехала» в&nbsp;админку, нам нужно <strong>убрать</strong> логику его записи из&nbsp;метода <code>save()</code> модели внутри <tt>models.py</tt>.
+              </p><p>Теперь метод <code>save()</code> в&nbsp;<tt>models.py</tt> должен быть максимально простым:</p>
+      <pre class="border p-3 my-3 rounded bg-secondary bg-opacity-25">
+class TbDictumAndQuotes(models.Model):
+    # ... поля ...
+    # ...
+    # ...
+
+    def save(self, *args, **kwargs):
+        # Типографирование поля szContentHTML перенесено в админку (через admin.save_model).
+        # Здесь оставляем только базовую подстраховку: если HTML пуст, заполняем оригиналом.
+        if not self.szContentHTML and self.szContent:
+            self.szContentHTML = self.szContent
+
+          super(TbDictumAndQuotes, self).save(*args, **kwargs)</pre>
+      <h2>Результат</h2>
+      <p>Теперь редактор видит обычную админку, пишет текст, открывает блок «Настройки типографа», выбирает нужные опции (например, «Включить висячую пунктуацию слева») и&nbsp;нажимает «Сохранить».</p>
+      <p>При&nbsp;сохранении&nbsp;Django читает эти настройки, инициа&shy;лизирует типограф, обрабатывает текст и&nbsp;сохраняет в&nbsp;базу уже готовый HTML. В&nbsp;итоге:</p>
+      <ul>
+      <li>Чистый исходный текст в&nbsp;поле <code>szContent</code> (для&nbsp;правки в&nbsp;будущем).</li>
+      <li>Готовый, красивый HTML в&nbsp;поле <code>szContentHTML</code> (с&nbsp;<code>&amp;nbsp;</code>, висячими кавычками и&nbsp;т.&thinsp;п., который можно сразу выводить на&nbsp;сайте.</li>
+      </ul>
+      <p>При&nbsp;этом таблица базы данных не&nbsp;замусорена колонками <code>is_hanging_punctuation_enabled</code>, которые нужны только в&nbsp;момент сохранения. <strong>Кроме того, это абсолютно безопасно:</strong> «виртуальные поля» существуют только в&nbsp;форме админки и&nbsp;не являются полями модели — Django их не сериализует и&nbsp;не пытается сохранить в&nbsp;БД, схема данных не меняется, а сами значения живут лишь в&nbsp;момент сохранения и&nbsp;влияют только на обработку текста.</p>
+
+
   </div>
 {% endblock %}
