@@ -96,8 +96,8 @@
             // Делаем gtag глобальной, чтобы вызывать из sendGoal
             window.gtag = gtag; 
             gtag('js', new Date());
-            gtag('config', '\'' + GOOGLE_ID + '\'');
-            
+            gtag('config', GOOGLE_ID);
+
         } catch (e) {
             console.error("Ошибка загрузки счетчиков:", e);
         }
