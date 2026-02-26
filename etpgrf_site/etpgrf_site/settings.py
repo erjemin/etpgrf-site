@@ -82,6 +82,11 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         # База данных лежит в папке data в корне проекта
         'NAME': BASE_DIR.parent / 'data' / 'db-etpgrf.sqlite3',
+        'OPTIONS': {
+            # Таймаут ожидания блокировки SQLite (в секундах)
+            # При сложных операциях (например, каскадное удаление тегов) нужно больше времени
+            'timeout': 20,
+        },
     }
 }
 
