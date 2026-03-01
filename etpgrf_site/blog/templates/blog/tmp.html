@@ -21,221 +21,163 @@
     {# Правая колонка: Контент #}
     <div class="col-lg-10 border-start ps-lg-4 post-page-content">
 
-      <h1>Как&nbsp;«подружить» Django Admin и&nbsp;типограф etpgrf: Виртуальные поля для&nbsp;настроек</h1>
+      <h1>Массовая типографика контента в&nbsp;Django: пользова&shy;тельские команды управления (Custom Management Commands)</h1>
 
       <div class="lead bg-secondary bg-opacity-10 p-3 rounded">
 
-        <p>Многие контент-проекты сталкиваются с&nbsp;дилеммой: хочется красивой типографики (правильные кавычки «ёлочки», длинные тире <code>—</code>, неразрывные пробелы <code>&amp;nbsp;</code>). Самое очевидное решение&nbsp;— переопре&shy;делить метод <code>safe()</code>, но&nbsp;каждый блок текста&nbsp;— заглоаок, тизер, статья&nbsp;— требуют разных настроек. В&nbsp;заголовках хочестя иметь «висячую пунктуацию» и&nbsp;запретить переносы в&nbsp;словах, для&nbsp;основного текста публикации&nbsp;— наоборот, одна публикация на&nbsp;английском и&nbsp;нужны кавычки “лапки”, другая на&nbsp;русском&nbsp;— и&nbsp;нужны «ёлочки».</p>
-        <p>Хранить все настройки в&nbsp;базе данных (добавляя десятки полей <code>bool</code> в&nbsp;модель)&nbsp;— плохая идея. Это «засоряет» схему данных параметрами отображения, раздувает базу «мусорной информацией» и&nbsp;некрасиво с&nbsp;точки зрения архитектуры.</p>
-        <p><strong>Решение:</strong> Если у&nbsp;вас Django в&nbsp;качестве бэкенда, то&nbsp;наилучший подход&nbsp;— использовать «Виртуальные поля» (Virtual Fields) в&nbsp;Django Admin: Добавить настройки типографа прямо в&nbsp;форму редакти&shy;рования админки, применить эти настройки при&nbsp;сохранении, и&nbsp;забыть о&nbsp;них, сохранив в&nbsp;базу только готовый, красивый HTML.</p>
+        <p>Если вы&nbsp;работали с&nbsp;Django, вы&nbsp;наверняка использовали команду <code>manage.py</code> сотни раз: <code>python manage.py runserver</code>, <code>migrate</code>, <code>createsuperuser</code>.</p>
+        <p>Но&nbsp;знаете&nbsp;ли вы, что можете легко создавать <strong>свои собственные</strong> команды? Это один из&nbsp;самых мощных и&nbsp;недоо&shy;цененных инструментов Django для&nbsp;автома&shy;тизации рутины. В&nbsp;этом посте я&nbsp;расскажу, что такое <strong>Management Command</strong>, зачем она нужна и&nbsp;как&nbsp;её использовать на&nbsp;примере реальной задачи: массовой типографики контента в&nbsp;базе данных.</p>
 
       </div>
       <hr>
       <div class="post-content mt-4">
 
-        <p>Разберём задачу на&nbsp;конкретном примере. У&nbsp;меня есть сайт с&nbsp;цитатами (<a href="https://dq.cube2.ru/" target="_blank">DQ&nbsp;– коллекция цитат. Место для&nbsp;вдумчивого чтения</a>, в&nbsp;нем большое внимание уделяется типографике, а&nbsp;значит при&nbsp;размещении&nbsp;цитат через&nbsp;иметь возможность не&nbsp;только редакти&shy;ровать текст, но&nbsp;и&nbsp;управлять настройками типографа. В&nbsp;проекте есть модель <code>Dictum</code> с&nbsp;полем <code>content</code> (исходный текст) и&nbsp;<code>content_html</code> (типогра&shy;фированный HTML для&nbsp;вывода на&nbsp;сайте). Я&nbsp;хочу, чтобы редактор мог управлять настройками типографа (язык, кавычки, переносы) прямо в&nbsp;админке, не&nbsp;меняя структуру БД.</p>
-        <h2>Инструменты</h2>
-      <ul>
-      <li><strong>Django 6.0</strong> (или любая актуальная версия) – «движок».</li>
-      <li><strong>etpgrf</strong> — библиотека типографики.</li>
-      </ul>
-      <h2>Реализация</h2>
-      <p>Идея в&nbsp;том, чтобы создать в&nbsp;админке дополни&shy;тельные «Виртуальные поля», которых нет в&nbsp;модели. Эти поля будут исполь&shy;зоваться только для&nbsp;настройки типографа при&nbsp;сохранении. Например, можно добавить выпадающий список для&nbsp;выбора языка (русский, английский), галочку для&nbsp;включения обработки кавычек, и&nbsp;т.&thinsp;д. При&nbsp;сохранении&nbsp;мы&nbsp;будем читать эти поля, настраивать типограф и&nbsp;сохранять результат в&nbsp;базу.</p>
-      <h3>Шаг 1. Добавляем необходимые импорты модулей etpgrf-типографа в&nbsp;<tt>admin.py</tt></h3>
-      <pre class="border p-3 my-3 rounded bg-secondary bg-opacity-25">from django.contrib import admin
-# Импортируем классы из нашей библиотеки типографики etpgrf
-try:
-    from etpgrf.typograph import Typographer
-    from etpgrf.layout import LayoutProcessor
-    from etpgrf.hyphenation import Hyphenator
-    from etpgrf.sanitizer import Sanitizer
-except ImportError:
-    # Заглушки на случай, если библиотека не установлена
-    class Typographer:
-        def __init__(self, **kwargs): pass
-        def process(self, text): return text
-    class LayoutProcessor:
-        def __init__(self, **kwargs): pass
-    class Hyphenator:
-         def __init__(self, **kwargs): pass</pre>
-      <h3>Шаг 2. Создаем кастомную форму</h3>
-      <p>Вместо стандартной формы админки (в&nbsp;<tt>admin.py</tt>, мы&nbsp;определим свою, унаследовав её от&nbsp;<code>forms.ModelForm</code>. В&nbsp;ней мы&nbsp;добавим поля, которых <strong>нет в&nbsp;модели</strong>:</p>
-      <pre class="border p-3 my-3 rounded bg-secondary bg-opacity-25">
-from django import forms
-from .models import TbDictumAndQuotes
+        <h2>Что это такое?</h2>
 
-class DictumAdminForm(forms.ModelForm):
-    # Виртуальные поля для настройки типографа
-    etp_language = forms.ChoiceField(
-        label="Язык типографики",
-        choices=[('ru', 'Русский'), ('en', 'English'), ('ru,en', 'Ru + En')],
-        initial='ru',
-        required=False
-    )
-    etp_quotes = forms.BooleanField(
-        label="Обработка кавычек",
-        initial=True,
-        required=False,
-        help_text="Заменять прямые кавычки на «ёлочки» или “лапки”"
-    )
-    etp_hanging_punctuation = forms.ChoiceField(
-        label="Висячая пунктуация",
-        choices=[('no', 'Нет'), ('left', 'Слева'), ('right', 'Справа'), ('both', 'Обе стороны')],
-        initial='left',
-        required=False,
-        help_text="Выносить кавычки за границу текстового блока"
-    )
-    etp_hyphenation = forms.BooleanField(
-        label="Переносы",
-        initial=True,
-        required=False,
-        help_text="Расставлять мягкие переносы (&amp;shy;)"
-    )
-    etp_mode = forms.ChoiceField(
-        label="Режим вывода",
-        choices=[('mixed', 'Смешанный (Mixed)'), ('unicode', 'Юникод (Unicode)'), ('mnemonic', 'Мнемоники')],
-        initial='mixed',
-        required=False,
-        help_text="Формат спецсимволов"
-    )
+        <p><strong>Management Command</strong> — это обычный Python-скрипт, который "встраивается" в экосистему Django. Он имеет доступ к моделям, настройкам (settings.py) и базе данных, но запускается из консоли через <code>python manage.py ...</code>.</p>
 
-    class Meta:
-        model = TbDictumAndQuotes
-        fields = '__all__'</pre>
-      <h3>Шаг 3. Настраиваем ModelAdmin</h3>
-      <p>Теперь, там&nbsp;же в&nbsp;<tt>admin.py</tt>, подключаем эту форму к&nbsp;нашему классу админки. Главный трюк&nbsp;— использовать <code>fieldsets</code>, чтобы сгруп&shy;пировать эти новые поля в&nbsp;отдельный, свора&shy;чиваемый блок «Настройки типографа».</p>
-      <pre class="border p-3 my-3 rounded bg-secondary bg-opacity-25">
-class AdmDictumAndQuotesAdmin(admin.ModelAdmin):
-    form = DictumAdminForm  # Подключаем нашу форму
-    # ... другие настройки админки (list_display, search_fields и т.д.) ...
-    # ...
-    # ...
+        <h2>Зачем это нужно?</h2>
+        <p>Представьте ситуации:</p>
+        <ul>
+          <li>Нужно пересчитать рейтинг для десятки тысяч товаров на сайте или сделать типографику всех публикаций после подключения etpgrf-типографа (или любого другого).</li>
+          <li>Необходимо обновить цены для всех товарных карточек в соответствии с таблицей excel или по API (или спарсить данные с внешнего сайта).</li>
+          <li>Нужно отправить e-mail рассылку пользователям.</li>
+          <li>Нужно пометить комментарии или публикации как архивные в соответствии с правилом или почистить базу от старых логов.</li>
+        </ul>
+        <p>Делать это через <tt>views.py</tt> (views) — плохая идея (страница может отвалиться по тайм-ауту). Писать отделный скрипт рядом <tt>manage.py</tt> — неудобно (нужно вручную настраивать `DJANGO_SETTINGS_MODULE`). Встроенные команды решают эти проблемы элегантно.</p>
 
-    # Группировка "виртуальных полей" типографа в отдельный блок
-    fieldsets = (
-        # Основные поля модели (можно оставить как есть, или сгруппировать по своему усмотрению).
-        # Поле szContent может быть в этом же блоке, так как мы его как раз типографируем.
-        # (None, {
-        #    'fields': ( ... 'szContent', ... )
-        # }),
-        ('Настройки типографа (Etpgrf)', {
-            'classes': ('collapse',),
-            'fields': (
-                ('etp_language', 'etp_mode'),
-                ('etp_hyphenation', 'etp_hanging_punctuation'),
-            ),
-            'description': 'Настройки применяются при сохранении. Результат записывается в скрытые HTML-поля.'
-        }),
-        # ... другие fieldsets, если нужно ...
-        # ...
-        # ... Например, можно добавить отдельный блок для отображения результата типографирования (только для чтения) ...
-        # ('HTML Результат (ReadOnly)', {
-        #     'classes': ('collapse',),
-        #     'fields': ('szContentHTML',),
-        # }),
-    )
+        <h2>Как это работает?</h2>
+        <p>Django использует систему "автообнаружения" (auto-discovery). Чтобы ваша команда появилась в списке `manage.py`, нужно соблюсти строгую иерархию папок внутри вашего приложения (например, <tt>web</tt>):</p>
+        <pre class="border p-3 my-3 rounded bg-secondary bg-opacity-25">web/
+├── __init__.py
+├── models.py
+└── management/                 🠀 1. Создаем папку management
+    ├── __init__.py
+    └── nginx/
+        ├── commands/           🠀 2. Внутри неё папку commands
+        ├── __init__.py
+        └── my_cool_script.py   🠀 3. Наш файл с командой</pre>
+        <p>Файл <tt>my_cool_script.py</tt> автоматически превратится в команду: <code>python manage.py my_cool_script</code>. Django будет искать его в папках <tt>management/commands/</tt> внутри каждого установленного приложения. Это позволяет легко организовать код и держать все "команды обслуживания" в одном месте.</p>
+        <p><strong>Для справки:</strong> Механизм Custom Management Commands появился еще в Django&nbsp;0.96 (в глубокой древности) и с тех пор является стандартом де-факто для написания скриптов обслуживания.</p>
 
-    # ...</pre>
-      <h3>Шаг 4. Перехват сохранения (save_model)</h3>
-      <p>Сейчас, когда у&nbsp;нас есть форма с&nbsp;дополни&shy;тельными полями, нам нужно:</p>
-      <ol>
-      <li>Переопре&shy;делить метод <code>save_model</code> в&nbsp;нашем классе админки.</li>
-      <li>Внутри этого метода прочитать значения виртуальных полей из&nbsp;формы (<code>LayoutProcessor</code>, <code>Hyphenator</code> и&nbsp;другие).</li>
-      <li>Инициали&shy;зировать <code>Typographer</code> с&nbsp;этими настройками.</li>
-      <li>Обработать текст из&nbsp;полей <code>szContent</code>, сохранив результат в&nbsp;<code>szContentHTML</code>.</li>
-      </ol>
-      <pre class="border p-3 my-3 rounded bg-secondary bg-opacity-25">
-    def save_model(self, request, obj, form, change):
-        # 1. Читаем базовые настройки языка и режима из формы
-        langs = form.cleaned_data.get('etp_language', 'ru').split(',')
+        <h2>Анатомия команды</h2>
+        <p>Вот пример простейшей команды. Мы наследуемся от класса <code>BaseCommand</code> и переопределяем метод <code>handle</code>:</p>
+        <pre class="border p-3 my-3 rounded bg-secondary bg-opacity-25">
+# web/management/commands/hello.py
+from django.core.management.base import BaseCommand
 
-        # 2. Собираем LayoutProcessor
-        layout_option = False
-        # Включаем layout по умолчанию с базовыми настройками (инициалы, юниты)
-        layout_option = LayoutProcessor(
-            langs=langs,
-            process_initials_and_acronyms=True,
-            process_units=True
+class Command(BaseCommand):
+    help = 'Выводит приветствие'  # Описание для --help
+
+    def add_arguments(self, parser):
+        # Можно добавлять аргументы, как в argparse
+        parser.add_argument('name', type=str, help='Имя пользователя')
+
+    def handle(self, *args, **options):
+        # Главная логика
+        name = options['name']
+        self.stdout.write(f"Привет, {name}!")</pre>
+
+Запуск:
+```bash
+python manage.py hello Иван
+# Вывод: Привет, Иван!
+```
+
+## Реальный пример: Массовая типографика
+
+В нашем проекте возникла задача: у нас есть тысячи цитат, сохраненных со старой разметкой. Мы хотим "прогнать" их все через новый типограф `etpgrf` с новыми настройками (висячая пунктуация слева).
+
+Вот как мы это реализовали в `reprocess_typography.py`:
+
+```python
+from django.core.management.base import BaseCommand
+from web.models import TbDictumAndQuotes
+# Импорты библиотеки etpgrf
+from etpgrf.typograph import Typographer
+from etpgrf.sanitizer import SanitizerProcessor
+# ... другие процессоры, если нужно ...
+
+class Command(BaseCommand):
+    help = 'Переобрабатывает все цитаты'
+
+    def add_arguments(self, parser):
+        # Добавляем флаг "сухой прогон"
+        parser.add_argument(
+            '--dry-run',
+            action='store_true',
+            help='Запустить без сохранения изменений',
         )
+        # Ограничение количества
+        parser.add_argument('--limit', type=int, help='Сколько записей обработать')
+        # Смещение (для пагинации)
+        parser.add_argument('--offset', type=int, default=0, help='Сколько пропустить')
 
-        # 3. Собираем Hyphenator (переносы слов)
-        hyphenation_enabled = form.cleaned_data.get('etp_hyphenation', True)
-        hyphenation_option = False
-        if hyphenation_enabled:
-            hyphenation_option = Hyphenator(
-                langs=langs,
-                max_unhyphenated_len=12
-            )
-
-        # 4. Читаем Hanging Punctuation (висячая пунктуация)
-        hanging_val = form.cleaned_data.get('etp_hanging_punctuation', 'no')
-        hanging_option = None
-        if hanging_val != 'no':
-            hanging_option = hanging_val
-
-        # 5. Собираем все настройки типографа в словарь
-        options = {
-            'langs': langs,
-            'process_html': True,
-            'quotes': form.cleaned_data.get('etp_quotes', True),
-            'layout': layout_option,
-            'unbreakables': True,
-            'hyphenation': hyphenation_option,
-            'symbols': True,
-            'hanging_punctuation': hanging_option,
-            'mode': form.cleaned_data.get('etp_mode', 'mixed'),
+    def handle(self, *args, **options):
+        # 1. Настраиваем типограф
+        # ... инициализация процессоров ...
+        settings = {
+             # ...
+             'sanitizer': SanitizerProcessor(mode="html"), # Режим HTML-очистки
+             'hanging_punctuation': 'left',                # Режим висячей пунктуации
+             # ...
         }
+        typographer = Typographer(**settings)
 
-        # Инициализируем типограф с настройками из формы
+        # 2. Получаем записи из базы с учетом limit/offset
+        qs = TbDictumAndQuotes.objects.all().order_by('id')
+
+        start = options['offset']
+        if options['limit']:
+             qs = qs[start : start + options['limit']]
+        else:
+             qs = qs[start:]
+
+        self.stdout.write(f"Найдено {qs.count()} цитат...")
+
+        # 3. Бежим по циклу с прогресс-баром (tqdm если есть)
         try:
-            # DEBUG: Проверка, какой класс используется
-            if Typographer.__module__ == __name__: # Если класс определен в этом же файле (заглушка)
-                 self.message_user(request, "ВНИМАНИЕ: Используется заглушка Typographer! Библиотека etpgrf не найдена.", level='WARNING')
+            from tqdm import tqdm
+            iterator = tqdm(qs)
+        except ImportError:
+            iterator = qs
 
-            t = Typographer(**options)
+        for dq in iterator:
+            try:
+                # Обрабатываем текст
+                new_html = typographer.process(dq.szContent)
 
-            # Обрабатываем контент
-            if obj.szContent:
-                # В онлайн-типографе используется .process(text)
-                old_html = obj.szContentHTML or ""
-                processed = t.process(obj.szContent)
-                obj.szContentHTML = processed
+                if options['dry_run']:
+                    self.stdout.write(f"[{dq.id}] Предпросмотр: {new_html[:50]}...")
+                else:
+                    dq.szContentHTML = new_html
+                    dq.save(update_fields=['szContentHTML'])
 
-                # DEBUG: Проверка изменений
-                if processed != old_html and processed != obj.szContent:
-                     self.message_user(request, f"Типограф: szContentHTML обновлен (len changed: {len(old_html)} -&gt; {len(processed)})", level='INFO')
+            except Exception as e:
+                self.stdout.write(self.style.ERROR(f"Ошибка id={dq.id}: {e}"))
 
 
-        except Exception as e:
-            # Возникла ошибка при обработке типографом, сохраняем оригинальный текст и показываем сообщение об ошибке
-            self.message_user(request, f"Ошибка типографа: {e}", level='ERROR')
-            if not obj.szContentHTML: obj.szContentHTML = obj.szContent
+        self.stdout.write(self.style.SUCCESS(f"\nГотово!"))
+```
 
-        super().save_model(request, obj, form, change)</pre>
-      <h3>Шаг 5. Очистка модели</h3>
-      <p>Так как&nbsp;логика обработки и&nbsp;сохранения поля <code>szContentHTML</code> «переехала» в&nbsp;админку, нам нужно <strong>убрать</strong> логику его записи из&nbsp;метода <code>save()</code> модели внутри <tt>models.py</tt>.
-              </p><p>Теперь метод <code>save()</code> в&nbsp;<tt>models.py</tt> должен быть максимально простым:</p>
-      <pre class="border p-3 my-3 rounded bg-secondary bg-opacity-25">
-class TbDictumAndQuotes(models.Model):
-    # ... поля ...
-    # ...
-    # ...
+### Фишки, которые мы использовали:
 
-    def save(self, *args, **kwargs):
-        # Типографирование поля szContentHTML перенесено в админку (через admin.save_model).
-        # Здесь оставляем только базовую подстраховку: если HTML пуст, заполняем оригиналом.
-        if not self.szContentHTML and self.szContent:
-            self.szContentHTML = self.szContent
+1.  **`self.stdout.write` вместо `print`**: Это важно. Это позволяет Django перехватывать вывод (например, для тестов) и корректно работать с кодировками.
+2.  **`self.style.SUCCESS / ERROR`**: Раскрашивает текст в консоли (зеленый/красный). Очень удобно для визуального восприятия логов.
+3.  **Аргументы (`--dry-run`)**: Позволяют безопасно тестировать скрипт на продакшене перед тем, как реально менять данные.
+4.  **`update_fields`**: При сохранении мы не перезаписываем всю модель целиком (что могло бы затереть изменения, сделанные кем-то другим в ту же секунду), а обновляем только конкретные колонки.
 
-          super(TbDictumAndQuotes, self).save(*args, **kwargs)</pre>
-      <h2>Результат</h2>
-      <p>Теперь редактор видит обычную админку, пишет текст, открывает блок «Настройки типографа», выбирает нужные опции (например, «Включить висячую пунктуацию слева») и&nbsp;нажимает «Сохранить».</p>
-      <p>При&nbsp;сохранении&nbsp;Django читает эти настройки, инициа&shy;лизирует типограф, обрабатывает текст и&nbsp;сохраняет в&nbsp;базу уже готовый HTML. В&nbsp;итоге:</p>
-      <ul>
-      <li>Чистый исходный текст в&nbsp;поле <code>szContent</code> (для&nbsp;правки в&nbsp;будущем).</li>
-      <li>Готовый, красивый HTML в&nbsp;поле <code>szContentHTML</code> (с&nbsp;<code>&amp;nbsp;</code>, висячими кавычками и&nbsp;т.&thinsp;п., который можно сразу выводить на&nbsp;сайте.</li>
-      </ul>
-      <p>При&nbsp;этом таблица базы данных не&nbsp;замусорена колонками <code>is_hanging_punctuation_enabled</code>, которые нужны только в&nbsp;момент сохранения. <strong>Кроме того, это абсолютно безопасно:</strong> «виртуальные поля» существуют только в&nbsp;форме админки и&nbsp;не являются полями модели — Django их не сериализует и&nbsp;не пытается сохранить в&nbsp;БД, схема данных не меняется, а сами значения живут лишь в&nbsp;момент сохранения и&nbsp;влияют только на обработку текста.</p>
+Теперь, чтобы "починить" всю базу, нам достаточно набрать одну строку в терминале, и Django сделает всю грязную работу за нас.
+
+## Запуск
+
+```bash
+# Тестовый прогон (безопасно, ничего не сохраняет)
+python manage.py reprocess_typography --dry-run
+
+# Боевой запуск (изменяет данные в базе!)
+python manage.py reprocess_typography
+```
 
 
   </div>
