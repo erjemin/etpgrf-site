@@ -33,35 +33,31 @@
       <div class="post-content mt-4">
 
         <h2>Что это такое?</h2>
-
-        <p><strong>Management Command</strong> — это обычный Python-скрипт, который "встраивается" в экосистему Django. Он имеет доступ к моделям, настройкам (settings.py) и базе данных, но запускается из консоли через <code>python manage.py ...</code>.</p>
-
+        <p><strong>Management Command</strong>&nbsp;— это обычный Python-скрипт, который «встраивается» в&nbsp;экосистему Django. Он&nbsp;имеет доступ к&nbsp;моделям, настройкам (settings.py) и&nbsp;базе данных, но&nbsp;запускается из&nbsp;консоли через&nbsp;<code>python manage.py ...</code>.</p>
         <h2>Зачем это нужно?</h2>
         <p>Представьте ситуации:</p>
         <ul>
-          <li>Нужно пересчитать рейтинг для десятки тысяч товаров на сайте или сделать типографику всех публикаций после подключения etpgrf-типографа (или любого другого).</li>
-          <li>Необходимо обновить цены для всех товарных карточек в соответствии с таблицей excel или по API (или спарсить данные с внешнего сайта).</li>
-          <li>Нужно отправить e-mail рассылку пользователям.</li>
-          <li>Нужно пометить комментарии или публикации как архивные в соответствии с правилом или почистить базу от старых логов.</li>
+        <li>Нужно пересчитать рейтинг для&nbsp;десятки тысяч товаров на&nbsp;сайте или сделать типографику всех публикаций после подключения etpgrf-типографа (или любого другого).</li>
+        <li>Необходимо обновить цены для&nbsp;всех товарных карточек в&nbsp;соответствии с&nbsp;таблицей excel или по&nbsp;API (или спарсить данные с&nbsp;внешнего сайта).</li>
+        <li>Нужно отправить e-mail рассылку пользо&shy;вателям.</li>
+        <li>Нужно пометить комментарии или публикации как&nbsp;архивные в&nbsp;соответствии с&nbsp;правилом или почистить базу от&nbsp;старых логов.</li>
         </ul>
-        <p>Делать это через <tt>views.py</tt> (views) — плохая идея (страница может отвалиться по тайм-ауту). Писать отделный скрипт рядом <tt>manage.py</tt> — неудобно (нужно вручную настраивать `DJANGO_SETTINGS_MODULE`). Встроенные команды решают эти проблемы элегантно.</p>
-
-        <h2>Как это работает?</h2>
-        <p>Django использует систему "автообнаружения" (auto-discovery). Чтобы ваша команда появилась в списке `manage.py`, нужно соблюсти строгую иерархию папок внутри вашего приложения (например, <tt>web</tt>):</p>
+        <p>Делать это через&nbsp;<tt>views.py</tt> (views) — плохая идея (страница может отвалиться по&nbsp;тайм-ауту). Писать отделный скрипт рядом <tt>manage.py</tt>&nbsp;— неудобно (нужно вручную настраивать `DJANGO_SETTINGS_MODULE`). Встроенные команды решают эти проблемы элегантно.</p>
+        <h2>Как&nbsp;это работает?</h2>
+        <p>Django использует систему «автообна&shy;ружения» (auto-discovery). Чтобы ваша команда появилась в&nbsp;списке `manage.py`, нужно соблюсти строгую иерархию папок внутри вашего приложения (например, <tt>web</tt>):</p>
         <pre class="border p-3 my-3 rounded bg-secondary bg-opacity-25">web/
 ├── __init__.py
 ├── models.py
-└── management/                 🠀 1. Создаем папку management
+└── management/                 <-- 1. Создаем папку management
     ├── __init__.py
     └── nginx/
-        ├── commands/           🠀 2. Внутри неё папку commands
+        ├── commands/           <-- 2. Внутри неё папку commands
         ├── __init__.py
-        └── my_cool_script.py   🠀 3. Наш файл с командой</pre>
-        <p>Файл <tt>my_cool_script.py</tt> автоматически превратится в команду: <code>python manage.py my_cool_script</code>. Django будет искать его в папках <tt>management/commands/</tt> внутри каждого установленного приложения. Это позволяет легко организовать код и держать все "команды обслуживания" в одном месте.</p>
-        <p><strong>Для справки:</strong> Механизм Custom Management Commands появился еще в Django&nbsp;0.96 (в глубокой древности) и с тех пор является стандартом де-факто для написания скриптов обслуживания.</p>
-
+        └── my_cool_script.py   <-- 3. Наш файл с командой</pre>
+        <p>Файл <tt>my_cool_script.py</tt> автома&shy;тически превратится в&nbsp;команду: <code>python manage.py my_cool_script</code>. Django будет искать его в&nbsp;папках <tt>management/commands/</tt> внутри каждого устано&shy;вленного приложения. Это позволяет легко организовать код и&nbsp;держать все «команды обслуживания» в&nbsp;одном месте.</p>
+        <p><strong>Для&nbsp;справки:</strong> Механизм Custom Management Commands появился еще в&nbsp;Django&nbsp;0.96 (в&nbsp;глубокой древности) и&nbsp;с&nbsp;тех пор является стандартом де-факто для&nbsp;написания скриптов обслуживания.</p>
         <h2>Анатомия команды</h2>
-        <p>Вот пример простейшей команды. Мы наследуемся от класса <code>BaseCommand</code> и переопределяем метод <code>handle</code>:</p>
+        <p>Вот пример простейшей команды. Мы&nbsp;наследуемся от&nbsp;класса <code>BaseCommand</code> и&nbsp;переопре&shy;деляем метод <code>handle</code>:</p>
         <pre class="border p-3 my-3 rounded bg-secondary bg-opacity-25">
 # web/management/commands/hello.py
 from django.core.management.base import BaseCommand
@@ -77,20 +73,16 @@ class Command(BaseCommand):
         # Главная логика
         name = options['name']
         self.stdout.write(f"Привет, {name}!")</pre>
-
-Запуск:
-```bash
-python manage.py hello Иван
-# Вывод: Привет, Иван!
-```
-
-## Реальный пример: Массовая типографика
-
-В нашем проекте возникла задача: у нас есть тысячи цитат, сохраненных со старой разметкой. Мы хотим "прогнать" их все через новый типограф `etpgrf` с новыми настройками (висячая пунктуация слева).
-
-Вот как мы это реализовали в `reprocess_typography.py`:
-
-```python
+        <p>Запуск:</p>
+        <pre class="border p-3 my-3 rounded bg-secondary bg-opacity-25">
+python manage.py hello Иван</pre>
+        <p>Увидим в&nbsp;консоли:</p>
+        <pre class="border p-3 my-3 rounded bg-secondary bg-opacity-25">
+Привет, Иван!</pre>
+        <h2>Реальный пример: Массовая типографика через&nbsp;etpgrf</h2>
+        <p>В&nbsp;моём проекте, <a href="https://dq.cube2.ru/" target="_blank">DQ&nbsp;– коллекция цитат. Место для&nbsp;вдумчивого чтения</a>, контент был частично обработан с&nbsp;помощью Типографа Муравьёа, частично вручную. И&nbsp;вот я&nbsp;установил и&nbsp;настроил etpgrf (тем более что Типограф Муравьева «почил в&nbsp;бозе», да&nbsp;и&nbsp;до&nbsp;того не&nbsp;обновлялся с&nbsp;2018 года). Все новые цитаты типогра&shy;фируются через&nbsp;etpgrf, но&nbsp;что делать со&nbsp;старыми? Их&nbsp;сотни, и&nbsp;открывать и&nbsp;«пересо&shy;хранаять» каждую вручную&nbsp;— это адский труд. Вот тут на&nbsp;помощь и&nbsp;приходит Custom Management Command.</p>
+        <p>Вот как&nbsp;я&nbsp;это реализовал: в&nbsp;<tt>web/management/commands/reprocess_typography.py</tt>:</p>
+        <pre class="border p-3 my-3 rounded bg-secondary bg-opacity-25">
 from django.core.management.base import BaseCommand
 from web.models import TbDictumAndQuotes
 # Импорты библиотеки etpgrf
@@ -157,27 +149,29 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.ERROR(f"Ошибка id={dq.id}: {e}"))
 
 
-        self.stdout.write(self.style.SUCCESS(f"\nГотово!"))
-```
+        self.stdout.write(self.style.SUCCESS(f"\nГотово!"))</pre>
+        <p>Возможно вы&nbsp;заметили, что в&nbsp;моем проекте для&nbsp;контента есть два поля: <code>szContent</code> и&nbsp;<code>szContentHTML</code>. В&nbsp;первом хранится «сырой» текст, во&nbsp;втором&nbsp;— результат типогра&shy;фирования. В&nbsp;вашем проекте, скорее всего только одно поле для&nbsp;контента, но&nbsp;по&nbsp;сути это ничего не&nbsp;меняет.</p>
+        <p>Еще интересные фишки, которые исполь&shy;зовались при&nbsp;типогра&shy;фировании:</p>
+        <ol>
+          <li><code>self.stdout.write</code> вместо <code>print</code>&nbsp;– позволяет Django перехва&shy;тывать вывод (например, для&nbsp;тестов) и&nbsp;корректно работать с&nbsp;кодировками.</li>
+          <li><code>self.style.SUCCESS</code> и&nbsp;<code>self.style.ERROR</code>&nbsp;– раскрашивает текст в&nbsp;консоли (зеленый/красный) и&nbsp;это очень удобно для&nbsp;визуального восприятия логов.</li>
+          <li>Аргумент <tt>–dry-run</tt>&nbsp;— позволяют безопасно тестировать скрипт на&nbsp;продакшене перед&nbsp;тем, как&nbsp;реально менять данные.</li>
+          <li>Аргументы <tt>–limit</tt> и&nbsp;<tt>–offset</tt>&nbsp;— позволяют обрабатывать базу «порциями», что полезно для&nbsp;больших объемов данных (можно запустить несколько процессов параллельно с&nbsp;разными offset).</li>
+          <li>Используется <code>update_fields</code>&nbsp;– позволяет переза&shy;писывать не&nbsp;всю модель целиком (что могло&nbsp;бы затереть изменения, сделанные кем-то&nbsp;другим в&nbsp;ту&nbsp;же секунду), а&nbsp;обновляем только конкретные поля.</li>
+        </ol>
+        <p>Теперь, чтобы типогра&shy;фировать весь контент, нам достаточно одной строку в&nbsp;терминале, и&nbsp;Django сделает всю грязную работу за&nbsp;нас (не&nbsp;забудьте инициировать виртуальное окружение вашего проекта).</p>
+        <p>Тестовый прогон (безопасно, ничего не&nbsp;сохраняет):</p>
+        <pre class="border p-3 my-3 rounded bg-secondary bg-opacity-25">
+python manage.py reprocess_typography --dry-run</pre>
+        <p>Боевой запуск, с&nbsp;изменениями данные в&nbsp;базе:</p>
+        <pre class="border p-3 my-3 rounded bg-secondary bg-opacity-25">
+python manage.py reprocess_typography</pre>
+        <p>Если у&nbsp;вас очень много записей, можно запускать по&nbsp;частям:</p>
+        <pre class="border p-3 my-3 rounded bg-secondary bg-opacity-25">
+python manage.py reprocess_typography --limit 1000 --offset 0
+python manage.py reprocess_typography --limit 1000 --offset 1000
+python manage.py reprocess_typography --limit 1000 --offset 2000</pre>
 
-### Фишки, которые мы использовали:
-
-1.  **`self.stdout.write` вместо `print`**: Это важно. Это позволяет Django перехватывать вывод (например, для тестов) и корректно работать с кодировками.
-2.  **`self.style.SUCCESS / ERROR`**: Раскрашивает текст в консоли (зеленый/красный). Очень удобно для визуального восприятия логов.
-3.  **Аргументы (`--dry-run`)**: Позволяют безопасно тестировать скрипт на продакшене перед тем, как реально менять данные.
-4.  **`update_fields`**: При сохранении мы не перезаписываем всю модель целиком (что могло бы затереть изменения, сделанные кем-то другим в ту же секунду), а обновляем только конкретные колонки.
-
-Теперь, чтобы "починить" всю базу, нам достаточно набрать одну строку в терминале, и Django сделает всю грязную работу за нас.
-
-## Запуск
-
-```bash
-# Тестовый прогон (безопасно, ничего не сохраняет)
-python manage.py reprocess_typography --dry-run
-
-# Боевой запуск (изменяет данные в базе!)
-python manage.py reprocess_typography
-```
 
 
   </div>
