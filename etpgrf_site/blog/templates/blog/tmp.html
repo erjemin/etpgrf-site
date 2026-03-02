@@ -80,8 +80,8 @@ python manage.py hello Иван</pre>
         <pre class="border p-3 my-3 rounded bg-secondary bg-opacity-25">
 Привет, Иван!</pre>
         <h2>Реальный пример: Массовая типографика через&nbsp;etpgrf</h2>
-        <p>В&nbsp;моём проекте, <a href="https://dq.cube2.ru/" target="_blank">DQ&nbsp;– коллекция цитат. Место для&nbsp;вдумчивого чтения</a>, контент был частично обработан с&nbsp;помощью Типографа Муравьёа, частично вручную. И&nbsp;вот я&nbsp;установил и&nbsp;настроил etpgrf (тем более что Типограф Муравьева «почил в&nbsp;бозе», да&nbsp;и&nbsp;до&nbsp;того не&nbsp;обновлялся с&nbsp;2018 года). Все новые цитаты типогра&shy;фируются через&nbsp;etpgrf, но&nbsp;что делать со&nbsp;старыми? Их&nbsp;сотни, и&nbsp;открывать и&nbsp;«пересо&shy;хранаять» каждую вручную&nbsp;— это адский труд. Вот тут на&nbsp;помощь и&nbsp;приходит Custom Management Command.</p>
-        <p>Вот как&nbsp;я&nbsp;это реализовал: в&nbsp;<tt>web/management/commands/reprocess_typography.py</tt>:</p>
+        <p>В&nbsp;моём проекте, <a href="https://dq.cube2.ru/" target="_blank">DQ&nbsp;– коллекция цитат: место для&nbsp;вдумчивого чтения</a>, контент был частично обработан с&nbsp;помощью Типографа Муравьёа, частично вручную. И&nbsp;вот я&nbsp;установил и&nbsp;настроил etpgrf (тем более что Типограф Муравьёва «почил в&nbsp;бозе», да&nbsp;и&nbsp;до&nbsp;того не&nbsp;обновлялся с&nbsp;2018 года). Все новые цитаты типогра&shy;фируются через&nbsp;etpgrf, но&nbsp;что делать со&nbsp;старыми? Их&nbsp;сотни, и&nbsp;открывать и&nbsp;«пересо&shy;хранаять» каждую вручную&nbsp;— это адский труд. Вот тут на&nbsp;помощь и&nbsp;приходит Custom Management Command.</p>
+        <p>Вот как&nbsp;я&nbsp;это реализовал. В&nbsp;<tt>web/management/commands/reprocess_typography.py</tt>:</p>
         <pre class="border p-3 my-3 rounded bg-secondary bg-opacity-25">
 from django.core.management.base import BaseCommand
 from web.models import TbDictumAndQuotes
@@ -150,14 +150,14 @@ class Command(BaseCommand):
 
 
         self.stdout.write(self.style.SUCCESS(f"\nГотово!"))</pre>
-        <p>Возможно вы&nbsp;заметили, что в&nbsp;моем проекте для&nbsp;контента есть два поля: <code>szContent</code> и&nbsp;<code>szContentHTML</code>. В&nbsp;первом хранится «сырой» текст, во&nbsp;втором&nbsp;— результат типогра&shy;фирования. В&nbsp;вашем проекте, скорее всего только одно поле для&nbsp;контента, но&nbsp;по&nbsp;сути это ничего не&nbsp;меняет.</p>
+        <p>Возможно вы&nbsp;заметили, что в&nbsp;моем проекте для&nbsp;контента есть два поля: <code>szContent</code> и&nbsp;<code>szContentHTML</code>. В&nbsp;первом хранится «сырой» текст, во&nbsp;втором&nbsp;— результат типогра&shy;фирования. В&nbsp;вашем проекте, скорее всего, только одно поле для&nbsp;контента, но&nbsp;по&nbsp;сути это ничего не&nbsp;меняет.</p>
         <p>Еще интересные фишки, которые исполь&shy;зовались при&nbsp;типогра&shy;фировании:</p>
         <ol>
           <li><code>self.stdout.write</code> вместо <code>print</code>&nbsp;– позволяет Django перехва&shy;тывать вывод (например, для&nbsp;тестов) и&nbsp;корректно работать с&nbsp;кодировками.</li>
           <li><code>self.style.SUCCESS</code> и&nbsp;<code>self.style.ERROR</code>&nbsp;– раскрашивает текст в&nbsp;консоли (зеленый/красный) и&nbsp;это очень удобно для&nbsp;визуального восприятия логов.</li>
-          <li>Аргумент <tt>–dry-run</tt>&nbsp;— позволяют безопасно тестировать скрипт на&nbsp;продакшене перед&nbsp;тем, как&nbsp;реально менять данные.</li>
-          <li>Аргументы <tt>–limit</tt> и&nbsp;<tt>–offset</tt>&nbsp;— позволяют обрабатывать базу «порциями», что полезно для&nbsp;больших объемов данных (можно запустить несколько процессов параллельно с&nbsp;разными offset).</li>
-          <li>Используется <code>update_fields</code>&nbsp;– позволяет переза&shy;писывать не&nbsp;всю модель целиком (что могло&nbsp;бы затереть изменения, сделанные кем-то&nbsp;другим в&nbsp;ту&nbsp;же секунду), а&nbsp;обновляем только конкретные поля.</li>
+          <li>Аргумент <tt>--dry-run</tt>&nbsp;— позволяют безопасно тестировать скрипт на&nbsp;продакшене перед&nbsp;тем, как&nbsp;реально менять данные.</li>
+          <li>Аргументы <tt>--limit</tt> и&nbsp;<tt>--offset</tt>&nbsp;— позволяют обрабатывать базу «порциями», что полезно для&nbsp;больших объемов данных (можно запустить несколько процессов параллельно с&nbsp;разными <tt>offset</tt>).</li>
+          <li>Используется <code>update_fields</code>&nbsp;— позволяет переза&shy;писывать не&nbsp;всю модель целиком (что могло&nbsp;бы затереть изменения, сделанные кем-то&nbsp;другим в&nbsp;ту&nbsp;же секунду), а&nbsp;обновляем только конкретные поля.</li>
         </ol>
         <p>Теперь, чтобы типогра&shy;фировать весь контент, нам достаточно одной строку в&nbsp;терминале, и&nbsp;Django сделает всю грязную работу за&nbsp;нас (не&nbsp;забудьте инициировать виртуальное окружение вашего проекта).</p>
         <p>Тестовый прогон (безопасно, ничего не&nbsp;сохраняет):</p>
