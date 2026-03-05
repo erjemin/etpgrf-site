@@ -143,7 +143,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Настройки безопасности для работы за прокси
 if not DEBUG:
+    # Если есть заголовок `X-Forwarded-Proto` со значением `https`, то считать запрос безопасным(HTTPS).
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    # Если кто-то зайдет по HTTP, то перенаправить на HTTPS. Подключать, только если Nginx уже настроен на HTTPS.
     SECURE_SSL_REDIRECT = True
+    # Устанавливает флаг Secure для куки сессии и CSRF, чтобы браузер отправлял их только по HTTPS.
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
+    # Обрабатывать заголовки `X-Forwarded-Host` и `X-Forwarded-Port`, которые Nginx может добавлять при проксировании.
+    USE_X_FORWARDED_HOST = True
+    USE_X_FORWARDED_PORT = True
+
