@@ -45,3 +45,8 @@ jobs:
           # Используем теги, сгенерированные шагом meta (v1.0.0 и latest)
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          # ДОБАВЛЕНО:
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          # И это для медленного интернета:
+          timeout: 900  # 15 минут на всю сборку

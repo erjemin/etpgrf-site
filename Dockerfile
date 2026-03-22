@@ -1,60 +1,71 @@
-# --- Stage 1: Сборка фронтенда (CodeMirror) ---
-FROM node:20-slim as frontend-builder
+# -----------------------------------------------------------------------------
+# --- Этап 1: Сборщик (Builder) ---
+# -----------------------------------------------------------------------------
+# Используем официальный, но компактный образ Python как "строительную площадку".
+# На этом этапе мы установим все зависимости, а потом скопируем только результат.
+FROM python:3.13-slim as builder
 
-WORKDIR /app/frontend
-
-# Копируем файлы зависимостей
-COPY frontend-assembly/package.json frontend-assembly/package-lock.json ./
-
-# Устанавливаем зависимости (включая devDependencies для сборки)
-RUN npm ci
-
-# Копируем исходники
-COPY frontend-assembly/ ./
-
-# Собираем бандл через npm script
-RUN npm run build
-
-
-# --- Stage 2: Сборка бэкенда (Django) ---
-FROM python:3.13-slim
-
-# Настройки Python
+# Устанавливаем переменные окружения для Poetry
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
+# Эти настройки говорят Poetry создать виртуальное окружение прямо в папке проекта (/app/.venv)
+ENV POETRY_NO_INTERACTION=1 \
+    POETRY_VIRTUALENVS_IN_PROJECT=1 \
+    POETRY_VIRTUALENVS_CREATE=1 \
+    POETRY_CACHE_DIR=/tmp/poetry_cache
 
+# Устанавливаем саму Poetry
+RUN pip install poetry
+
+# Устанавливаем рабочую директорию внутри контейнера
 WORKDIR /app
 
-# Установка Poetry
-RUN pip install --no-cache-dir poetry
+# Копируем только файлы зависимостей.
+# Docker кэширует этот слой. Если эти файлы не меняются, Docker не будет
+# переустанавливать все зависимости при каждой сборке.
+COPY poetry.lock pyproject.toml ./
 
-# Копируем файлы зависимостей
-COPY pyproject.toml poetry.lock* /app/
+# Устанавливаем зависимости с помощью Poetry.
+# --no-root: не устанавливать сам проект (etpgrf-site) как пакет.
+# --only main: устанавливать только основные зависимости (не dev).
+RUN poetry install --no-interaction --no-ansi --no-root --only main
 
-# Настройка Poetry: не создавать venv и установка зависимостей (без dev-зависимостей для продакшена)
-RUN poetry config virtualenvs.create false \
-    && poetry install --no-interaction --no-ansi --no-root --only main
+# Очищаем кеш Poetry, чтобы он не попал в финальный образ.
+RUN poetry cache clear --all -n
 
-# Создаем непривилегированного пользователя
+
+# -----------------------------------------------------------------------------
+# --- Этап 2: Финальный образ ---
+# -----------------------------------------------------------------------------
+# Начинаем с такого же чистого и легкого образа Python.
+FROM python:3.13-slim
+
+# Устанавливаем рабочую директорию
+WORKDIR /app
+
+# Создаем непривилегированного пользователя для запуска приложения
 RUN useradd -m -r appuser
-
-# Копируем код проекта
-COPY . /app/
-
-# Создаем папку для данных и статики, чтобы у appuser были права
-RUN mkdir -p /app/data /app/public/static_collected
-
-# Копируем собранный фронтенд из первого стейджа
-COPY --from=frontend-builder /app/frontend/dist/editor.js /app/public/static/codemirror/editor.js
-
-# Меняем владельца папки
+# Устанавливаем владельца рабочей директории
 RUN chown -R appuser:appuser /app
 
-# Переключаемся на пользователя
+# Копируем готовое виртуальное окружение из сборщика
+COPY --from=builder /app/.venv ./.venv
+
+# Устанавливаем PATH, чтобы использовать python из .venv
+ENV PATH="/app/.venv/bin:$PATH"
+
+# Копируем весь код нашего приложения в рабочую директорию.
+COPY . .
+
+# Устанавливаем владельца для скопированных файлов
+RUN chown -R appuser:appuser /app
+
+# Переключаемся на непривилегированного пользователя
 USER appuser
 
-# Порт
+# Сообщаем Docker, что наше приложение будет работать на порту 8000.
+# Это нужно для `docker-compose`.
 EXPOSE 8000
 
-# Команда запуска через Gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--chdir", "/app/etpgrf_site", "etpgrf_site.wsgi"]
+# ENTRYPOINT и CMD не указываем, так как команда запуска
+# будет передана из docker-compose.prod.yml (docker-compose.yml).
