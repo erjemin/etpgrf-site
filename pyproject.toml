@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "2026-etpgrf-site"
-version = "0.2.5"
+version = "0.2.6"
 description = ""
 authors = ["erjemin <erjemin@gmail.com>"]
 readme = "README.md"

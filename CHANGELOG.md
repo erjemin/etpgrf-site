@@ -5,6 +5,13 @@
 Формат основан на [Keep a Changelog](https://keepachangelog.com/ru/1.0.0/),
 и этот проект придерживается [Semantic Versioning](https://semver.org/lang/ru/).
 
+## [0.2.7] - 2025-03-22
+### Изменено
+- Обновлене всех пактов, включая `etpgrf` (v0.1.5 → v0.1.6.post1).
+
+### Исправлено
+- `canonical` для страниц учитывает https/http.
+
 ## [0.2.6] - 2025-02-28
 
 ### Изменено
