@@ -3,16 +3,16 @@
 # -----------------------------------------------------------------------------
 # Используем официальный, но компактный образ Python как "строительную площадку".
 # На этом этапе мы установим все зависимости, а потом скопируем только результат.
-FROM python:3.13-slim as builder
+FROM python:3.13-slim AS builder
 
 # Устанавливаем переменные окружения для Poetry
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 # Эти настройки говорят Poetry создать виртуальное окружение прямо в папке проекта (/app/.venv)
-ENV POETRY_NO_INTERACTION=1 \
-    POETRY_VIRTUALENVS_IN_PROJECT=1 \
-    POETRY_VIRTUALENVS_CREATE=1 \
-    POETRY_CACHE_DIR=/tmp/poetry_cache
+ENV POETRY_NO_INTERACTION=1
+ENV POETRY_VIRTUALENVS_IN_PROJECT=1
+ENV POETRY_VIRTUALENVS_CREATE=1
+ENV POETRY_CACHE_DIR=/tmp/poetry_cache
 
 # Устанавливаем саму Poetry
 RUN pip install poetry
