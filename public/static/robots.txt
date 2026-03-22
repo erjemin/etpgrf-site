@@ -3,3 +3,6 @@ Allow: /
 
 Host: https://typograph.cube2.ru
 Sitemap: https://typograph.cube2.ru/sitemap.xml
+
+# Ссылка на файл для ИИ-моделей
+Link: /llms.txt
