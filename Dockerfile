@@ -67,5 +67,6 @@ USER appuser
 # Это нужно для `docker-compose`.
 EXPOSE 8000
 
-# ENTRYPOINT и CMD не указываем, так как команда запуска
-# будет передана из docker-compose.prod.yml (docker-compose.yml).
+# Команда запуска через Gunicorn (не обязательно. т.к. дублируется в docker-compose, но для чистоты образа
+# на случай, если кто-то захочет запустить контейнер напрямую, а не через docker-compose, оставляем её здесь).
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--chdir", "/app/etpgrf_site", "etpgrf_site.wsgi"]
