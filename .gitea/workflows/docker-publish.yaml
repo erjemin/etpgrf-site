@@ -40,13 +40,14 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
+          # platforms: linux/amd64,linux/arm64
           push: true
           # Используем теги, сгенерированные шагом meta (v1.0.0 и latest)
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          # ДОБАВЛЕНО:
+          # Кэширование для ускорения повторных сборок
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          # И это для медленного интернета:
-          timeout: 900  # 15 минут на всю сборку
+          # Увеличиваем тайм-аут на случай медленного интернета
+          timeout: 1800  # 30 минут
