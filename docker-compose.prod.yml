@@ -65,14 +65,33 @@ services:
       # Медиа (папка media должна быть создана на хосте)
       - ./media:/app/media
 
+    # Переменные окружения
     env_file:
       - .env
 
+   # Логирование (Ротация)
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
+
+    # Проверка здоровья контейнера (Healthcheck)
+    # Docker будет периодически проверять статус контейнера. Это критично для Watchtower!
+    # Если контейнер объявлен "unhealthy", Watchtower сначала остановит старый образ, потом запустит новый.
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/').read()\""]
+      interval: 5m
+      timeout: 10s
+      retries: 1
+      start_period: 30s
+
+    # Лимиты ресурсов (docker compose вне swarm)
+    deploy:
+      resources:
+        limits:
+          cpus: '0.40'
+          memory: 360M
 
   # Nginx для отдачи статики и проксирования запросов к бэкенду
   etpgrf-nginx:
