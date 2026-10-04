@@ -32,145 +32,21 @@
       <hr>
       <div class="post-content mt-4">
 
-        <h2>Что это такое?</h2>
-        <p><strong>Management Command</strong>&nbsp;— это обычный Python-скрипт, который «встраивается» в&nbsp;экосистему Django. Он&nbsp;имеет доступ к&nbsp;моделям, настройкам (settings.py) и&nbsp;базе данных, но&nbsp;запускается из&nbsp;консоли через&nbsp;<code>python manage.py ...</code>.</p>
-        <h2>Зачем это нужно?</h2>
-        <p>Представьте ситуации:</p>
-        <ul>
-        <li>Нужно пересчитать рейтинг для&nbsp;десятки тысяч товаров на&nbsp;сайте или сделать типографику всех публикаций после подключения etpgrf-типографа (или любого другого).</li>
-        <li>Необходимо обновить цены для&nbsp;всех товарных карточек в&nbsp;соответствии с&nbsp;таблицей excel или по&nbsp;API (или спарсить данные с&nbsp;внешнего сайта).</li>
-        <li>Нужно отправить e-mail рассылку пользо&shy;вателям.</li>
-        <li>Нужно пометить комментарии или публикации как&nbsp;архивные в&nbsp;соответствии с&nbsp;правилом или почистить базу от&nbsp;старых логов.</li>
-        </ul>
-        <p>Делать это через&nbsp;<tt>views.py</tt> (views) — плохая идея (страница может отвалиться по&nbsp;тайм-ауту). Писать отделный скрипт рядом <tt>manage.py</tt>&nbsp;— неудобно (нужно вручную настраивать `DJANGO_SETTINGS_MODULE`). Встроенные команды решают эти проблемы элегантно.</p>
-        <h2>Как&nbsp;это работает?</h2>
-        <p>Django использует систему «автообна&shy;ружения» (auto-discovery). Чтобы ваша команда появилась в&nbsp;списке `manage.py`, нужно соблюсти строгую иерархию папок внутри вашего приложения (например, <tt>web</tt>):</p>
-        <pre class="border p-3 my-3 rounded bg-secondary bg-opacity-25">web/
-├── __init__.py
-├── models.py
-└── management/                 <-- 1. Создаем папку management
-    ├── __init__.py
-    └── nginx/
-        ├── commands/           <-- 2. Внутри неё папку commands
-        ├── __init__.py
-        └── my_cool_script.py   <-- 3. Наш файл с командой</pre>
-        <p>Файл <tt>my_cool_script.py</tt> автома&shy;тически превратится в&nbsp;команду: <code>python manage.py my_cool_script</code>. Django будет искать его в&nbsp;папках <tt>management/commands/</tt> внутри каждого устано&shy;вленного приложения. Это позволяет легко организовать код и&nbsp;держать все «команды обслуживания» в&nbsp;одном месте.</p>
-        <p><strong>Для&nbsp;справки:</strong> Механизм Custom Management Commands появился еще в&nbsp;Django&nbsp;0.96 (в&nbsp;глубокой древности) и&nbsp;с&nbsp;тех пор является стандартом де-факто для&nbsp;написания скриптов обслуживания.</p>
-        <h2>Анатомия команды</h2>
-        <p>Вот пример простейшей команды. Мы&nbsp;наследуемся от&nbsp;класса <code>BaseCommand</code> и&nbsp;переопре&shy;деляем метод <code>handle</code>:</p>
-        <pre class="border p-3 my-3 rounded bg-secondary bg-opacity-25">
-# web/management/commands/hello.py
-from django.core.management.base import BaseCommand
+      <h4>[0.1.6.post1] - 2026–03–19</h4>
+      <h5>Изменено</h5>
+      <ul>
+        <li>Новый алгоритм «висячей пунктуации» (<em>HangingPunctuationProcessor</em>). Добавлены компенси­рующие пробелы для висячих символов, чтобы избежать наложения на соседние слова. Теперь «висячие символы» (кавычки, скобки и т. п.) обора­чиваются в <code>&lt;span&gt;</code> вместе с ближайшим словом и пробелом, что обеспечивает отсутствие визуальных смещений внутри строки. Режим <code>both</code> (для одновре­менного вывешивания в обе стороны) отключен из-за потенци­альных конфликтов компенси­рующих пробелов и проблем с выравни­ванием при исполь­зовании CSS <code>text-justify</code>.</span></li>
+      </ul>
+      <h4>Исправлено</h4>
+      <ul>
+        <li>Автоматическая замена символов <code>x</code>, <code>X</code>, <code>х</code>, <code>Х</code>, стоящих между числами, на&nbsp;знак умножения&nbsp;<code>×</code>, чтобы выражения вида <code>100x100</code> или <code>100&nbsp;х &nbsp;100` корректно обрабатывались и выглядели типографски правильными (<code>100×100</code> или <code>100&amp;nbsp;×&amp;nbsp;100</code>).</li>
+      </ul>
 
-class Command(BaseCommand):
-    help = 'Выводит приветствие'  # Описание для --help
-
-    def add_arguments(self, parser):
-        # Можно добавлять аргументы, как в argparse
-        parser.add_argument('name', type=str, help='Имя пользователя')
-
-    def handle(self, *args, **options):
-        # Главная логика
-        name = options['name']
-        self.stdout.write(f"Привет, {name}!")</pre>
-        <p>Запуск:</p>
-        <pre class="border p-3 my-3 rounded bg-secondary bg-opacity-25">
-python manage.py hello Иван</pre>
-        <p>Увидим в&nbsp;консоли:</p>
-        <pre class="border p-3 my-3 rounded bg-secondary bg-opacity-25">
-Привет, Иван!</pre>
-        <h2>Реальный пример: Массовая типографика через&nbsp;etpgrf</h2>
-        <p>В&nbsp;моём проекте, <a href="https://dq.cube2.ru/" target="_blank">DQ&nbsp;– коллекция цитат: место для&nbsp;вдумчивого чтения</a>, контент был частично обработан с&nbsp;помощью Типографа Муравьёа, частично вручную. И&nbsp;вот я&nbsp;установил и&nbsp;настроил etpgrf (тем более что Типограф Муравьёва «почил в&nbsp;бозе», да&nbsp;и&nbsp;до&nbsp;того не&nbsp;обновлялся с&nbsp;2018 года). Все новые цитаты типогра&shy;фируются через&nbsp;etpgrf, но&nbsp;что делать со&nbsp;старыми? Их&nbsp;сотни, и&nbsp;открывать и&nbsp;«пересо&shy;хранаять» каждую вручную&nbsp;— это адский труд. Вот тут на&nbsp;помощь и&nbsp;приходит Custom Management Command.</p>
-        <p>Вот как&nbsp;я&nbsp;это реализовал. В&nbsp;<tt>web/management/commands/reprocess_typography.py</tt>:</p>
-        <pre class="border p-3 my-3 rounded bg-secondary bg-opacity-25">
-from django.core.management.base import BaseCommand
-from web.models import TbDictumAndQuotes
-# Импорты библиотеки etpgrf
-from etpgrf.typograph import Typographer
-from etpgrf.sanitizer import SanitizerProcessor
-# ... другие процессоры, если нужно ...
-
-class Command(BaseCommand):
-    help = 'Переобрабатывает все цитаты'
-
-    def add_arguments(self, parser):
-        # Добавляем флаг "сухой прогон"
-        parser.add_argument(
-            '--dry-run',
-            action='store_true',
-            help='Запустить без сохранения изменений',
-        )
-        # Ограничение количества
-        parser.add_argument('--limit', type=int, help='Сколько записей обработать')
-        # Смещение (для пагинации)
-        parser.add_argument('--offset', type=int, default=0, help='Сколько пропустить')
-
-    def handle(self, *args, **options):
-        # 1. Настраиваем типограф
-        # ... инициализация процессоров ...
-        settings = {
-             # ...
-             'sanitizer': SanitizerProcessor(mode="html"), # Режим HTML-очистки
-             'hanging_punctuation': 'left',                # Режим висячей пунктуации
-             # ...
-        }
-        typographer = Typographer(**settings)
-
-        # 2. Получаем записи из базы с учетом limit/offset
-        qs = TbDictumAndQuotes.objects.all().order_by('id')
-
-        start = options['offset']
-        if options['limit']:
-             qs = qs[start : start + options['limit']]
-        else:
-             qs = qs[start:]
-
-        self.stdout.write(f"Найдено {qs.count()} цитат...")
-
-        # 3. Бежим по циклу с прогресс-баром (tqdm если есть)
-        try:
-            from tqdm import tqdm
-            iterator = tqdm(qs)
-        except ImportError:
-            iterator = qs
-
-        for dq in iterator:
-            try:
-                # Обрабатываем текст
-                new_html = typographer.process(dq.szContent)
-
-                if options['dry_run']:
-                    self.stdout.write(f"[{dq.id}] Предпросмотр: {new_html[:50]}...")
-                else:
-                    dq.szContentHTML = new_html
-                    dq.save(update_fields=['szContentHTML'])
-
-            except Exception as e:
-                self.stdout.write(self.style.ERROR(f"Ошибка id={dq.id}: {e}"))
-
-
-        self.stdout.write(self.style.SUCCESS(f"\nГотово!"))</pre>
-        <p>Возможно вы&nbsp;заметили, что в&nbsp;моем проекте для&nbsp;контента есть два поля: <code>szContent</code> и&nbsp;<code>szContentHTML</code>. В&nbsp;первом хранится «сырой» текст, во&nbsp;втором&nbsp;— результат типогра&shy;фирования. В&nbsp;вашем проекте, скорее всего, только одно поле для&nbsp;контента, но&nbsp;по&nbsp;сути это ничего не&nbsp;меняет.</p>
-        <p>Еще интересные фишки, которые исполь&shy;зовались при&nbsp;типогра&shy;фировании:</p>
-        <ol>
-          <li><code>self.stdout.write</code> вместо <code>print</code>&nbsp;– позволяет Django перехва&shy;тывать вывод (например, для&nbsp;тестов) и&nbsp;корректно работать с&nbsp;кодировками.</li>
-          <li><code>self.style.SUCCESS</code> и&nbsp;<code>self.style.ERROR</code>&nbsp;– раскрашивает текст в&nbsp;консоли (зеленый/красный) и&nbsp;это очень удобно для&nbsp;визуального восприятия логов.</li>
-          <li>Аргумент <tt>--dry-run</tt>&nbsp;— позволяют безопасно тестировать скрипт на&nbsp;продакшене перед&nbsp;тем, как&nbsp;реально менять данные.</li>
-          <li>Аргументы <tt>--limit</tt> и&nbsp;<tt>--offset</tt>&nbsp;— позволяют обрабатывать базу «порциями», что полезно для&nbsp;больших объемов данных (можно запустить несколько процессов параллельно с&nbsp;разными <tt>offset</tt>).</li>
-          <li>Используется <code>update_fields</code>&nbsp;— позволяет переза&shy;писывать не&nbsp;всю модель целиком (что могло&nbsp;бы затереть изменения, сделанные кем-то&nbsp;другим в&nbsp;ту&nbsp;же секунду), а&nbsp;обновляем только конкретные поля.</li>
-        </ol>
-        <p>Теперь, чтобы типогра&shy;фировать весь контент, нам достаточно одной строку в&nbsp;терминале, и&nbsp;Django сделает всю грязную работу за&nbsp;нас (не&nbsp;забудьте инициировать виртуальное окружение вашего проекта).</p>
-        <p>Тестовый прогон (безопасно, ничего не&nbsp;сохраняет):</p>
-        <pre class="border p-3 my-3 rounded bg-secondary bg-opacity-25">
-python manage.py reprocess_typography --dry-run</pre>
-        <p>Боевой запуск, с&nbsp;изменениями данные в&nbsp;базе:</p>
-        <pre class="border p-3 my-3 rounded bg-secondary bg-opacity-25">
-python manage.py reprocess_typography</pre>
-        <p>Если у&nbsp;вас очень много записей, можно запускать по&nbsp;частям:</p>
-        <pre class="border p-3 my-3 rounded bg-secondary bg-opacity-25">
-python manage.py reprocess_typography --limit 1000 --offset 0
-python manage.py reprocess_typography --limit 1000 --offset 1000
-python manage.py reprocess_typography --limit 1000 --offset 2000</pre>
+      ## [0.1.6] - 2024-03-19
+### Изменено
+- Н
+###
+-
 
 
 
