@@ -4,8 +4,10 @@
   "description": "CodeMirror build for ETPGRF",
   "main": "index.js",
   "scripts": {
-    "build": "esbuild src/editor.js --bundle --format=esm --outfile=dist/editor.js --minify",
-    "dev": "esbuild src/editor.js --bundle --format=esm --outfile=../public/static/codemirror/editor.js --minify",
+    "build:codemirror": "esbuild src/editor.js --bundle --format=esm --outfile=../public/static/codemirror/editor.js --minify",
+    "build:vendor": "node copy-vendor.js",
+    "build": "npm run build:codemirror && npm run build:vendor",
+    "dev": "npm run build",
     "watch": "esbuild src/editor.js --bundle --format=esm --outfile=../public/static/codemirror/editor.js --watch"
   },
   "keywords": [],
@@ -17,7 +19,11 @@
     "@codemirror/lang-html": "^6.4.11",
     "@codemirror/language": "^6.12.1",
     "@codemirror/theme-one-dark": "^6.1.3",
-    "codemirror": "^6.0.2"
+    "alpinejs": "^3.14.8",
+    "bootstrap": "^5.3.3",
+    "bootstrap-icons": "^1.11.3",
+    "codemirror": "^6.0.2",
+    "htmx.org": "^1.9.12"
   },
   "devDependencies": {
     "esbuild": "^0.27.2"
