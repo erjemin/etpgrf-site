@@ -2,7 +2,7 @@
 Основные возможности:
 - Веб-интерфейс для ввода текста и настройки параметров типографики.
 """
-__version__ = "0.2.8"
+__version__ = "0.2.9"
 __author__ = "Sergei Erjemin"
 __email__ = "erjemin@gmail.com"
 __license__ = "MIT"
