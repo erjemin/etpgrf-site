@@ -100,3 +100,20 @@ class TypographViewsTestCase(TestCase):
         """Проверка эндпоинта сводной статистики."""
         response = self.client.get(reverse('stats_summary'))
         self.assertEqual(response.status_code, 200)
+
+    def test_seo_metadata_and_sitemap(self):
+        """Проверка мета-тегов на главной странице и генерации sitemap.xml."""
+        response = self.client.get(reverse('index'))
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode('utf-8')
+        self.assertIn('<title>Онлайн-типограф', content)
+        self.assertIn('name="description"', content)
+        self.assertIn('name="keywords"', content)
+        self.assertIn('rel="canonical"', content)
+
+        # Проверка sitemap.xml
+        sitemap_res = self.client.get('/sitemap.xml')
+        self.assertEqual(sitemap_res.status_code, 200)
+        sitemap_content = sitemap_res.content.decode('utf-8')
+        self.assertIn('<loc>', sitemap_content)
+        self.assertIn('http://testserver/', sitemap_content)

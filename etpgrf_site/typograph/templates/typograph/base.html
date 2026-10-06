@@ -3,25 +3,25 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  {# SEO & Meta Tags #}<title>{% block title %}ETPGRF — единая типографика для веба{% endblock %}</title>
-  <meta name="description" content="{% block description %}Бесплатный онлайн-типограф для подготовки текстов к публикации в вебе. Расставка неразрывных пробелов, правильных кавычек («ёлочки»), тире, спецсимволы, отбивка, компоновка, висячая пунктуация. Идеально для верстки сайтов, статей и постов.{% endblock %}">
-  <meta name="keywords" content="{% block keywords %}типограф, типографика, онлайн типограф, подготовка текста для веба, html типограф, неразрывные пробелы, кавычки елочки, длинное тире, очистка текста от мусора, интернет верстка, муравьев{% endblock %}">
+  {# SEO & Meta Tags #}<title>{% block title %}Онлайн-типограф для текста и HTML — ETPGRF{% endblock %}</title>
+  <meta name="description" content="{% block description %}Онлайн-типограф для подготовки HTML и публикаций на русском и английском: кавычки «ёлочки» и “лапки”, длинное тире, неразрывные пробелы (&amp;nbsp;), отбивка предлогов, артиклей и чисел, висячая пунктуация…{% endblock %}">
+  <meta name="keywords" content="{% block keywords %}онлайн типограф, типографика онлайн, типограф для текста, html типограф, неразрывные пробелы, кавычки елочки, длинное тире, подготовка текста для веба, висячая пунктуация, python etpgrf, типограф лебедева муравьева{% endblock %}">
   <meta name="author" content="Sergei Erjemin">
   {# Schema.org (JSON-LD) #}{% block schema %}{% endblock %}
   {# Open Graph (Facebook, VK, LinkedIn, Telegram) #}<meta property="og:type" content="website" />
   <meta property="og:site_name" content="ETPGRF" />
-  <meta property="og:url" content="{{ request.build_absolute_uri }}" />
-  <meta property="og:title" content="{% block og_title %}ETPGRF — единая типографика для веба{% endblock %}" />
-  <meta property="og:description"  content="{% block og_description %}Сделайте ваш текст профессиональным и готовым к публикации в интернете за один клик. Умная типографика для веб-дизайнеров, редакторов и контент-менеджеров.{% endblock %}" />
+  <meta property="og:url" content="{% block og_url %}{{ request.scheme }}://{{ request.get_host }}{{ request.path }}{% endblock %}" />
+  <meta property="og:title" content="{% block og_title %}Онлайн-типограф для текста и HTML — ETPGRF{% endblock %}" />
+  <meta property="og:description"  content="{% block og_description %}Бесплатный онлайн-типограф для подготовки текстов и HTML к публикации: кавычки «ёлочки», неразрывные пробелы, длинное тире и висячая пунктуация.{% endblock %}" />
   <meta property="og:image" content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/etpgrf-logo-for-fb-vk-x.gif' %}{% endblock %}" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   {# --- Twitter Cards (X) --- #}<meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="{% block twitter_title %}ETPGRF — единая типографика для веба{% endblock %}" />
-  <meta name="twitter:description" content="{% block twitter_description %}Сделайте ваш текст профессиональным и готовым к публикации в интернете за один клик.{% endblock %}" />
+  <meta name="twitter:title" content="{% block twitter_title %}Онлайн-типограф для текста и HTML — ETPGRF{% endblock %}" />
+  <meta name="twitter:description" content="{% block twitter_description %}Бесплатный онлайн-типограф для подготовки текстов и HTML к публикации в вебе.{% endblock %}" />
   <meta name="twitter:image" content="{% block twitter_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/etpgrf-logo-for-fb-vk-x.gif' %}{% endblock %}" />
   {# Шутка #}<meta name="generator" content="Microsoft FrontPage 1.0"/>
-  {# Canonical #}<link rel="canonical" href="{{ request.build_absolute_uri }}"/>
+  {# Canonical #}<link rel="canonical" href="{% block canonical %}{{ request.scheme }}://{{ request.get_host }}{{ request.path }}{% endblock %}"/>
   {# Favicons #}<link rel="icon" href="{{ request.scheme }}://{{ request.get_host }}{% static 'favicon.ico' %}" type="image/x-icon" />
   {# Favicons #}<link rel="icon" type="image/png" href="{% static 'favicon-96x96.png' %}" />
   {# Favicons #}<link rel="icon" href="{% static 'favicon-light.svg' %}" type="image/svg+xml" media="(prefers-color-scheme: light)" />

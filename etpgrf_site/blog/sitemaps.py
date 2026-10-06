@@ -1,5 +1,17 @@
 from django.contrib.sitemaps import Sitemap
+from django.urls import reverse
 from .models import Post
+
+class StaticViewSitemap(Sitemap):
+    """Карта сайта для статических страниц (главная и др.)."""
+    priority = 1.0
+    changefreq = "daily"
+
+    def items(self):
+        return ['index']
+
+    def location(self, item):
+        return reverse(item)
 
 class PostSitemap(Sitemap):
     changefreq = "weekly"  # Как часто меняются страницы

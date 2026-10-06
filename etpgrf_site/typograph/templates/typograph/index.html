@@ -1,11 +1,11 @@
 {% extends 'typograph/base.html' %}
 {% load static %}
 
-{% block title %}ETPGRF — единая типографика для веба{% endblock %}
+{% block title %}Онлайн-типограф для текста и HTML — ETPGRF: кавычки «ёлочки», тире, неразрывные пробелы{% endblock %}
 
-{% block description %}Бесплатный онлайн-типограф для подготовки публикаций в вебе: кавычки «ёлочки», тире, неразрывные пробелы, спецсимволы, отбивка/компоновка, висячая пунктуация… Идеально для верстки сайтов, статей и постов.{% endblock %}
+{% block og_title %}Онлайн-типограф для текста и HTML — ETPGRF{% endblock %}
 
-{% block keywords %}типограф, типографика, онлайн типограф, подготовка текста для веба, html типограф, неразрывные пробелы, кавычки елочки, длинное тире, очистка текста от мусора, интернет верстка, муравьев{% endblock %}
+{% block og_description %}Бесплатный умный онлайн-типограф для подготовки текстов, статей и верстки к публикации в вебе за один клик.{% endblock %}
 
 {% block content %}
   <div class="row">
@@ -13,7 +13,7 @@
 
       {# SEO-текст и описание #}
       <div class="mb-4">
-        <h1 class="h3 mb-3">Онлайн-типограф для веба</h1>
+        <h1 class="h3 mb-3">Онлайн-типограф для текста и веб-публикаций</h1>
         <p>
           Интернет-типограф <strong>etpgrf</strong>&nbsp;— инструмент для&nbsp;подготовки текста для&nbsp;публикации
           в&nbsp;вебе. Расстановка неразрывных пробелов перед&nbsp;союзами и&nbsp;предлогами, замена кавычек
@@ -297,6 +297,192 @@
       </div>
       <div id="cm-result-wrapper" class="result-box p-0"></div>
       <div id="result-area" style="display: none;"></div>
+    </div>
+
+    {# ИНФОРМАЦИОННЫЙ И SEO-БЛОК #}
+    <div class="col-md-12 mt-4 pt-3 border-top">
+      <div class="text-center mb-3">
+        <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 shadow-sm collapse-toggle-btn collapsed"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#seoDetailsCollapse"
+                aria-expanded="false"
+                aria-controls="seoDetailsCollapse">
+          <i class="bi bi-info-circle me-1"></i> О&nbsp;сервисе, возможности и&nbsp;правила
+          <i class="bi bi-chevron-down ms-1 collapse-icon"></i>
+        </button>
+      </div>
+
+      <div class="collapse" id="seoDetailsCollapse">
+        <section class="mb-5 pt-3">
+        <h2 class="h4 mb-4">Возможности онлайн-типографа etpgrf</h2>
+        <div class="row g-4">
+          <div class="col-md-6 col-lg-4">
+            <div class="p-3 border rounded bg-body-tertiary h-100 feature-card">
+              <h3 class="h6 fw-bold"><i class="bi bi-distribute-horizontal me-1"></i> Неразрывные пробелы (&amp;nbsp;)</h3>
+              <p class="small text-muted mb-0">
+                Автоматическая привязка предлогов, союзов, частиц (&laquo;в&raquo;, &laquo;на&raquo;, &laquo;с&raquo;, &laquo;и&raquo;, &laquo;не&raquo;, &laquo;бы&raquo;…) и&nbsp;артиклей (&bdquo;the&ldquo;, &bdquo;a&ldquo;, &bdquo;is&ldquo;…). Парсер &laquo;видит&raquo; и&nbsp;связывает их&nbsp;со&nbsp;словами даже сквозь кавычки и&nbsp;скобки (например, <code>и&amp;nbsp;&laquo;Беда&raquo; села на&nbsp;мель</code>).
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <div class="p-3 border rounded bg-body-tertiary h-100 feature-card">
+              <h3 class="h6 fw-bold"><i class="bi bi-quote me-1"></i> Кавычки «ёлочки» и&nbsp;„лапки“</h3>
+              <p class="small text-muted mb-0">
+                Замена машинных прямых кавычек (<code>&quot;</code>) на&nbsp;правильные русские &laquo;ёлочки&raquo; и&nbsp;французские &bdquo;лапки&ldquo; для&nbsp;вложенных цитат. Поддержка английской, современной русской и&nbsp;русской дореформенной типографики (&laquo;безъ&raquo;, &laquo;въ&raquo;, &laquo;надъ&raquo;, &laquo;сiя&raquo;…).
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <div class="p-3 border rounded bg-body-tertiary h-100 feature-card">
+              <h3 class="h6 fw-bold"><i class="bi bi-dash-lg me-1"></i> Тире, числа и&nbsp;диапазоны</h3>
+              <p class="small text-muted mb-0">
+                Замена дефисов на&nbsp;длинное тире (&mdash;) с&nbsp;языковой отбивкой, среднее тире (&ndash;) в&nbsp;числовых интервалах (1941&ndash;1945, 10&ndash;20&nbsp;кг). Корректная обработка арабских и&nbsp;римских чисел (например, XXI&nbsp;век, III&nbsp;в.&nbsp;н.&nbsp;э.).
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <div class="p-3 border rounded bg-body-tertiary h-100 feature-card">
+              <h3 class="h6 fw-bold"><i class="bi bi-person-badge me-1"></i> Инициалы и&nbsp;сокращения</h3>
+              <p class="small text-muted mb-0">
+                Связывание неразрывными пробелами инициалов (А.С.&nbsp;Пушкин), устойчивых сокращений (ЗАО&nbsp;&laquo;Рога и&nbsp;Копыта&raquo;, др.&nbsp;Барменталь), сокращений (&laquo;и&nbsp;т.д.&raquo;, &laquo;и&nbsp;др.&raquo;), знаков (&sect;&nbsp;5, &#8470;&nbsp;12) и&nbsp;единиц (100&nbsp;руб., 50&nbsp;м&sup2;).
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <div class="p-3 border rounded bg-body-tertiary h-100 feature-card">
+              <h3 class="h6 fw-bold"><i class="bi bi-layout-text-sidebar me-1"></i> Висячая пунктуация</h3>
+              <p class="small text-muted mb-0">
+                Оптическое выравнивание левого и&nbsp;правого края текстового блока за&nbsp;счет выноса кавычек, скобок и&nbsp;тире за&nbsp;границу полосы набора. Идеально для&nbsp;крупных заголовков, цитат, выносов и&nbsp;врезок.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <div class="p-3 border rounded bg-body-tertiary h-100 feature-card">
+              <h3 class="h6 fw-bold"><i class="bi bi-shield-check me-1"></i> Санитайзер и&nbsp;спецсимволы</h3>
+              <p class="small text-muted mb-0">
+                Встроенный HTML-санитайзер: очистка текста от&nbsp;мусорных тегов при&nbsp;копировании из&nbsp;Word/Google Docs, сброс разметки висячей пунктуации. Обработка псевдографики (<code>(c)</code>&nbsp;&rarr;&nbsp;&copy;, <code>(tm)</code>&nbsp;&rarr;&nbsp;&trade;, <code>+/-</code>&nbsp;&rarr;&nbsp;&plusmn;).
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <div class="p-3 border rounded bg-body-tertiary h-100 feature-card">
+              <h3 class="h6 fw-bold"><i class="bi bi-fonts me-1"></i> Переносы в&nbsp;словах</h3>
+              <p class="small text-muted mb-0">
+                Автоматическая расстановка мягких переносов (<code>&amp;shy;</code>) в&nbsp;длинных словах с&nbsp;настраиваемым порогом длины (от&nbsp;12&nbsp;символов). Колонки текста аккуратно перено&shy;сятся в&nbsp;узких блоках и&nbsp;на&nbsp;мобильных экранах без&nbsp;разрыва вёрстки.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <div class="p-3 border rounded bg-body-tertiary h-100 feature-card">
+              <h3 class="h6 fw-bold"><i class="bi bi-code-slash me-1"></i> Форматы вывода и&nbsp;гибкие правила</h3>
+              <p class="small text-muted mb-0">
+                Поддержка HTML с&nbsp;мнемониками, смешанного режима и&nbsp;Unicode (UTF-8) для&nbsp;постов в&nbsp;соцсетях (VK, Telegram, Reddit). Любые группы правил можно гибко комбинировать, включать или&nbsp;отключать под&nbsp;конкретную задачу или&nbsp;проект.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <div class="p-3 border rounded bg-body-tertiary h-100 feature-card">
+              <h3 class="h6 fw-bold"><i class="bi bi-infinity me-1"></i> Бесплатно и&nbsp;безлимитно</h3>
+              <p class="small text-muted mb-0">
+                Полная свобода использования без&nbsp;ограничений по&nbsp;объёму текста, без&nbsp;регистрации, подписок и&nbsp;рекламы. Доступен как&nbsp;онлайн-сервис, так и&nbsp;в&nbsp;виде открытой библиотеки для&nbsp;Python по&nbsp;лицензии MIT.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <hr />
+      <section class="mb-5">
+        <h2 class="h4 mb-3">Кому подходит типограф ETPGRF</h2>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <div class="border-start border-3 border-secondary ps-3">
+              <h3 class="h6 fw-bold">Контент-менеджерам и&nbsp;дизайнерам</h3>
+              <p class="small text-muted">
+                Профессиональный визуальный ритм и&nbsp;читаемость текста в&nbsp;веб-интерфейсах, блогах, SMM-публикациях в&nbsp;соцсетях и&nbsp;электронных рассылках.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="border-start border-3 border-secondary ps-3">
+              <h3 class="h6 fw-bold">Веб-разработчикам и&nbsp;верстальщикам</h3>
+              <p class="small text-muted">
+                Получайте чистый, валидный HTML-код с&nbsp;неразрывными пробелами и&nbsp;мнемониками, готовый к&nbsp;вставке в&nbsp;шаблоны, CMS и&nbsp;лендинги.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="border-start border-3 border-secondary ps-3">
+              <h3 class="h6 fw-bold">Редакторам и&nbsp;копирайтерам</h3>
+              <p class="small text-muted">
+                Быстрая автоматическая подготовка статей, колонок и&nbsp;постов для&nbsp;публикации без&nbsp;рутинной ручной расстановки спецсимволов.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+      <hr />
+      <section class="mb-5">
+        <h2 class="h4 mb-3">Интеграция в&nbsp;проекты: Python-библиотека etpgrf</h2>
+        <p class="small text-muted">
+          Вы&nbsp;можете свободно использовать движок etpgrf-типографа офлайн в&nbsp;своих Python-скриптах, Django-, FastAPI- или&nbsp;Flask-приложениях и&nbsp;сайтах:
+        </p>
+        <div class="bg-body-tertiary p-3 rounded border font-monospace small mb-3">
+          <div class="text-secondary mb-1"># Установка через pip:</div>
+          <div class="text-success fw-bold mb-3">pip install etpgrf</div>
+          <div class="text-secondary mb-1"># Пример использования в коде:</div>
+          <div><span class="text-primary">from</span> etpgrf.main <span class="text-primary">import</span> Typographer</div>
+          <div class="mt-1">tp = Typographer(lang=<span class="text-success">'ru'</span>, mode=<span class="text-success">'mixed'</span>)</div>
+          <div>formatted_html = tp.process(<span class="text-success">'Правильная вёрстка "кавычек" и отбивка тире -- улучшают читаемость текста на сайте!'</span>)</div>
+        </div>
+        <p class="small text-muted mb-0">
+          Подробная документация и&nbsp;исходный код библиотеки открыты на&nbsp;<a href="https://github.com/erjemin/etpgrf" target="_blank" rel="noopener">GitHub</a> и&nbsp;<a href="https://pypi.org/project/etpgrf/" target="_blank" rel="noopener">PyPI</a>.
+        </p>
+      </section>
+      <hr />
+      <section class="mb-5">
+        <h2 class="h4 mb-3">Часто задаваемые вопросы (FAQ)</h2>
+        <div class="accordion" id="faqAccordion">
+          <div class="accordion-item bg-body-tertiary">
+            <h3 class="accordion-header" id="faqHeadingOne">
+              <button class="accordion-button collapsed bg-body-tertiary" type="button" data-bs-toggle="collapse" data-bs-target="#faqOne" aria-expanded="false" aria-controls="faqOne">
+                Зачем типографировать текст перед публикацией на сайте?
+              </button>
+            </h3>
+            <div id="faqOne" class="accordion-collapse collapse" aria-labelledby="faqHeadingOne" data-bs-parent="#faqAccordion">
+              <div class="accordion-body small text-muted">
+                В&nbsp;вебе строки переносятся динамически в&nbsp;зависимости от&nbsp;экрана устройства. Без&nbsp;неразрывных пробелов предлоги и&nbsp;союзы часто &laquo;висят&raquo; на&nbsp;концах строк, а&nbsp;дефисы путаются с&nbsp;длинным тире. Типографика делает текст легким для&nbsp;восприятия и&nbsp;профессиональным.
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item bg-body-tertiary">
+            <h3 class="accordion-header" id="faqHeadingTwo">
+              <button class="accordion-button collapsed bg-body-tertiary" type="button" data-bs-toggle="collapse" data-bs-target="#faqTwo" aria-expanded="false" aria-controls="faqTwo">
+                Чем ETPGRF отличается от Типографа Студии Лебедева или Типографа Муравьёва?
+              </button>
+            </h3>
+            <div id="faqTwo" class="accordion-collapse collapse" aria-labelledby="faqHeadingTwo" data-bs-parent="#faqAccordion">
+              <div class="accordion-body small text-muted">
+                ETPGRF разработан на&nbsp;современной открытой кодовой базе Python 3, активно поддерживается, умеет корректно обрабатывать смешанные русско-английские тексты (ru+en), имеет гибкий выбор режима кодирования (Unicode/HTML-мнемоники), настраиваемую висячую пунктуацию и&nbsp;может работать как&nbsp;локальный модуль или веб-микросервис.
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item bg-body-tertiary">
+            <h3 class="accordion-header" id="faqHeadingThree">
+              <button class="accordion-button collapsed bg-body-tertiary" type="button" data-bs-toggle="collapse" data-bs-target="#faqThree" aria-expanded="false" aria-controls="faqThree">
+                Сохраняются ли введённые тексты на сервере?
+              </button>
+            </h3>
+            <div id="faqThree" class="accordion-collapse collapse" aria-labelledby="faqHeadingThree" data-bs-parent="#faqAccordion">
+              <div class="accordion-body small text-muted">
+                Нет, сервис соблюдает полную конфиденциальность. Тексты обрабатываются исключительно в&nbsp;памяти в&nbsp;момент отправки запроса и&nbsp;не&nbsp;сохраняются в&nbsp;базу данных и&nbsp;логи.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      </div>
     </div>
   </div>
 {% endblock %}

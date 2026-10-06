@@ -4,10 +4,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.sitemaps.views import sitemap # Импортируем view для sitemap
 from blog import views as blog_views
-from blog.sitemaps import PostSitemap # Импортируем наш класс Sitemap
+from blog.sitemaps import PostSitemap, StaticViewSitemap # Импортируем классы Sitemap
 
 # Словарь с картами сайта
 sitemaps = {
+    'static': StaticViewSitemap,
     'posts': PostSitemap,
 }
 

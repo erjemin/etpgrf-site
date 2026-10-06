@@ -4,51 +4,314 @@
 {% block title %}Песочница верстки — ETPGRF{% endblock %}
 
 {% block content %}
-  <div class="row">
 
-    {# Левая колонка: Дата и Картинка #}
-    <div class="col-lg-2 align-self-start text-end mb-4">
-      <p class="small align-self-end">
-          <small class="bg-secondary bg-opacity-10 p-2 text-nowrap">
-              12.фев.2026
-          </small>
-      </p>
-      <p>
-        <img src="{% static 'img/etpgrf-logo-for-fb-vk-x.gif' %}" class="w-100" alt="Django Admin" />
-      </p>
+  <div class="row align-items-start">
+    <div class="col border-end">
+      <h3>Сайт typograph.cube2.ru</h3>
+
+      <p>Исходный код сайта онланй-типографа <tt>etpgrf</tt> доступен в&nbsp;нескольких репози&shy;ториях (<a
+        href="https://github.com/erjemin/etpgrf-site" target="_blank">GitHub</a>, <a
+        href="https://gitverse.ru/erjemin/etpgrf-site" target="_blank">GitVerse</a> и&nbsp;<a
+        href="https://git.cube2.ru/erjemin/2026-etpgrf-site" target="_blank">Сube2</a>. Наиболее заметные изменения
+        сайта онлайн-типографа приводятся ниже в&nbsp;хронологическом порядке. Для&nbsp;полного списка изменений,
+        включая мелкие фиксы и&nbsp;коммиты, пожалуйста, обратитесь к&nbsp;истории репозитория.</p>
+
+      <h4>[0.2.8] - 2026–10–04</h4>
+      <h5>Добавлено</h5>
+      <ul>
+        <li>Локальная статика для&nbsp;внешних фронтенд-библиотек (Bootstrap&nbsp;5, Bootstrap Icons, HTMX, Alpine.js,
+          CodeMirror&nbsp;6) для&nbsp;работы интер&shy;фейса при&nbsp;недос&shy;тупности CDN.
+        </li>
+        <li>Стратегия fallback-подключения в&nbsp;шаблонах: автома&shy;тическое переклю&shy;чение на&nbsp;локальную
+          статику при&nbsp;сбое или&nbsp;блокировке CDN.
+        </li>
+        <li>Скрипт копиро&shy;вания production-ассетов <code>frontend-assembly/copy-vendor.js</code>
+          и&nbsp;обновление сборки через&nbsp;<code>frontend-assembly/assembly_via_npm.sh</code>.
+        </li>
+        <li>Автомати&shy;ческие тесты проверки наличия стати&shy;ческих вендорных ассетов и&nbsp;коррект&shy;ности
+          ренде&shy;ринга fallback-подключений в&nbsp;<code>typograph/tests.py</code>.
+        </li>
+      </ul>
+      <h5>Изменено</h5>
+      <ul>
+        <li>Обновлен и&nbsp;структу&shy;рирован <code>.gitignore</code> с&nbsp;подроб&shy;ными коммен&shy;тариями.</li>
+      </ul>
+
+      <h4>[0.2.7] - 2026–03–22</h4>
+      <h5>Изменено</h5>
+      <ul>
+        <li>Обновление всех пактов, включая <tt>etpgrf</tt> (v0.1.5&nbsp;→&nbsp;v0.1.6.post1).</li>
+      </ul>
+      <h4>Исправлено</h4>
+      <ul>
+        <li><code>canonical</code> для страниц учитывает https/http.</li>
+      </ul>
+
+      <h4>[0.2.6] - 2026–02–28</h4>
+      <h5>Изменено</h5>
+      <ul>
+        <li>Подключена новая версия библиотеки <tt>etpgrf</tt> (v0.1.4 → v0.1.5).</li>
+      </ul>
+
+      <h4>[0.2.5]&nbsp;— 2026–02–13</h4>
+      <h5>Добавлено</h5>
+      <ul>
+        <li>Редизайн списка постов в&nbsp;блоге: шахматный порядок, вертикальные разделители, улучшенная адаптивность
+          для&nbsp;мобильных
+          устройств.
+        </li>
+        <li>Поле <code>updated_at</code> (<em>Дата обновления</em>) в&nbsp;модели, админке, блогах, страницах, <tt>sitemaps.xml</tt>
+          и&nbsp;микро&shy;разметке <tt>Schema.org</tt> для&nbsp;улучшения <abbr
+            title="Search Engine Optimization / Поисковая оптимизация">SEO</abbr>, <abbr
+            title="Generative Engine Optimization / Оптимизацию для Генеративных нейросетей и ИИ-поисковиков">GEO</abbr>
+          и&nbsp;<abbr title="Large Language Model Optimization / Оптимизация под Большие Языковые Модели">LLMO</abbr>.
+        </li>
+        <li><tt>README.md</tt> с&nbsp;описанием проекта онлайн-типографа, его особенностей, технического стека и&nbsp;инструкциями
+          по&nbsp;установке и&nbsp;запуску.
+        </li>
+        <li>Отображение заголовков постов в&nbsp;списке админки без&nbsp;HTML-мнемоник (декоди&shy;рование <code>&amp;nbsp;</code>
+          и&nbsp;др.).
+        </li>
+      </ul>
+      <h5>Изменено</h5>
+      <ul>
+        <li>Исправлены ошибки в&nbsp;шаблоне <tt>post_list.html</tt> (и&nbsp;полностью переработан дизайн в&nbsp;целом).
+          <ul>
+            <li>Улучшено отображение даты и&nbsp;скрытие декоративных изображений в&nbsp;списке постов на&nbsp;мобильных
+              устройствах.
+            </li>
+            <li>Оптими&shy;зированы отступы и&nbsp;типографика в&nbsp;списке постов.</li>
+          </ul>
+        </li>
+        <li>Формирование <code>slug</code> из&nbsp;<code>title</code> при&nbsp;сохранении&nbsp;поста или страницы с&nbsp;исполь&shy;зованием
+          библиотеки <code>pytils</code> для&nbsp;трансли&shy;терации с&nbsp;очистикой от&nbsp;HTML-мнемоник и&nbsp;создания
+          <abbr title="Uniform Resource Locator / Унифицированный Указатель Ресурса">URL</abbr>-дружес&shy;твенных
+          строк.
+        </li>
+        <li>Дизайн и&nbsp;вёрстка страниц для&nbsp;постов блога и&nbsp;вспомо&shy;гательных страниц для&nbsp;мобильных
+          устройств (адаптивность, скрытие картинки-обложки).
+        </li>
+      </ul>
+
+      <h4>[0.2.4]&nbsp;— 2026–02–12</h4>
+      <h5>Добавлено</h5>
+      <ul>
+        <li>Микро&shy;разметка <code>Schema.org</code> (JSON-LD) для&nbsp;постов и&nbsp;страниц для&nbsp;улучшения
+          SEO и&nbsp;понимания контента поисковиками и&nbsp;ИИ.
+        </li>
+        <li>Файл <code>llms.txt</code> для&nbsp;предоста&shy;вления информации о&nbsp;сайте и&nbsp;API для&nbsp;больших
+          языковых моделей (<abbr title="Large Language Model">LLM</abbr>) в&nbsp;соответвиии со&nbsp;стандартом GEO
+          и&nbsp;LLMO.
+        </li>
+        <li>Кастомный фильтр <code>unescape</code> для&nbsp;очистки мета-тегов от&nbsp;HTML-сущностей и&nbsp;переводов
+          строк.
+        </li>
+      </ul>
+      <h5>Исправлено</h5>
+      <ul>
+        <li>Исправлена ошибка, при&nbsp;которой счетчик символов не&nbsp;обновлялся при&nbsp;восста&shy;новлении&nbsp;вкладки
+          из&nbsp;истории браузера.
+        </li>
+        <li>Исправлена ошибка экрани&shy;рования кавычек в&nbsp;<tt>JSON-LD</tt>, <tt>Title</tt>
+          и&nbsp;<tt>Description</tt>.
+        </li>
+        <li>В&nbsp;<code>docker-compose.yaml</code> додавлен перезапуск <code>watchtower</code> при&nbsp;его
+          остановке.
+        </li>
+      </ul>
+      <h4>[0.2.3]&nbsp;— 2026–02–11</h4>
+      <h5>Изменено</h5>
+      <ul>
+        <li>Добавлена кнопка очистки текста во&nbsp;вводном поле и&nbsp;счетчик вводимых символов.</li>
+      </ul>
+      <h4>[0.2.2]&nbsp;— 2026–02–03</h4>
+      <h5>Изменено</h5>
+      <ul>
+        <li>В&nbsp;онлайн-типографе подключена новая версия библиотеки <tt>etpgrf</tt> (v0.1.3 → v0.1.4).</li>
+        <li>Незначи&shy;тельные улучшения в&nbsp;оформлении.</li>
+      </ul>
+      <h4>v0.2.1&nbsp;— 2026–01–30</h4>
+      <h5>Исправлено</h5>
+      <ul>
+        <li>Исправление ошибок при&nbsp;формировании&nbsp;мета-тегов, картинок, <code>alt</code> под&nbsp;картинками
+          и&nbsp;т.&thinsp;п.
+        </li>
+        <li>Исправлена ошибка в&nbsp;настройках nginx внутри docker-контейнера возникавшая при&nbsp;отдаче
+          media-файлов.
+        </li>
+      </ul>
+      <h5>Изменено</h5>
+      <ul>
+        <li>При&nbsp;создании&nbsp;записи в&nbsp;блог или страницы «тизер» обязателен!</li>
+      </ul>
+
+      <h4>v0.2.0&nbsp;— 2026–01–28</h4>
+      <h5>Добавлено</h5>
+      <ul>
+        <li>Приложение blog (для&nbsp;страниц и&nbsp;постов) и&nbsp;соответ&shy;ствующие изменения в&nbsp;моделях базы,
+          добавление новых view и&nbsp;шаблонов.
+        </li>
+        <li>Песочница (шаблон <code>blog/templates/blog/tmp.html</code> для&nbsp;тестирования верстки (доступен только в&nbsp;режиме
+          debug).
+        </li>
+        <li>Динамическое создание sitemap.xml</li>
+        <li>robots.txt</li>
+        <li>Изменения в&nbsp;шапке сайта (меню и&nbsp;бургер)</li>
+      </ul>
+      <h5>Изменено</h5>
+      <ul>
+        <li>Спрятан <code>url</code> админки типографа. Его расположение теперь задается через&nbsp;переменные окружения
+          в&nbsp;<code>.env</code>.
+        </li>
+        <li><code>favicon.ico</code> оптими&shy;зирована для&nbsp;Яндекс (120х120px).</li>
+        <li>Исправлено поведение шапки и&nbsp;логотива для&nbsp;мобильных устройств.</li>
+      </ul>
+
+      <h4>v0.1.8&nbsp;— 2026–01–23</h4>
+      Коммит:
+      846c066
+
+      <h4>v0.1.7&nbsp;— 2026–01–23</h4>
+      Коммит:
+      d74bee2
+
+      <h4>v0.1.6&nbsp;— 2026–01–23</h4>
+      Коммит:
+      6b4dbaf
+
+      <h4>v0.1.5&nbsp;— 2026–01–21</h4>
+      Коммит:
+      78174a8
+
+      <h4>v0.1.4&nbsp;— 2026–01–20</h4>
+      Коммит:
+      2d09aef
+
+      <h4>v0.1.3&nbsp;— 2026–01–19</h4>
+      Коммит:
+      66f2228
+
+      <h4>v0.1.2&nbsp;— 2026–01–18</h4>
+      Коммит:
+      92711f5
+
+      <h4>v0.1.1&nbsp;— 2026–01–16</h4>v0.1.1
+      Коммит:
+      5d5d48d
+
+      <h4>v0.1.0&nbsp;— 2026–01–16</h4>
+      Коммит:
+      3a7bb29
+
     </div>
-
-    {# Правая колонка: Контент #}
-    <div class="col-lg-10 border-start ps-lg-4 post-page-content">
-
-      <h1>Массовая типографика контента в&nbsp;Django: пользова&shy;тельские команды управления (Custom Management Commands)</h1>
-
-      <div class="lead bg-secondary bg-opacity-10 p-3 rounded">
-
-        <p>Если вы&nbsp;работали с&nbsp;Django, вы&nbsp;наверняка использовали команду <code>manage.py</code> сотни раз: <code>python manage.py runserver</code>, <code>migrate</code>, <code>createsuperuser</code>.</p>
-        <p>Но&nbsp;знаете&nbsp;ли вы, что можете легко создавать <strong>свои собственные</strong> команды? Это один из&nbsp;самых мощных и&nbsp;недоо&shy;цененных инструментов Django для&nbsp;автома&shy;тизации рутины. В&nbsp;этом посте я&nbsp;расскажу, что такое <strong>Management Command</strong>, зачем она нужна и&nbsp;как&nbsp;её использовать на&nbsp;примере реальной задачи: массовой типографики контента в&nbsp;базе данных.</p>
-
-      </div>
-      <hr>
-      <div class="post-content mt-4">
+    <div class="col border-start">
+      <h3>Библиотека etpgrf</h3>
+      <p>
+        Исходный код etpgrf-типографа доступен в&nbsp;нескольких репози&shy;ториях (<a
+        href="https://github.com/erjemin/etpgrf" target="_blank">GitHub</a>, <a
+        href="https://gitverse.ru/erjemin/etpgrf" target="_blank">GitVerse</a>, <a
+        href="https://git.cube2.ru/erjemin/2025-etpgrf" target="_blank">Сube2</a>, и&nbsp;<a
+        href="https://pypi.org/project/etpgrf/" target="_blank">PyPI</a>), распрос&shy;траняется под&nbsp;лицензией <a
+        href="https://opensource.org/licenses/MIT" target="_blank">MIT</a>, может быть установлен локально, на&nbsp;ваш
+        сайт или&nbsp;интегри&shy;рован в&nbsp;ваши проекты как&nbsp;Python-библиотека.</p>
 
       <h4>[0.1.6.post1] - 2026–03–19</h4>
       <h5>Изменено</h5>
       <ul>
-        <li>Новый алгоритм «висячей пунктуации» (<em>HangingPunctuationProcessor</em>). Добавлены компенси­рующие пробелы для висячих символов, чтобы избежать наложения на соседние слова. Теперь «висячие символы» (кавычки, скобки и т. п.) обора­чиваются в <code>&lt;span&gt;</code> вместе с ближайшим словом и пробелом, что обеспечивает отсутствие визуальных смещений внутри строки. Режим <code>both</code> (для одновре­менного вывешивания в обе стороны) отключен из-за потенци­альных конфликтов компенси­рующих пробелов и проблем с выравни­ванием при исполь­зовании CSS <code>text-justify</code>.</span></li>
+        <li>Новый алгоритм «висячей пунктуации» (<em>HangingPunctuationProcessor</em>). Добавлены компенси­рующие
+          пробелы для висячих символов, чтобы избежать наложения на соседние слова. Теперь «висячие символы» (кавычки,
+          скобки и т. п.) обора­чиваются в <code>&lt;span&gt;</code> вместе с ближайшим словом и пробелом, что
+          обеспечивает отсутствие визуальных смещений внутри строки. Режим <code>both</code> (для одновре­менного
+          вывешивания в обе стороны) отключен из-за потенци­альных конфликтов компенси­рующих пробелов и проблем
+          с&nbsp;выравни&shy;ванием при&nbsp;исполь&shy;зовании&nbsp;CSS <code>text-justify</code>.</li>
       </ul>
       <h4>Исправлено</h4>
       <ul>
-        <li>Автоматическая замена символов <code>x</code>, <code>X</code>, <code>х</code>, <code>Х</code>, стоящих между числами, на&nbsp;знак умножения&nbsp;<code>×</code>, чтобы выражения вида <code>100x100</code> или <code>100&nbsp;х &nbsp;100` корректно обрабатывались и выглядели типографски правильными (<code>100×100</code> или <code>100&amp;nbsp;×&amp;nbsp;100</code>).</li>
+        <li>Автоматическая замена символов <code>x</code>, <code>X</code>, <code>х</code>, <code>Х</code>, стоящих между
+          числами, на&nbsp;знак умножения&nbsp;<code>×</code>, чтобы выражения вида <code>100x100</code> или&nbsp;<code>100&nbsp;х&nbsp;100</code>
+          корректно обрабатывались и&nbsp;выглядели типографски правильными (<code>100×100</code> или&nbsp;<code>100&amp;nbsp;×&amp;nbsp;100</code>).
+        </li>
       </ul>
 
-      ## [0.1.6] - 2024-03-19
-### Изменено
-- Н
-###
--
-
-
-
+      <h4>[0.1.5] - 2026–02–27</h4>
+      <h5>Исправлено</h5>
+      <ul>
+        <li>Исправлена ошибка, из-за которой <code>&amp;amp;</code> в&nbsp;исходном тексте некорректно преобразовывался
+          в&nbsp;<code>&amp;</code>. Теперь <code>&amp;amp;</code>; и&nbsp;его маскирование (<code>&amp;amp;amp;</code>,
+          <code>&amp;amp;lt;</code>&nbsp;и&nbsp;т.&thinsp;д.) сохраняются в&nbsp;итоговом HTML.
+        </li>
+        <li>Исправлена (частично) расстановка неразрывных пробелов <code>&amp;nbsp;</code> на&nbsp;границах закрывающих
+          тегов (например, <code>&lt;b&gt;Текст&lt;/b&gt; — слово</code> теперь корректно обрабатывается, в <code>&lt;b&gt;Текст&lt;/b&gt;&amp;nbsp;—
+            слово)</code>.
+        </li>
+      </ul>
+      <h4>[0.1.4] - 2026–02–03</h4>
+      <h5>Изменено</h5>
+      <ul>
+        <li><b>Архите&shy;ктурное улучшение:</b> Полностью переработан механизм обработки HTML.</li>
+        <li>Внедрены <b>маркеры границ узлов</b> (<code>\uFFFF</code>) при&nbsp;сборке текста. Это позволяет корректно
+          восста&shy;навливать структуру HTML даже если длина текста изменилась в&nbsp;процессе обработки (например, при&nbsp;удалении&nbsp;лишних
+          пробелов).
+        </li>
+        <li>Внедрены <b>плейсхолдеры</b> (<code>\uFFFC</code>) для&nbsp;защищенных тегов (<code>&lt;code&gt;</code>,
+          <code>&lt;script&gt;</code> и&nbsp;др.). Теперь содержимое этих тегов физически изолируется перед&nbsp;обработкой,
+          что предот&shy;вращает «протекание» контекста (например, склеивание слов, разделенных кодом).
+        </li>
+      </ul>
+      <h5>Исправлено</h5>
+      <ul>
+        <li>Исправлена ошибка смещения текста при&nbsp;наличии спецсимволов (мнемоник) или при&nbsp;изменении&nbsp;длины
+          строки.
+        </li>
+        <li>Исправлена обработка кавычек, стоящих вплотную к&nbsp;границам тегов (например, <code>"&lt;b&gt;Текст&lt;/b&gt;"</code>).
+        </li>
+      </ul>
+      <h4>v0.1.3&nbsp;— 2026–01–11</h4>
+      <h5>Исправлено</h5>
+      <ul>
+        <li>Исправлена проблема с&nbsp;появлением лишних тегов <code>&lt;html&gt;</code>
+          и&nbsp;<code>&lt;body&gt;</code> при&nbsp;обработке фрагментов HTML (когда исполь&shy;зуется парсер
+          <code>lxml</code>). Теперь типограф автома&shy;тически определяет, был&nbsp;ли на&nbsp;входе полноценный
+          документ или&nbsp;фрагмент, и&nbsp;возвращает соответ&shy;ствующий результат.
+        </li>
+      </ul>
+      <h4>v0.1.2&nbsp;— 2025–12–27</h4>
+      <h5>Исправлено</h5>
+      <ul>
+        <li><strong>Критическое исправление:</strong> Добавлена отсут&shy;ствующая зависимость <code>regex</code> в&nbsp;<code>pyproject.toml</code>.
+          Без&nbsp;неё библиотека падала при&nbsp;импорте.
+        </li>
+      </ul>
+      <h4>v0.1.1&nbsp;— 2025–12–23</h4>
+      <h5>Добавлено</h5>
+      <ul>
+        <li>Ссылки на&nbsp;зеркала репозитория (GitVerse, Gitea) в&nbsp;<code>pyproject.toml</code> и&nbsp;<code>README.md</code>.
+        </li>
+        <li>Раздел Credits в&nbsp;документации.</li>
+      </ul>
+      <h4>v0.1.0&nbsp;— 2025–12–23</h4>
+      <h5>Добавлено</h5>
+      <ul>
+        <li>Первый публичный релиз библиотеки <code>etpgrf</code>.</li>
+        <li>
+          Основные модули:
+          <ul>
+            <li><code>Typographer</code>: основной класс-оркестратор.</li>
+            <li><code>Hyphenator</code>: расстановка мягких переносов (алгоритм Ляна-Кнута).</li>
+            <li><code>QuotesProcessor</code>: замена кавычек («ёлочки», „лапки“).</li>
+            <li><code>Unbreakables</code>: неразрывные пробелы для&nbsp;предлогов, союзов и&nbsp;частиц.</li>
+            <li><code>LayoutProcessor</code>: типографика тире, инициалов, акронимов, единиц измерения, устойчивых
+              сокращений (постпо&shy;зиционных и&nbsp;препози&shy;ционных).</li>
+            <li><code>SymbolsProcessor</code>: псевдо&shy;графика (тире, стрелочки, копирайт и&nbsp;т.&thinsp;п.)</li>
+            <li><code>HangingPunctuationProcessor</code>: висячая пунктуация.</li>
+            <li><code>SanitizerProcessor</code>: очистка HTML перед&nbsp;обработкой.</li>
+          </ul>
+        </li>
+        <li>Поддержка русского, русского дорефо&shy;рменного и&nbsp;английского языков.</li>
+        <li>Поддержка обработки HTML (через&nbsp;BeautifulSoup).</li>
+      </ul>
+    </div>
   </div>
+
+
 {% endblock %}
